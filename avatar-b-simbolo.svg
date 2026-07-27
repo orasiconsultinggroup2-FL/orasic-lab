@@ -1,0 +1,17 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1024" height="1024" fill="#080a0f"/>
+  <circle cx="512" cy="512" r="462" fill="none" stroke="#c7d2de" stroke-width="14"/>
+
+  <!-- Símbolo grande: 4 nodos conectados = rubros distintos integrados -->
+  <g>
+    <line x1="512" y1="296" x2="338" y2="503" stroke="#475569" stroke-width="20"/>
+    <line x1="512" y1="296" x2="686" y2="503" stroke="#475569" stroke-width="20"/>
+    <line x1="338" y1="503" x2="512" y2="709" stroke="#475569" stroke-width="20"/>
+    <line x1="686" y1="503" x2="512" y2="709" stroke="#475569" stroke-width="20"/>
+
+    <circle cx="512" cy="296" r="68" fill="#a78bfa"/>
+    <circle cx="338" cy="503" r="66" fill="#22d3ee"/>
+    <circle cx="686" cy="503" r="66" fill="#f472b6"/>
+    <circle cx="512" cy="709" r="69" fill="#fb923c"/>
+  </g>
+</svg>

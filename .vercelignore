@@ -1,0 +1,14 @@
+# Documentos internos — no deben publicarse en el sitio
+*.md
+contenido/
+
+# Material de marca de trabajo (no lo usa la página)
+avatar-*.png
+avatar-*.svg
+comparacion-avatares.png
+logo-orasic-lab-circular.svg
+logo-orasic-lab.svg
+Logo Orasic Lab.png
+
+# Scripts y temporales
+*.py

@@ -1,0 +1,35 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="labGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="1024" height="1024" fill="#080a0f"/>
+
+  <!-- Anillo exterior -->
+  <circle cx="512" cy="512" r="390" fill="none" stroke="#c7d2de" stroke-width="12"/>
+
+  <!-- Icono: 4 nodos conectados (rubros distintos integrados) -->
+  <g>
+    <line x1="512" y1="180" x2="424" y2="285" stroke="#475569" stroke-width="13"/>
+    <line x1="512" y1="180" x2="600" y2="285" stroke="#475569" stroke-width="13"/>
+    <line x1="424" y1="285" x2="512" y2="385" stroke="#475569" stroke-width="13"/>
+    <line x1="600" y1="285" x2="512" y2="385" stroke="#475569" stroke-width="13"/>
+
+    <circle cx="512" cy="180" r="36" fill="#a78bfa"/>
+    <circle cx="424" cy="285" r="34" fill="#22d3ee"/>
+    <circle cx="600" cy="285" r="34" fill="#f472b6"/>
+    <circle cx="512" cy="385" r="38" fill="#fb923c"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="512" y="570" text-anchor="middle"
+        font-family="'Space Grotesk','Segoe UI',Arial,sans-serif"
+        font-weight="700" font-size="140" fill="#ffffff" letter-spacing="2">ORASIC</text>
+  <text x="512" y="700" text-anchor="middle"
+        font-family="'Space Grotesk','Segoe UI',Arial,sans-serif"
+        font-weight="700" font-size="105" fill="url(#labGradient)" letter-spacing="10">LAB</text>
+</svg>

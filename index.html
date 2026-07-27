@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORASIC Lab | Tu negocio, hecho aplicación</title>
+    <meta name="description" content="Tu negocio, hecho aplicación. Construimos apps a medida con IA: reservas, gestión de clientes, dashboards y automatización por WhatsApp. +100 apps en 12 rubros — Perú y Colombia.">
+
+    <!-- Open Graph: cómo se ve el link al compartirlo en redes -->
+    <meta property="og:title" content="ORASIC Lab | Tu negocio, hecho aplicación">
+    <meta property="og:description" content="Apps a medida con IA para negocios reales. +100 construidas en 12 rubros — Perú y Colombia.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://orasic-lab.vercel.app/">
+    <meta property="og:image" content="https://orasic-lab.vercel.app/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; color: #e2e8f0; background:#05060a; }
+        h1, h2, h3, h4, h5 { font-family: 'Space Grotesk', sans-serif; }
+        .smooth-scroll { scroll-behavior: smooth; }
+
+        .hero-section {
+            background-image:
+                radial-gradient(circle at 15% 15%, rgba(124,58,237,0.25), transparent 45%),
+                radial-gradient(circle at 85% 30%, rgba(34,211,238,0.15), transparent 40%),
+                linear-gradient(180deg, #05060a 0%, #05060a 100%);
+        }
+
+        .avatar {
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: white; font-size: 1.3rem;
+        }
+
+        .light-section { background:#f8fafc; color:#1e293b; }
+        .light-section h2, .light-section h3, .light-section h4 { color:#0f172a; }
+    </style>
+</head>
+<body class="smooth-scroll">
+
+    <!-- NAVBAR -->
+    <nav class="bg-[#05060a]/90 backdrop-blur fixed w-full z-50 border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="logo-orasic-lab-white.svg" alt="ORASIC Lab" class="h-9 md:h-10 w-auto object-contain">
+            </div>
+
+            <div class="hidden md:flex items-center space-x-8 text-xs uppercase tracking-widest font-bold text-slate-300">
+                <a href="#servicios" class="hover:text-cyan-400 transition duration-300">Servicios</a>
+                <a href="#portafolio" class="hover:text-cyan-400 transition duration-300">Portafolio</a>
+                <a href="#proceso" class="hover:text-cyan-400 transition duration-300">Proceso</a>
+                <a href="https://wa.me/51986375900?text=Hola%2C%20quiero%20cotizar%20una%20app%20para%20mi%20negocio%20(vengo%20de%20la%20web%20de%20ORASIC%20Lab)."
+                   target="_blank" rel="noopener noreferrer"
+                   class="bg-violet-600 text-white px-5 py-2 hover:bg-violet-500 transition duration-300 rounded-sm">
+                    Cotizar mi App
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero-section min-h-screen flex items-center justify-center text-center px-4 relative">
+        <div class="max-w-5xl mx-auto pt-40 pb-12">
+            <div class="inline-block border-b-2 border-violet-500 pb-2 mb-6">
+                <span class="text-cyan-400 text-xs font-bold tracking-[0.3em] uppercase">Custom Software &amp; AI Development</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
+                Convertimos tu negocio en <br class="hidden md:block"/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400 font-bold">una aplicación real</span>
+            </h1>
+            <p class="text-slate-300 text-lg md:text-xl font-light max-w-2xl mx-auto mb-12 leading-relaxed">
+                Diseñamos y construimos apps a medida &mdash; reservas, gestión de clientes, automatización con IA &mdash;
+                para negocios que quieren dejar el WhatsApp desordenado y el Excel atrás.
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-5 justify-center items-center">
+                <a href="#contacto" class="w-full md:w-auto bg-violet-600 text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-violet-500 transition shadow-lg shadow-violet-900/40 text-center rounded-sm">
+                    Cuéntame tu Idea
+                </a>
+                <a href="#portafolio" class="w-full md:w-auto border border-slate-600 text-slate-200 px-8 py-4 text-sm font-bold uppercase tracking-widest hover:border-cyan-400 hover:text-cyan-400 transition text-center rounded-sm">
+                    Ver Portafolio
+                </a>
+            </div>
+
+            <div class="mt-14 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto border-t border-white/10 pt-8">
+                <div>
+                    <div class="text-2xl md:text-3xl font-bold text-white">100+</div>
+                    <div class="text-[11px] uppercase tracking-widest text-slate-500 mt-1">Apps construidas</div>
+                </div>
+                <div>
+                    <div class="text-2xl md:text-3xl font-bold text-white">12</div>
+                    <div class="text-[11px] uppercase tracking-widest text-slate-500 mt-1">Rubros distintos</div>
+                </div>
+                <div>
+                    <div class="text-2xl md:text-3xl font-bold text-white">2</div>
+                    <div class="text-[11px] uppercase tracking-widest text-slate-500 mt-1">Países (Perú y Colombia)</div>
+                </div>
+                <div>
+                    <div class="text-2xl md:text-3xl font-bold text-white">&lt; 24h</div>
+                    <div class="text-[11px] uppercase tracking-widest text-slate-500 mt-1">Tiempo de respuesta</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- PROBLEMA -->
+    <section class="py-24 light-section px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">El Costo de Seguir Improvisando</h2>
+                <div class="w-24 h-1 bg-violet-500 mx-auto"></div>
+                <p class="mt-6 text-slate-600 max-w-2xl mx-auto">
+                    Cada reserva anotada a mano, cada cliente perdido en el chat, cada reporte armado a última hora
+                    es tiempo y dinero que tu negocio ya no recupera.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-8 border-t-4 border-slate-900 shadow-sm hover:shadow-xl transition duration-300 group">
+                    <div class="text-slate-300 text-4xl mb-4 group-hover:text-violet-500 transition">01</div>
+                    <h3 class="text-lg font-bold mb-3">Citas y Pedidos por WhatsApp</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Sin sistema, se pierden mensajes, se duplican horarios y nadie hace seguimiento real.</p>
+                </div>
+                <div class="bg-white p-8 border-t-4 border-violet-500 shadow-sm hover:shadow-xl transition duration-300 group">
+                    <div class="text-violet-200 text-4xl mb-4 group-hover:text-violet-500 transition">02</div>
+                    <h3 class="text-lg font-bold mb-3">Cero Presencia Digital</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Sin una app o landing propia, cada cliente nuevo depende 100% del boca a boca.</p>
+                </div>
+                <div class="bg-white p-8 border-t-4 border-slate-900 shadow-sm hover:shadow-xl transition duration-300 group">
+                    <div class="text-slate-300 text-4xl mb-4 group-hover:text-violet-500 transition">03</div>
+                    <h3 class="text-lg font-bold mb-3">Datos Dispersos</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Clientes en un cuaderno, ventas en Excel, fotos en el celular: nada conversa entre sí.</p>
+                </div>
+                <div class="bg-white p-8 border-t-4 border-violet-500 shadow-sm hover:shadow-xl transition duration-300 group">
+                    <div class="text-violet-200 text-4xl mb-4 group-hover:text-violet-500 transition">04</div>
+                    <h3 class="text-lg font-bold mb-3">Presupuesto de Agencia</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Una app a medida sonaba a meses de desarrollo y miles de dólares. Ya no.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICIOS -->
+    <section id="servicios" class="py-24 px-6 light-section border-b border-slate-200">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-violet-600 font-bold text-xs tracking-[0.2em] uppercase mb-2 block">Qué Construimos</span>
+                <h2 class="text-3xl md:text-5xl font-bold mb-6 leading-tight">Software a la medida de tu negocio</h2>
+                <p class="text-slate-600 text-lg max-w-2xl mx-auto font-light">
+                    No vendemos plantillas genéricas. Cada aplicación se diseña alrededor de cómo trabaja realmente tu negocio.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-8 hover:shadow-xl transition border border-slate-200 hover:border-violet-300">
+                    <h3 class="text-xl font-bold mb-3 flex items-center"><span class="w-2 h-2 bg-cyan-500 rounded-full mr-3"></span>Apps de Gestión</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Reservas, turnos, clientes, inventario y pagos &mdash; y también ventas: dashboards comerciales, pipelines y seguimiento de leads, hecho para tu flujo de trabajo.</p>
+                </div>
+                <div class="bg-white p-8 hover:shadow-xl transition border border-slate-200 hover:border-violet-300">
+                    <h3 class="text-xl font-bold mb-3 flex items-center"><span class="w-2 h-2 bg-cyan-500 rounded-full mr-3"></span>Landing Pages &amp; Web</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Presencia digital que convierte visitas en clientes, con formulario y WhatsApp integrados.</p>
+                </div>
+                <div class="bg-white p-8 hover:shadow-xl transition border border-slate-200 hover:border-violet-300">
+                    <h3 class="text-xl font-bold mb-3 flex items-center"><span class="w-2 h-2 bg-cyan-500 rounded-full mr-3"></span>Automatización con IA</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Chatbots de WhatsApp, respuestas automáticas y paneles con IA que ahorran horas cada semana.</p>
+                </div>
+                <div class="bg-white p-8 hover:shadow-xl transition border border-slate-200 hover:border-violet-300">
+                    <h3 class="text-xl font-bold mb-3 flex items-center"><span class="w-2 h-2 bg-cyan-500 rounded-full mr-3"></span>MVPs para Startups</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Valida tu idea con un producto funcional en semanas, no en meses de desarrollo tradicional.</p>
+                </div>
+                <div class="bg-white p-8 hover:shadow-xl transition border-2 border-dashed border-violet-300 hover:border-violet-500">
+                    <h3 class="text-xl font-bold mb-3 flex items-center"><span class="w-2 h-2 bg-violet-500 rounded-full mr-3"></span>¿Algo distinto?</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">Si tu idea no encaja en ninguna categoría, mejor. Construimos software a medida &mdash; cuéntanos qué necesitas y lo evaluamos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIFERENCIA -->
+    <section class="py-20 px-6 border-y border-white/10">
+        <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+            <div>
+                <span class="text-cyan-400 font-bold text-xs tracking-[0.2em] uppercase mb-2 block">Por qué ORASIC Lab</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">No entregamos código y desaparecemos</h2>
+            </div>
+            <div class="grid gap-4">
+                <div class="flex items-start gap-4">
+                    <span class="text-violet-400 font-bold text-xl">→</span>
+                    <p class="text-slate-300 text-sm leading-relaxed">La mayoría de agencias te entregan el código y se van. Nosotros seguimos disponibles para ajustar la app a como realmente trabaja tu negocio, no al revés.</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <span class="text-violet-400 font-bold text-xl">→</span>
+                    <p class="text-slate-300 text-sm leading-relaxed">Usamos IA para construir más rápido y más barato de lo que cuesta una agencia tradicional &mdash; sin sacrificar que la app resuelva tu problema real.</p>
+                </div>
+                <div class="flex items-start gap-4">
+                    <span class="text-violet-400 font-bold text-xl">→</span>
+                    <p class="text-slate-300 text-sm leading-relaxed">Ya construimos en 12 rubros distintos. No te vendemos una plantilla genérica disfrazada de "solución a medida".</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PORTAFOLIO -->
+    <section id="portafolio" class="py-24 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-cyan-400 font-bold text-xs tracking-[0.2em] uppercase mb-2 block">Casos Reales</span>
+                <h2 class="text-3xl md:text-5xl font-bold mb-6 text-white">Aplicaciones que ya están funcionando</h2>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto font-light">
+                    Organizado por rubro: una muestra de lo que hemos construido para negocios reales, en Perú y Colombia.
+                </p>
+            </div>
+
+            <div id="portfolio-grid" class="space-y-16"></div>
+        </div>
+    </section>
+
+    <!-- PROCESO -->
+    <section id="proceso" class="py-24 px-6 light-section">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="text-violet-600 font-bold text-xs tracking-[0.2em] uppercase mb-2 block">Cómo Trabajamos</span>
+                <h2 class="text-3xl md:text-4xl font-bold">De la idea al lanzamiento</h2>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-xl font-bold">1</div>
+                    <h4 class="font-bold mb-2">Diagnóstico</h4>
+                    <p class="text-sm text-slate-500">Entendemos tu negocio, tu flujo actual y qué te está frenando.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-xl font-bold">2</div>
+                    <h4 class="font-bold mb-2">Prototipo</h4>
+                    <p class="text-sm text-slate-500">Diseñamos una primera versión funcional que puedes probar en días.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-xl font-bold">3</div>
+                    <h4 class="font-bold mb-2">Desarrollo</h4>
+                    <p class="text-sm text-slate-500">Ajustamos contigo hasta que la app resuelva exactamente lo que necesitas.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-gradient-to-br from-violet-600 to-cyan-500 text-white flex items-center justify-center text-xl font-bold">4</div>
+                    <h4 class="font-bold mb-2">Lanzamiento</h4>
+                    <p class="text-sm text-slate-500">Tu app en producción, con soporte para seguir mejorándola.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-24 px-6">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-cyan-400 font-bold text-xs tracking-[0.2em] uppercase mb-2 block">Preguntas Frecuentes</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Antes de que preguntes</h2>
+            </div>
+            <div class="space-y-3">
+                <details class="group bg-white/5 border border-white/10 rounded-lg px-6 py-1">
+                    <summary class="cursor-pointer select-none list-none flex items-center justify-between py-4 text-white font-bold">
+                        ¿Cuánto cuesta una app a medida?
+                        <span class="text-slate-400 group-open:rotate-45 transition-transform text-xl">+</span>
+                    </summary>
+                    <p class="text-slate-400 text-sm leading-relaxed pb-5">Depende del alcance, pero al usar IA en el desarrollo construimos más rápido y a un costo muy por debajo de una agencia tradicional. Te damos un número concreto después de una llamada breve de diagnóstico, sin compromiso.</p>
+                </details>
+                <details class="group bg-white/5 border border-white/10 rounded-lg px-6 py-1">
+                    <summary class="cursor-pointer select-none list-none flex items-center justify-between py-4 text-white font-bold">
+                        ¿Cuánto se demora un proyecto?
+                        <span class="text-slate-400 group-open:rotate-45 transition-transform text-xl">+</span>
+                    </summary>
+                    <p class="text-slate-400 text-sm leading-relaxed pb-5">Una primera versión funcional suele estar lista en días, no meses. El tiempo total depende de cuánto ajuste necesite tu caso específico.</p>
+                </details>
+                <details class="group bg-white/5 border border-white/10 rounded-lg px-6 py-1">
+                    <summary class="cursor-pointer select-none list-none flex items-center justify-between py-4 text-white font-bold">
+                        ¿Trabajan con mi rubro aunque no esté en el portafolio?
+                        <span class="text-slate-400 group-open:rotate-45 transition-transform text-xl">+</span>
+                    </summary>
+                    <p class="text-slate-400 text-sm leading-relaxed pb-5">Sí. El portafolio es una muestra, no el límite. Ya construimos en 12 rubros distintos y evaluamos cualquier idea nueva sin costo.</p>
+                </details>
+                <details class="group bg-white/5 border border-white/10 rounded-lg px-6 py-1">
+                    <summary class="cursor-pointer select-none list-none flex items-center justify-between py-4 text-white font-bold">
+                        ¿Qué pasa después de que la app está lista?
+                        <span class="text-slate-400 group-open:rotate-45 transition-transform text-xl">+</span>
+                    </summary>
+                    <p class="text-slate-400 text-sm leading-relaxed pb-5">Seguimos disponibles para ajustes y mejoras. No entregamos el código y desaparecemos — te acompañamos mientras la app siga en uso.</p>
+                </details>
+                <details class="group bg-white/5 border border-white/10 rounded-lg px-6 py-1">
+                    <summary class="cursor-pointer select-none list-none flex items-center justify-between py-4 text-white font-bold">
+                        No tengo conocimientos técnicos, ¿igual puedo pedir una app?
+                        <span class="text-slate-400 group-open:rotate-45 transition-transform text-xl">+</span>
+                    </summary>
+                    <p class="text-slate-400 text-sm leading-relaxed pb-5">Por supuesto — la mayoría de nuestros clientes no son técnicos. Tú describes cómo funciona tu negocio hoy y nosotros nos encargamos del resto.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <footer id="contacto" class="bg-[#05060a] text-white py-20 px-6 border-t border-white/10">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Cuéntanos tu Idea</h2>
+                <p class="text-slate-400 max-w-xl mx-auto">
+                    Completa el formulario y te contactamos por WhatsApp para conversar sobre tu proyecto.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-10 items-start">
+                <form id="contact-form" class="space-y-4 bg-white rounded-lg p-6 md:p-8 text-slate-800">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">Nombre</label>
+                        <input type="text" name="nombre" required class="w-full border border-slate-300 rounded px-4 py-3 text-sm focus:outline-none focus:border-violet-500" placeholder="Tu nombre">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">Negocio / Rubro</label>
+                        <input type="text" name="negocio" class="w-full border border-slate-300 rounded px-4 py-3 text-sm focus:outline-none focus:border-violet-500" placeholder="Ej. Estudio de belleza, clínica, tienda...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">WhatsApp</label>
+                        <input type="tel" name="telefono" required class="w-full border border-slate-300 rounded px-4 py-3 text-sm focus:outline-none focus:border-violet-500" placeholder="+51 9...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">Cuéntame tu idea</label>
+                        <textarea name="mensaje" rows="4" class="w-full border border-slate-300 rounded px-4 py-3 text-sm focus:outline-none focus:border-violet-500" placeholder="¿Qué te gustaría automatizar o construir?"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-violet-600 text-white px-6 py-4 text-sm font-bold uppercase tracking-widest hover:bg-violet-500 transition rounded-sm">
+                        Enviar por WhatsApp
+                    </button>
+                    <p class="text-[11px] text-slate-400 text-center">Al enviar, se abrirá WhatsApp con tu mensaje ya escrito.</p>
+                </form>
+
+                <div class="flex flex-col gap-4 justify-center h-full">
+                    <a href="https://wa.me/51986375900?text=Hola%2C%20quiero%20cotizar%20una%20app%20para%20mi%20negocio%20(vengo%20de%20la%20web%20de%20ORASIC%20Lab)."
+                       target="_blank" rel="noopener noreferrer"
+                       class="bg-violet-600 hover:bg-violet-500 text-white font-bold py-4 px-8 rounded shadow-lg transition text-center uppercase tracking-widest text-sm">
+                        Escribir por WhatsApp
+                    </a>
+                    <a href="mailto:orasiclab@gmail.com?subject=Quiero%20una%20app%20para%20mi%20negocio"
+                       class="border border-cyan-500 text-cyan-400 hover:text-cyan-300 font-bold py-4 px-8 rounded shadow-lg transition hover:bg-cyan-50/10 text-center uppercase tracking-widest text-sm">
+                        Escribir por Email
+                    </a>
+                    <p class="text-slate-500 text-xs mt-2 text-center md:text-left">
+                        Respondemos normalmente en menos de 24 horas.<br>
+                        <span class="text-slate-600">orasiclab@gmail.com</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-16 text-xs text-slate-600 border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <span>&copy; 2026 ORASIC Lab &middot; Tu negocio, hecho aplicación.</span>
+                <div class="space-x-4">
+                    <a href="#contacto" class="hover:text-cyan-400">Contacto</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ---- Portafolio: agrupado por rubro ----
+        const RUBROS = [
+            {
+                nombre: "Belleza",
+                color: "#f472b6",
+                proyectos: [
+                    { nombre: "Blink & Bloom", desc: "Landing y sistema de gestión para estudio de pestañas, uñas y cejas en Surco.", letra: "B" },
+                    { nombre: "SalonBot", desc: "Automatización de reservas y atención por WhatsApp para salones de belleza.", letra: "S" },
+                    { nombre: "Helen Aesthetic & Holistic", desc: "Diagnóstico estético y holístico con análisis visual asistido por IA.", letra: "H" },
+                ]
+            },
+            {
+                nombre: "Salud",
+                color: "#34d399",
+                proyectos: [
+                    { nombre: "SOLUM Podología", desc: "Seguimiento fotográfico de pacientes y gestión de citas para clínica podológica.", letra: "S" },
+                    { nombre: "Clínica Dental", desc: "Sistema de gestión de turnos con atención automatizada por IA vía WhatsApp.", letra: "C" },
+                    { nombre: "Nutri.Express", desc: "Gestión nutricional integral para dietistas: historia clínica, evaluación antropométrica y reportes con IA.", letra: "N" },
+                ]
+            },
+            {
+                nombre: "Retail y Moda",
+                color: "#4ade80",
+                proyectos: [
+                    { nombre: "Quishuar Store", desc: "E-commerce de moda casual con recomendador de outfits y probador virtual con IA.", letra: "Q" },
+                    { nombre: "La Tienda de Lui", desc: "Tienda urbana con catálogo interactivo y generador de marca con IA — Manizales y Villamaría, Colombia.", letra: "L" },
+                    { nombre: "DecorIA", desc: "Diseña tu hogar con IA: genera versiones de cualquier ambiente en distintos estilos.", letra: "D" },
+                ]
+            },
+            {
+                nombre: "Deporte",
+                color: "#fb923c",
+                proyectos: [
+                    { nombre: "SurfPro", desc: "Seguimiento de rendimiento, seguridad y equipamiento para surfistas.", letra: "S" },
+                    { nombre: "Surfboard Renovator Pro", desc: "Renovación de tablas de surf con diseño generado por IA.", letra: "S" },
+                ]
+            },
+            {
+                nombre: "Comunidad",
+                color: "#f87171",
+                proyectos: [
+                    { nombre: "Las Repetidas del Mundial", desc: "App para gestionar álbumes de figuritas, registrar repetidas e intercambios entre coleccionistas.", letra: "R" },
+                ]
+            },
+            {
+                nombre: "Ventas B2B",
+                color: "#60a5fa",
+                proyectos: [
+                    { nombre: "ZEUS Growth OS", desc: "Panel de gestión comercial B2B y eficiencia operativa para una red nacional de estaciones — Perú.", letra: "Z" },
+                    { nombre: "SalesOS", desc: "CRM de ventas con lead scoring inteligente y cadencias de prospección estructuradas.", letra: "S" },
+                    { nombre: "Strategic AI CRM", desc: "CRM potenciado por IA enfocado en influencia y relacionamiento B2B.", letra: "S" },
+                ]
+            },
+            {
+                nombre: "Marketing y Contenido",
+                color: "#818cf8",
+                proyectos: [
+                    { nombre: "Orasi Content Strategist", desc: "Dashboard de estrategia de contenido: planificación, guiones virales y generación de ideas con IA.", letra: "O" },
+                    { nombre: "GIC — Generador Inteligente de Campañas", desc: "Diseño, ejecución y medición diaria de campañas publicitarias de alto rendimiento.", letra: "G" },
+                    { nombre: "ContentFlow", desc: "Convierte videos virales en posts estratégicos de LinkedIn con diseño de alto impacto.", letra: "C" },
+                    { nombre: "CIA — Content Intelligence Analytics", desc: "Ingestión multicanal, normalización de métricas, scoring de contenido y gestión de riesgo.", letra: "C" },
+                ]
+            },
+            {
+                nombre: "Educación",
+                color: "#facc15",
+                proyectos: [
+                    { nombre: "Academia de Repostería Virtual", desc: "Plataforma m-learning con módulos de repostería tradicional e internacional.", letra: "A" },
+                    { nombre: "Plataforma de Marketing con IA", desc: "Aprendizaje interactivo sobre marketing estratégico y aplicación de inteligencia artificial.", letra: "P" },
+                    { nombre: "SimuLearn Pro", desc: "Simulación empresarial de alta fidelidad para aprendizaje corporativo.", letra: "S" },
+                    { nombre: "Deep Intelligence Campus", desc: "Plataforma de inteligencia educativa institucional para un instituto técnico.", letra: "D" },
+                ]
+            },
+            {
+                nombre: "Productividad",
+                color: "#2dd4bf",
+                proyectos: [
+                    { nombre: "Fábrica de Emprendedores", desc: "Generación de ideas de negocio de baja inversión para Perú y Colombia.", letra: "F" },
+                    { nombre: "Spark", desc: "Incubadora creativa con metodologías SCAMPER y Doble Diamante potenciada por IA.", letra: "S" },
+                ]
+            },
+            {
+                nombre: "Liderazgo y Coaching",
+                color: "#a78bfa",
+                proyectos: [
+                    { nombre: "HUELLA AI System", desc: "Sistema de inteligencia aumentada para coaches: diagnóstico y seguimiento conductual.", letra: "H" },
+                    { nombre: "HUELLA — Metodología de Transformación", desc: "Presentación interactiva de una metodología propia de transformación en liderazgo.", letra: "H" },
+                    { nombre: "Strategic Control Room", desc: "Sala de control estratégico para la gestión de un programa de coaching organizacional.", letra: "S" },
+                    { nombre: "DecisionLab", desc: "Simulador interactivo para entrenar decisiones complejas de liderazgo en un entorno seguro.", letra: "D" },
+                    { nombre: "SpeakerFlow", desc: "CRM, operaciones y suite de gestión B2B a medida para un conferencista profesional.", letra: "S" },
+                ]
+            },
+            {
+                nombre: "Institucional y Corporativo",
+                color: "#94a3b8",
+                proyectos: [
+                    { nombre: "VOCERO360", desc: "Simulador de crisis y media training para voceros institucionales.", letra: "V" },
+                    { nombre: "Leadership Intelligence Platform", desc: "Plataforma de inteligencia de liderazgo institucional para mandos medios.", letra: "L" },
+                    { nombre: "Centro de Comando Élite", desc: "Gestión estratégica de activos, validación por IA y radar territorial.", letra: "C" },
+                    { nombre: "SaaS Productization", desc: "Productización de un sistema interno de innovación como producto SaaS.", letra: "S" },
+                    { nombre: "ZollaWeb", desc: "Sitio institucional en producción — en vivo en zolla.com.pe.", letra: "W" },
+                ]
+            },
+            {
+                nombre: "Minería y Conflictos Sociales",
+                color: "#22d3ee",
+                proyectos: [
+                    { nombre: "Radar de Conflictos Mineros", desc: "Sistema de RevOps, Data Engineering y Sales Ops para monitoreo de conflictos en el sector minero.", letra: "R" },
+                    { nombre: "AcuerdoIA Social", desc: "Entrenamiento en diálogo comunitario y manejo de conflictos para gestores sociales de una minera internacional.", letra: "A" },
+                    { nombre: "ONCM Nexus", desc: "Plataforma de negociación de clase mundial integrando metodologías PNR, MGA y AAR para minería.", letra: "O" },
+                    { nombre: "Negocia con Otro", desc: "Entrenamiento de alto nivel para negociadores senior.", letra: "N" },
+                    { nombre: "Blackwell Negotiator", desc: "Simulaciones de negociación con ciencia del comportamiento y coaching personalizado.", letra: "B" },
+                    { nombre: "NeuroNegociación", desc: "Entrenamiento de negociación practicando con avatares de IA realistas.", letra: "N" },
+                    { nombre: "Negociador Inteligente", desc: "Simulación de negociación con instrucción académica integrada.", letra: "N" },
+                    { nombre: "Institutional Leadership Intelligence", desc: "Plataforma de inteligencia institucional para negociación y liderazgo.", letra: "I" },
+                ]
+            },
+        ];
+
+        const grid = document.getElementById('portfolio-grid');
+        grid.className = "space-y-3 max-w-4xl mx-auto";
+
+        RUBROS.forEach(function (rubro, idx) {
+            const details = document.createElement('details');
+            details.className = "group bg-white/5 border border-white/10 rounded-lg overflow-hidden";
+            if (idx === 0) details.open = true;
+
+            const summary = document.createElement('summary');
+            summary.className = "cursor-pointer select-none list-none flex items-center gap-3 px-6 py-5 hover:bg-white/[0.04] transition";
+            summary.innerHTML =
+                '<span class="w-3 h-3 rounded-full flex-shrink-0" style="background:' + rubro.color + '"></span>' +
+                '<h3 class="text-lg font-bold text-white flex-1">' + rubro.nombre + '</h3>' +
+                '<span class="text-xs text-slate-500 uppercase tracking-widest">' + rubro.proyectos.length + (rubro.proyectos.length === 1 ? ' app' : ' apps') + '</span>' +
+                '<span class="text-slate-400 transition-transform group-open:rotate-45 text-xl leading-none">+</span>';
+            details.appendChild(summary);
+
+            const cards = document.createElement('div');
+            cards.className = "grid sm:grid-cols-2 lg:grid-cols-3 gap-4 px-6 pb-6";
+            rubro.proyectos.forEach(function (p) {
+                const card = document.createElement('div');
+                card.className = "bg-white/5 border border-white/10 rounded-lg p-5 hover:border-cyan-400/60 hover:bg-white/[0.07] transition";
+                card.innerHTML =
+                    '<div class="flex items-center gap-3 mb-3">' +
+                        '<div class="avatar w-10 h-10 rounded-full flex-shrink-0" style="background:' + rubro.color + '">' + p.letra + '</div>' +
+                        '<h4 class="text-sm font-bold leading-tight text-white">' + p.nombre + '</h4>' +
+                    '</div>' +
+                    '<p class="text-slate-400 text-xs leading-relaxed">' + p.desc + '</p>';
+                cards.appendChild(card);
+            });
+            details.appendChild(cards);
+
+            grid.appendChild(details);
+        });
+
+        // ---- Tarjeta final abierta: la lista no es el límite ----
+        const openCard = document.createElement('div');
+        openCard.className = "bg-gradient-to-r from-violet-900/30 to-cyan-900/20 border-2 border-dashed border-violet-500/40 rounded-lg px-6 py-8 text-center";
+        openCard.innerHTML =
+            '<h3 class="text-lg font-bold text-white mb-2">¿Tu rubro no está en la lista?</h3>' +
+            '<p class="text-slate-400 text-sm max-w-md mx-auto mb-5">Esto es una muestra, no el límite. Hemos construido para minería, salud, belleza, retail, deporte, educación y más — probablemente también podamos ayudarte a ti.</p>' +
+            '<a href="https://wa.me/51986375900?text=Hola%2C%20tengo%20un%20negocio%20de%20un%20rubro%20distinto%20y%20quiero%20saber%20si%20pueden%20ayudarme%20(vengo%20de%20la%20web%20de%20ORASIC%20Lab)." target="_blank" rel="noopener noreferrer" class="inline-block bg-violet-600 hover:bg-violet-500 text-white font-bold px-6 py-3 text-xs uppercase tracking-widest rounded-sm transition">Pregúntanos por el tuyo</a>';
+        grid.appendChild(openCard);
+
+        // ---- Formulario -> WhatsApp ----
+        document.getElementById('contact-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const f = e.target;
+            const nombre = f.nombre.value.trim();
+            const negocio = f.negocio.value.trim();
+            const telefono = f.telefono.value.trim();
+            const mensaje = f.mensaje.value.trim();
+
+            let texto = 'Hola, soy ' + nombre + '.';
+            if (negocio) texto += ' Tengo un negocio de ' + negocio + '.';
+            if (mensaje) texto += ' ' + mensaje;
+            texto += ' (Vengo de la web de ORASIC Lab, mi WhatsApp es ' + telefono + ')';
+
+            const url = 'https://wa.me/51986375900?text=' + encodeURIComponent(texto);
+            window.open(url, '_blank');
+        });
+    </script>
+
+</body>
+</html>

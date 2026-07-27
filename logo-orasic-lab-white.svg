@@ -1,0 +1,27 @@
+<svg width="640" height="200" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="orasicGradientW" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="640" height="200" fill="#05060a"/>
+
+  <!-- Icon: connected nodes, each a different color = distintos rubros conectados -->
+  <g transform="translate(20, 38)">
+    <line x1="60" y1="20" x2="20" y2="72" stroke="#64748b" stroke-width="4"/>
+    <line x1="60" y1="20" x2="100" y2="72" stroke="#64748b" stroke-width="4"/>
+    <line x1="20" y1="72" x2="60" y2="118" stroke="#64748b" stroke-width="4"/>
+    <line x1="100" y1="72" x2="60" y2="118" stroke="#64748b" stroke-width="4"/>
+
+    <circle cx="60" cy="20" r="12" fill="#a78bfa"/>
+    <circle cx="20" cy="72" r="12" fill="#22d3ee"/>
+    <circle cx="100" cy="72" r="12" fill="#f472b6"/>
+    <circle cx="60" cy="118" r="15" fill="#fb923c"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="160" y="98" font-family="'Space Grotesk', 'Segoe UI', Arial, sans-serif" font-weight="700" font-size="56" fill="#ffffff" letter-spacing="1">ORASIC</text>
+  <text x="160" y="132" font-family="'Space Grotesk', 'Segoe UI', Arial, sans-serif" font-weight="600" font-size="30" fill="url(#orasicGradientW)" letter-spacing="6">LAB</text>
+</svg>
