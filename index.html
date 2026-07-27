@@ -36,6 +36,20 @@
         }
 
         .connector-line { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); }
+
+        .glow-top-left {
+            background-image: radial-gradient(circle at 15% 0%, rgba(124,58,237,0.16), transparent 45%);
+        }
+        .glow-bottom-right {
+            background-image: radial-gradient(circle at 85% 100%, rgba(34,211,238,0.14), transparent 45%);
+        }
+        .seam-top { position: relative; }
+        .seam-top::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent);
+        }
     </style>
 </head>
 <body class="smooth-scroll">
@@ -126,7 +140,7 @@
     </header>
 
     <!-- PROBLEMA -->
-    <section class="py-24 px-6 bg-[#080a11]">
+    <section class="py-24 px-6 bg-[#0a0d17] seam-top glow-top-left">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">El Costo de Seguir Improvisando</h2>
@@ -199,7 +213,7 @@
     </section>
 
     <!-- DIFERENCIA -->
-    <section class="py-20 px-6 border-y border-white/10">
+    <section class="py-20 px-6 border-y border-white/10 glow-bottom-right">
         <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
             <div>
                 <span class="text-cyan-400 font-bold text-xs tracking-[0.2em] uppercase mb-2 block">Por qué ORASIC Lab</span>
@@ -223,7 +237,7 @@
     </section>
 
     <!-- PORTAFOLIO -->
-    <section id="portafolio" class="py-24 px-6">
+    <section id="portafolio" class="py-24 px-6 glow-top-left">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
                 <span class="text-cyan-400 font-bold text-xs tracking-[0.2em] uppercase mb-2 block">Casos Reales</span>
@@ -238,7 +252,7 @@
     </section>
 
     <!-- PROCESO -->
-    <section id="proceso" class="py-24 px-6 bg-[#080a11]">
+    <section id="proceso" class="py-24 px-6 bg-[#0a0d17] seam-top glow-bottom-right">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-16">
                 <span class="text-cyan-400 font-bold text-xs tracking-[0.2em] uppercase mb-2 block">Cómo Trabajamos</span>
@@ -272,7 +286,7 @@
     </section>
 
     <!-- FAQ -->
-    <section class="py-24 px-6">
+    <section class="py-24 px-6 glow-bottom-right">
         <div class="max-w-3xl mx-auto">
             <div class="text-center mb-12">
                 <span class="text-cyan-400 font-bold text-xs tracking-[0.2em] uppercase mb-2 block">Preguntas Frecuentes</span>
