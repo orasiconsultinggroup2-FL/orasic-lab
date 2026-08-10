@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | ORASIC Lab</title>
+    <meta name="description" content="Notas de ORASIC Lab sobre software a medida, IA aplicada y cómo organizar negocios y organizaciones que hoy dependen de procesos manuales.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; color: #e2e8f0; background:#05060a; }
+        h1, h2, h3, h4, h5 { font-family: 'Space Grotesk', sans-serif; }
+        .smooth-scroll { scroll-behavior: smooth; }
+        .glow-top-left {
+            background-image: radial-gradient(circle at 15% 0%, rgba(124,58,237,0.16), transparent 45%);
+        }
+    </style>
+</head>
+<body class="smooth-scroll">
+
+    <!-- WHATSAPP FLOTANTE -->
+    <a href="https://wa.me/51999039947?text=Hola%2C%20quiero%20cotizar%20una%20app%20para%20mi%20negocio%20(vengo%20de%20la%20web%20de%20ORASIC%20Lab)."
+       target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp"
+       class="fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] shadow-lg shadow-black/40 flex items-center justify-center transition hover:scale-105">
+        <svg viewBox="0 0 32 32" class="w-8 h-8 fill-white" aria-hidden="true">
+            <path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.362.685 4.564 1.868 6.42L4 29l7.771-1.84A11.94 11.94 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.818c-1.955 0-3.771-.573-5.301-1.559l-.38-.24-4.61 1.092 1.11-4.49-.248-.393A9.77 9.77 0 0 1 5.182 15c0-5.964 4.855-10.818 10.819-10.818S26.818 9.036 26.818 15 21.965 24.818 16.001 24.818zm5.966-8.144c-.327-.164-1.936-.955-2.236-1.064-.3-.109-.518-.164-.736.164-.218.327-.845 1.064-1.036 1.282-.191.218-.382.246-.709.082-.327-.164-1.38-.508-2.629-1.62-.972-.867-1.629-1.938-1.82-2.265-.191-.327-.02-.504.144-.667.148-.147.327-.382.49-.573.164-.191.218-.327.327-.545.109-.218.055-.409-.027-.573-.082-.164-.736-1.774-1.009-2.43-.266-.64-.536-.553-.736-.563l-.627-.011c-.218 0-.573.082-.873.409-.3.327-1.145 1.119-1.145 2.729s1.172 3.164 1.336 3.382c.164.218 2.307 3.522 5.59 4.938.781.337 1.39.539 1.865.69.784.25 1.497.215 2.06.13.629-.094 1.936-.792 2.209-1.556.273-.764.273-1.418.191-1.556-.082-.137-.3-.218-.627-.382z"/>
+        </svg>
+    </a>
+
+    <!-- NAVBAR -->
+    <nav class="bg-[#05060a]/90 backdrop-blur fixed w-full z-50 border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="logo-orasic-lab-white.svg" alt="ORASIC Lab" class="h-9 md:h-10 w-auto object-contain">
+            </a>
+            <div class="hidden md:flex items-center space-x-8 text-xs uppercase tracking-widest font-bold text-slate-300">
+                <a href="index.html#servicios" class="hover:text-cyan-400 transition duration-300">Servicios</a>
+                <a href="index.html#portafolio" class="hover:text-cyan-400 transition duration-300">Portafolio</a>
+                <a href="blog.html" class="text-cyan-400">Blog</a>
+                <a href="https://wa.me/51999039947?text=Hola%2C%20quiero%20cotizar%20una%20app%20para%20mi%20negocio%20(vengo%20de%20la%20web%20de%20ORASIC%20Lab)."
+                   target="_blank" rel="noopener noreferrer"
+                   class="bg-violet-600 text-white px-5 py-2 hover:bg-violet-500 transition duration-300 rounded-sm">
+                    Cotizar mi App
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HEADER BLOG -->
+    <header class="glow-top-left pt-40 pb-16 px-6 text-center">
+        <div class="max-w-3xl mx-auto">
+            <span class="text-cyan-400 font-bold text-xs tracking-[0.2em] uppercase mb-3 block">Notas de ORASIC Lab</span>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Blog</h1>
+            <p class="text-slate-400 text-lg font-light">
+                Ideas cortas sobre software a medida, IA aplicada y cómo dejar atrás el WhatsApp desordenado y las hojas de cálculo.
+            </p>
+        </div>
+    </header>
+
+    <!-- LISTADO DE POSTS -->
+    <section class="px-6 pb-24">
+        <div class="max-w-3xl mx-auto space-y-6">
+
+            <article class="bg-white/5 border border-white/10 rounded-lg p-8 hover:border-violet-400/40 hover:bg-white/[0.07] transition">
+                <span class="text-xs uppercase tracking-widest text-cyan-400 font-bold">Software a medida</span>
+                <h2 class="text-2xl font-bold text-white mt-2 mb-3">Comprar vs. Construir: por qué el software a medida ya no es un lujo</h2>
+                <p class="text-slate-300 leading-relaxed mb-4 font-medium">
+                    Construir software propio dejó de ser cosa de multinacionales con presupuestos millonarios.
+                </p>
+                <p class="text-slate-400 leading-relaxed mb-4">
+                    Durante años el desarrollo a medida se asoció con ciclos de implementación larguísimos y equipos internos de IT.
+                    Esa imagen quedó atrás: con arquitecturas modulares, desarrollo ágil e IA como acelerador, construir software
+                    propio es accesible para organizaciones medianas e instituciones.
+                </p>
+                <p class="text-slate-400 leading-relaxed mb-4">
+                    El costo real del software genérico rara vez se ve en la factura del mes uno: horas de adaptación,
+                    integraciones con tus sistemas existentes, procesos que la herramienta no cubre y se resuelven con parches
+                    manuales, dependencia de tickets para cada cambio.
+                </p>
+                <p class="text-slate-400 leading-relaxed mb-4">
+                    Conviene construir cuando tu proceso operativo es diferenciador, cuando necesitas integrar IA de forma nativa,
+                    o cuando ya probaste software genérico y se quedó corto. Conviene comprar cuando el problema es estándar
+                    y no hay nada que proteger.
+                </p>
+                <p class="text-slate-400 leading-relaxed">
+                    La pregunta ya no es "¿puedo permitirme software a medida?". Es: "¿puedo permitirme seguir operando
+                    con herramientas que no fueron hechas para mí?"
+                </p>
+            </article>
+
+        </div>
+    </section>
+
+    <!-- FOOTER SIMPLE -->
+    <footer class="bg-[#05060a] text-slate-500 text-xs py-10 px-6 border-t border-white/10 text-center">
+        &copy; 2026 ORASIC Lab &middot; <a href="index.html" class="hover:text-cyan-400">Volver al inicio</a>
+    </footer>
+
+</body>
+</html>
