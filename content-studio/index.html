@@ -11,6 +11,8 @@
   <meta http-equiv="Expires" content="0" />
   <title>ORASIC Content Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/orasic-tour.js"></script>
+  <script src="/tour-content-studio.js" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -387,6 +389,15 @@ function loadState() {
       st.linkedinArticles = st.linkedinArticles || [];
       st.blogArticles = st.blogArticles || [];
       st.photoBank = st.photoBank || [];
+
+      // Migración: añadir sugerencia_imagen a artículos existentes que no la tengan
+      (st.linkedinArticles || []).forEach(a => {
+        if (a.sugerencia_imagen === undefined) a.sugerencia_imagen = '';
+      });
+      (st.blogArticles || []).forEach(a => {
+        if (a.sugerencia_imagen === undefined) a.sugerencia_imagen = '';
+      });
+
       return st;
     }
   } catch(e) {}

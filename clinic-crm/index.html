@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>ORASIC Dental CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-base:    #080A0F;
+      --bg-sidebar: #0C0E16;
+      --bg-card:    #111827;
+      --bg-card2:   #1a2236;
+      --border:     #1F2937;
+      --border2:    #2D3748;
+      --text-1:     #F9FAFB;
+      --text-2:     #9CA3AF;
+      --text-3:     #6B7280;
+      --violet:     #A78BFA;
+      --violet-d:   #7C3AED;
+      --cyan:       #22D3EE;
+      --pink:       #F472B6;
+      --orange:     #FB923C;
+      --green:      #34D399;
+      --red:        #F87171;
+      --yellow:     #FCD34D;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-base); color: var(--text-1); min-height: 100vh; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-card); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--violet); }
+
+    /* Login */
+    #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .login-box { width: 100%; max-width: 380px; background: var(--bg-card); border: 1px solid var(--border2); border-radius: 16px; padding: 32px; }
+    .login-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .login-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .login-tab { flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 600; color: var(--text-3); cursor: pointer; border-bottom: 2px solid transparent; }
+    .login-tab.active { color: var(--violet); border-bottom-color: var(--violet); }
+    .login-error { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); color: var(--red); font-size: 12.5px; padding: 10px 12px; border-radius: 8px; margin-bottom: 14px; display: none; }
+
+    #app { display: none; }
+    /* Sidebar */
+    #sidebar { width: 240px; min-height: 100vh; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; }
+    .nav-brand { padding: 20px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .brand-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--violet), var(--cyan)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .brand-text { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; }
+    .brand-text span { color: var(--violet); }
+    .brand-sub { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+    nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
+    .nav-section { margin-bottom: 16px; }
+    .nav-section-label { font-size: 10px; font-weight: 600; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; padding: 0 8px; margin-bottom: 4px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; cursor: pointer; font-size: 13.5px; color: var(--text-2); transition: all 0.15s; text-decoration: none; white-space: nowrap; overflow: hidden; }
+    .nav-item:hover { background: var(--bg-card); color: var(--text-1); }
+    .nav-item.active { background: rgba(167,139,250,0.12); color: var(--violet); }
+    .nav-item .icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+    .nav-item .label { flex: 1; }
+    .nav-item .badge { background: var(--violet); color: white; font-size: 10px; font-weight: 700; border-radius: 99px; padding: 1px 6px; }
+
+    /* Main */
+    #main { margin-left: 240px; flex: 1; min-height: 100vh; }
+    .page-header { padding: 24px 32px 0; border-bottom: 1px solid var(--border); background: var(--bg-base); position: sticky; top: 0; z-index: 10; }
+    .page-header-inner { display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; gap: 16px; flex-wrap: wrap; }
+    .page-title { font-size: 22px; font-weight: 700; }
+    .page-sub { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+    .page-body { padding: 28px 32px; }
+
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .card-title { font-size: 11px; font-weight: 600; color: var(--text-2); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .alert-banner { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 10px; margin-bottom: 20px; }
+    .alert-banner.orange { background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.25); }
+    .alert-banner .ab-icon { font-size: 20px; }
+    .alert-banner .ab-text { flex: 1; font-size: 13.5px; }
+    .alert-banner .ab-text strong { font-weight: 700; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative; overflow: hidden; }
+    .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+    .stat-card.violet::before { background: var(--violet); }
+    .stat-card.cyan::before { background: var(--cyan); }
+    .stat-card.green::before { background: var(--green); }
+    .stat-card.orange::before { background: var(--orange); }
+    .stat-num { font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+    .stat-label { font-size: 12px; color: var(--text-2); }
+    .stat-icon { position: absolute; top: 16px; right: 16px; font-size: 20px; opacity: 0.3; }
+
+    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+    .btn-primary { background: var(--violet); color: white; }
+    .btn-primary:hover { background: #9370f0; }
+    .btn-secondary { background: var(--bg-card2); color: var(--text-1); border: 1px solid var(--border2); }
+    .btn-secondary:hover { border-color: var(--violet); color: var(--violet); }
+    .btn-ghost { background: transparent; color: var(--text-2); padding: 8px 12px; }
+    .btn-ghost:hover { color: var(--text-1); }
+    .btn-danger { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+    .btn-danger:hover { background: rgba(248,113,113,0.2); }
+    .btn-success { background: rgba(52,211,153,0.12); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+    .btn-success:hover { background: rgba(52,211,153,0.2); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn-icon { padding: 8px; border-radius: 8px; background: var(--bg-card2); border: 1px solid var(--border); cursor: pointer; color: var(--text-2); font-size: 14px; transition: all 0.15s; }
+    .btn-icon:hover { border-color: var(--violet); color: var(--violet); }
+    .btn-full { width: 100%; justify-content: center; }
+
+    .status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+    .sb-pending { background: rgba(251,191,36,0.12); color: var(--yellow); }
+    .sb-confirmed { background: rgba(52,211,153,0.12); color: var(--green); }
+    .sb-completed { background: rgba(34,211,238,0.12); color: var(--cyan); }
+    .sb-cancelled { background: rgba(248,113,113,0.12); color: var(--red); }
+    .sb-no_show { background: rgba(107,114,128,0.15); color: var(--text-2); }
+    .sb-sent { background: rgba(52,211,153,0.12); color: var(--green); }
+
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; }
+    .form-input, .form-textarea, .form-select { width: 100%; background: var(--bg-card2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text-1); padding: 10px 14px; font-size: 14px; font-family: inherit; transition: border 0.15s; outline: none; }
+    .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--violet); }
+    .form-textarea { resize: vertical; min-height: 70px; }
+    .form-hint { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .modal-box { background: var(--bg-card); border: 1px solid var(--border2); border-radius: 16px; padding: 28px; width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto; }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 17px; font-weight: 700; }
+
+    table.data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    table.data-table th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-3); border-bottom: 1px solid var(--border); }
+    table.data-table td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    table.data-table tr:last-child td { border-bottom: none; }
+    table.data-table tr:hover td { background: rgba(255,255,255,0.015); }
+    .row-actions { display: flex; gap: 6px; }
+
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--text-3); }
+    .empty-state .es-icon { font-size: 32px; margin-bottom: 10px; }
+
+    #toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg-card); border: 1px solid var(--border2); border-radius: 10px; padding: 12px 18px; font-size: 13px; z-index: 200; display: flex; align-items: center; gap: 8px; opacity: 0; transform: translateY(10px); transition: all 0.25s; pointer-events: none; max-width: 320px; }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.success { border-left: 3px solid var(--green); }
+    #toast.error { border-left: 3px solid var(--red); }
+    #toast.info { border-left: 3px solid var(--violet); }
+
+    /* Tabla con scroll horizontal para que no rompa el layout en pantallas chicas */
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    /* Barra de navegación inferior (solo celular) */
+    #bottom-nav { display: none; }
+    .bn-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 8px 2px; color: var(--text-3); text-decoration: none; position: relative; }
+    .bn-item.active { color: var(--violet); }
+    .bn-icon { font-size: 19px; }
+    .bn-label { font-size: 9.5px; font-weight: 600; }
+    .bn-badge { position: absolute; top: 4px; right: 18%; background: var(--violet); color: white; font-size: 9px; font-weight: 700; border-radius: 99px; padding: 0 4px; min-width: 14px; text-align: center; }
+
+    @media (max-width: 768px) and (min-width: 641px) {
+      #sidebar { width: 64px; }
+      .brand-text, .nav-item .label, .nav-section-label, .nav-item .badge { display: none; }
+      #main { margin-left: 64px; }
+    }
+
+    @media (max-width: 640px) {
+      #sidebar { display: none; }
+      #main { margin-left: 0; padding-bottom: 66px; }
+      #bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 60; background: var(--bg-sidebar); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom, 0); }
+      #btn-logout-mobile { display: inline-flex !important; }
+      .page-header { padding: 16px 16px 0; }
+      .page-header-inner { padding-bottom: 14px; }
+      .page-actions, #page-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-row { grid-template-columns: 1fr; }
+      .page-body { padding: 14px; }
+      .modal-box { padding: 20px; max-height: 92vh; }
+      .row-actions { flex-wrap: wrap; }
+    }
+
+    /* Manual de uso */
+    .manual-hero { background: linear-gradient(135deg, var(--violet-d), var(--cyan)); border-radius: 14px; padding: 24px 28px; margin-bottom: 20px; color: white; }
+    .manual-hero-title { font-size: 21px; font-weight: 800; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .manual-hero-sub { font-size: 13.5px; opacity: 0.92; line-height: 1.6; max-width: 640px; }
+    .manual-quicknav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+    .manual-qn-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.15s; }
+    .manual-qn-card:hover { border-color: var(--violet); transform: translateY(-2px); }
+    .manual-qn-icon { font-size: 22px; margin-bottom: 6px; }
+    .manual-qn-label { font-size: 12.5px; font-weight: 600; }
+    .manual-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 18px; scroll-margin-top: 20px; }
+    .manual-section-head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
+    .manual-section-icon { width: 42px; height: 42px; border-radius: 10px; background: rgba(167,139,250,0.12); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .manual-section-title { font-size: 16.5px; font-weight: 700; }
+    .manual-section-sub { font-size: 12.5px; color: var(--text-2); margin-top: 2px; }
+    .manual-step { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .manual-step:last-of-type { border-bottom: none; }
+    .manual-step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--bg-card2); border: 1px solid var(--border2); color: var(--violet); font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .manual-step-title { font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
+    .manual-step-body { font-size: 12.5px; color: var(--text-2); line-height: 1.6; }
+    .manual-tip { background: rgba(252,211,77,0.08); border: 1px solid rgba(252,211,77,0.25); border-radius: 10px; padding: 14px 16px; margin-top: 14px; }
+    .manual-tip-title { font-size: 12px; font-weight: 700; color: var(--yellow); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .manual-tip-item { font-size: 12.5px; color: var(--text-2); line-height: 1.6; display: flex; gap: 7px; margin-bottom: 4px; }
+    .manual-tip-item:last-child { margin-bottom: 0; }
+    .manual-cta { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; font-size: 13px; font-weight: 600; color: var(--violet); cursor: pointer; }
+    .manual-cta:hover { text-decoration: underline; }
+    @media (max-width: 640px) {
+      .manual-quicknav { grid-template-columns: repeat(2, 1fr); }
+      .manual-hero { padding: 20px; }
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.25s ease; }
+  </style>
+  <script src="/orasic-tour.js"></script>
+  <script src="/tour-clinic.js" defer></script>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-brand">
+      <div class="brand-icon">🦷</div>
+      <div>
+        <div class="brand-text"><span>ORASIC</span> Dental CRM</div>
+        <div class="brand-sub">Citas, pacientes y recordatorios</div>
+      </div>
+    </div>
+    <div class="login-tabs">
+      <div class="login-tab active" data-tab="signin">Ingresar</div>
+      <div class="login-tab" data-tab="signup">Crear mi clínica</div>
+    </div>
+    <div class="login-error" id="login-error"></div>
+
+    <form id="form-signin">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="signin-email" required autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" type="password" id="signin-password" required autocomplete="current-password" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Ingresar</button>
+    </form>
+
+    <form id="form-signup" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">Nombre de la clínica</label>
+        <input class="form-input" type="text" id="signup-clinic" required placeholder="Clínica Dental Sonrisa" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tu nombre</label>
+        <input class="form-input" type="text" id="signup-name" required placeholder="Dr. Juan Pérez" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="signup-email" required autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" type="password" id="signup-password" required minlength="6" autocomplete="new-password" />
+        <div class="form-hint">Mínimo 6 caracteres.</div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Crear clínica y cuenta</button>
+    </form>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <aside id="sidebar">
+    <div class="nav-brand">
+      <div class="brand-icon">🦷</div>
+      <div>
+        <div class="brand-text"><span>ORASIC</span> Dental</div>
+        <div class="brand-sub" id="clinic-name-label">Clínica</div>
+      </div>
+    </div>
+    <nav>
+      <div class="nav-section">
+        <div class="nav-section-label">Principal</div>
+        <a class="nav-item active" data-page="dashboard"><span class="icon">⬡</span><span class="label">Dashboard</span></a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Gestión</div>
+        <a class="nav-item" data-page="patients"><span class="icon">🧑</span><span class="label">Pacientes</span></a>
+        <a class="nav-item" data-page="appointments"><span class="icon">📅</span><span class="label">Citas</span></a>
+        <a class="nav-item" data-page="chairs" id="nav-chairs"><span class="icon">🪑</span><span class="label">Sillones</span></a>
+        <a class="nav-item" data-page="reminders"><span class="icon">💬</span><span class="label">Recordatorios</span><span class="badge" id="badge-reminders">0</span></a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Ayuda</div>
+        <a class="nav-item" id="btn-tour"><span class="icon">🧭</span><span class="label">Ver tour guiado</span></a>
+        <a class="nav-item" data-page="manual"><span class="icon">📖</span><span class="label">Manual de uso</span></a>
+      </div>
+    </nav>
+    <div style="padding:12px 16px; border-top:1px solid var(--border);">
+      <div style="font-size:11px; color:var(--text-2);" id="user-email-label"></div>
+      <a id="btn-logout" style="font-size:11px; color:var(--text-3); cursor:pointer;">Cerrar sesión</a>
+    </div>
+  </aside>
+
+  <div id="main">
+    <div class="page-header">
+      <div class="page-header-inner">
+        <div>
+          <div class="page-title" id="page-title">Dashboard</div>
+          <div class="page-sub" id="page-sub"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div id="page-actions"></div>
+          <a id="btn-logout-mobile" class="btn-icon" title="Cerrar sesión" style="display:none;">⎋</a>
+        </div>
+      </div>
+    </div>
+    <div class="page-body" id="page-body"></div>
+  </div>
+
+  <nav id="bottom-nav">
+    <a class="bn-item active" data-page="dashboard"><span class="bn-icon">⬡</span><span class="bn-label">Inicio</span></a>
+    <a class="bn-item" data-page="patients"><span class="bn-icon">🧑</span><span class="bn-label">Pacientes</span></a>
+    <a class="bn-item" data-page="appointments"><span class="bn-icon">📅</span><span class="bn-label">Citas</span></a>
+    <a class="bn-item" data-page="reminders"><span class="bn-icon">💬</span><span class="bn-label">Avisos</span><span class="bn-badge" id="badge-reminders-mobile">0</span></a>
+    <a class="bn-item" data-page="manual"><span class="bn-icon">📖</span><span class="bn-label">Ayuda</span></a>
+  </nav>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// Cambiar a true si la clínica decide usar sillones/consultorios para asignar citas.
+const CHAIRS_ENABLED = false;
+
+// ---------- Supabase ----------
+const SUPABASE_URL = 'https://crtkozepmebjtqosepos.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_fi_h6a-TjlxTwKPy8CqZyw_36J_q8ak';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ---------- State ----------
+let profile = null;      // { id, email, role, full_name, clinic_id }
+let clinic = null;       // { id, name, phone, ... }
+let currentPage = 'dashboard';
+let cache = { patients: [], appointments: [], chairs: [], doctors: [], reminders: [] };
+
+// ---------- Utils ----------
+function toast(msg, type = 'info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { el.className = el.className.replace('show', ''); }, 3200);
+}
+function fmtDate(d) {
+  if (!d) return '';
+  return new Date(d + 'T00:00:00').toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+function fmtTime(t) { return t ? t.slice(0, 5) : ''; }
+function statusLabel(s) {
+  return { pending: 'Pendiente', confirmed: 'Confirmada', completed: 'Completada', cancelled: 'Cancelada', no_show: 'No asistió' }[s] || s;
+}
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// ---------- Auth ----------
+document.querySelectorAll('.login-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const isSignin = tab.dataset.tab === 'signin';
+    document.getElementById('form-signin').style.display = isSignin ? 'block' : 'none';
+    document.getElementById('form-signup').style.display = isSignin ? 'none' : 'block';
+    document.getElementById('login-error').style.display = 'none';
+  });
+});
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+document.getElementById('form-signin').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value;
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) showLoginError(error.message);
+});
+
+document.getElementById('form-signup').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const clinicName = document.getElementById('signup-clinic').value.trim();
+  const fullName = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+
+  const { data: authData, error: authErr } = await sb.auth.signUp({ email, password });
+  if (authErr) { showLoginError(authErr.message); return; }
+  if (!authData.session) {
+    showLoginError('Cuenta creada. Si tu proyecto pide confirmación por email, revisa tu correo antes de ingresar.');
+    return;
+  }
+
+  // Se genera el id en el navegador (en vez de pedir .select() tras el insert) porque en este
+  // instante el usuario todavía no tiene perfil/clinic_id: la política de lectura por clínica
+  // rechazaría el "devolver la fila creada" al no encontrar coincidencia todavía.
+  const clinicId = crypto.randomUUID();
+  const { error: clinicErr } = await sb.from('clinics').insert({ id: clinicId, name: clinicName });
+  if (clinicErr) { showLoginError('Error creando la clínica: ' + clinicErr.message); return; }
+
+  const { error: profileErr } = await sb.from('profiles').insert({
+    id: authData.user.id, email, role: 'admin', full_name: fullName, clinic_id: clinicId
+  });
+  if (profileErr) { showLoginError('Error creando el perfil: ' + profileErr.message); return; }
+
+  await boot();
+});
+
+document.getElementById('btn-logout').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  location.reload();
+});
+document.getElementById('btn-logout-mobile').addEventListener('click', async () => {
+  if (!confirm('¿Cerrar sesión?')) return;
+  await sb.auth.signOut();
+  location.reload();
+});
+
+// ---------- Boot ----------
+async function boot() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none'; return; }
+
+  const { data: prof, error: profErr } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+  if (profErr || !prof) { document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none'; return; }
+  profile = prof;
+
+  const { data: clinicRow } = await sb.from('clinics').select('*').eq('id', profile.clinic_id).maybeSingle();
+  clinic = clinicRow;
+
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  if (!CHAIRS_ENABLED) document.getElementById('nav-chairs').style.display = 'none';
+  document.getElementById('clinic-name-label').textContent = clinic ? clinic.name : 'Clínica';
+  document.getElementById('user-email-label').textContent = profile.email;
+
+  await loadAll();
+  navigate('dashboard');
+
+  // El tour se arma recien aca: antes del login no hay nada que mostrar.
+  if (typeof iniciarTourDental === 'function' && !window.__tourDentalListo) {
+    window.__tourDentalListo = true;
+    iniciarTourDental();
+  }
+}
+
+async function loadAll() {
+  const [{ data: patients }, { data: appointments }, { data: chairs }, { data: doctors }, { data: reminders }] = await Promise.all([
+    sb.from('patients').select('*').order('full_name'),
+    sb.from('appointments').select('*, patients(full_name, phone), profiles!appointments_doctor_id_fkey(full_name), chairs(name)').order('appointment_date').order('appointment_time'),
+    sb.from('chairs').select('*').order('name'),
+    sb.from('profiles').select('*').eq('role', 'doctor'),
+    sb.from('reminders').select('*, appointments(appointment_date, appointment_time, service_type, patients(full_name, phone))').order('send_at')
+  ]);
+  cache.patients = patients || [];
+  cache.appointments = appointments || [];
+  cache.chairs = chairs || [];
+  cache.doctors = doctors || [];
+  cache.reminders = reminders || [];
+  updateReminderBadge();
+}
+
+function updateReminderBadge() {
+  const due = pendingReminders();
+  document.getElementById('badge-reminders').textContent = due.length;
+  document.getElementById('badge-reminders-mobile').textContent = due.length;
+  document.getElementById('badge-reminders-mobile').style.display = due.length > 0 ? 'block' : 'none';
+}
+
+function pendingReminders() {
+  const now = new Date();
+  return cache.reminders.filter(r => r.status === 'pending' && new Date(r.send_at) <= now);
+}
+
+// ---------- Nav ----------
+document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+  item.addEventListener('click', () => navigate(item.dataset.page));
+});
+document.querySelectorAll('.bn-item[data-page]').forEach(item => {
+  item.addEventListener('click', () => navigate(item.dataset.page));
+});
+
+function navigate(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item[data-page]').forEach(i => i.classList.toggle('active', i.dataset.page === page));
+  document.querySelectorAll('.bn-item[data-page]').forEach(i => i.classList.toggle('active', i.dataset.page === page));
+  const renderers = { dashboard: renderDashboard, patients: renderPatients, appointments: renderAppointments, chairs: renderChairs, reminders: renderReminders, manual: renderManual };
+  renderers[page]();
+}
+
+// ---------- Dashboard ----------
+function renderDashboard() {
+  document.getElementById('page-title').textContent = 'Dashboard';
+  document.getElementById('page-sub').textContent = new Date().toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('page-actions').innerHTML = '';
+
+  const today = new Date().toISOString().slice(0, 10);
+  const todays = cache.appointments.filter(a => a.appointment_date === today);
+  const pendingConfirm = todays.filter(a => a.status === 'pending').length;
+  const totalPatients = cache.patients.length;
+  const monthKey = today.slice(0, 7);
+  const revenue = cache.appointments.filter(a => a.appointment_date.startsWith(monthKey) && a.status === 'completed')
+    .reduce((sum, a) => sum + (Number(a.price) || 0), 0);
+
+  const dueReminders = pendingReminders();
+
+  let html = '';
+  if (dueReminders.length > 0) {
+    html += `<div class="alert-banner orange"><span class="ab-icon">🔔</span><span class="ab-text"><strong>${dueReminders.length} recordatorio(s)</strong> listos para enviar. Ve a la sección Recordatorios.</span><button class="btn btn-sm btn-secondary" onclick="navigate('reminders')">Ver</button></div>`;
+  }
+
+  html += `<div class="stat-grid">
+    <div class="stat-card violet"><span class="stat-icon">📅</span><div class="stat-num">${todays.length}</div><div class="stat-label">Citas hoy</div></div>
+    <div class="stat-card orange"><span class="stat-icon">🔔</span><div class="stat-num">${pendingConfirm}</div><div class="stat-label">Por confirmar</div></div>
+    <div class="stat-card cyan"><span class="stat-icon">🧑</span><div class="stat-num">${totalPatients}</div><div class="stat-label">Pacientes activos</div></div>
+    <div class="stat-card green"><span class="stat-icon">💰</span><div class="stat-num">S/ ${revenue.toFixed(0)}</div><div class="stat-label">Ingresos del mes</div></div>
+  </div>`;
+
+  html += `<div class="card fade-in">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0;">Citas de hoy</div>
+      <button class="btn btn-sm btn-primary" onclick="openAppointmentModal()">+ Nueva cita</button>
+    </div>`;
+
+  if (todays.length === 0) {
+    html += `<div class="empty-state"><div class="es-icon">📭</div>No hay citas programadas para hoy.</div>`;
+  } else {
+    html += todays.map(apt => `
+      <div style="display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="text-align:center; min-width:60px;">
+            <div style="font-size:18px; font-weight:700; color:var(--violet);">${fmtTime(apt.appointment_time)}</div>
+            <div style="font-size:11px; color:var(--text-3);">${apt.duration_minutes} min</div>
+          </div>
+          <div>
+            <div style="font-weight:600;">${escapeHtml(apt.patients?.full_name || '—')}</div>
+            <div style="font-size:12.5px; color:var(--text-2);">🦷 ${escapeHtml(apt.service_type || '—')} ${apt.profiles ? '• 👨‍⚕️ ' + escapeHtml(apt.profiles.full_name) : ''}</div>
+            <div style="font-size:11.5px; color:var(--text-3);">📞 ${escapeHtml(apt.patients?.phone || '')}</div>
+          </div>
+        </div>
+        <div class="row-actions">
+          <span class="status-badge sb-${apt.status}">${statusLabel(apt.status)}</span>
+          <button class="btn btn-sm btn-success" onclick="openWhatsappModal('${apt.id}')">💬 WhatsApp</button>
+        </div>
+      </div>`).join('');
+  }
+  html += `</div>`;
+
+  document.getElementById('page-body').innerHTML = html;
+}
+
+// ---------- Manual de uso ----------
+const MANUAL_SECTIONS = [
+  {
+    id: 'ms-tour', icon: '🧭', page: 'manual', navLabel: 'Tour guiado',
+    title: 'Tour guiado', sub: 'La forma más rápida de entender el sistema: que te lo muestren.',
+    steps: [
+      { title: 'Se abre solo la primera vez', body: 'Apenas entrás por primera vez, un recorrido de 2 minutos te va señalando cada parte con globos explicativos y <b>llena una ficha de paciente en vivo</b> para que veas cómo se completa un formulario real.' },
+      { title: 'No se guarda nada del ejemplo', body: 'Esa ficha de ejemplo (Andrea Salinas Coronel) es solo para mostrarte — el tour la cierra sin guardar. Tus pacientes reales no se tocan.' },
+      { title: 'Repetirlo cuando quieras', body: 'Botón <b>🧭 Ver tour guiado</b> en el menú de la izquierda, sección Ayuda. Sirve para refrescar la memoria o para mostrárselo a alguien nuevo del consultorio.' }
+    ],
+    tips: ['Si estás por delegarle el sistema a la recepcionista o a otro doctor, hacelo sentar y arrancar el tour — es más rápido que explicarlo de palabra.']
+  },
+  {
+    id: 'ms-dashboard', icon: '⬡', page: 'dashboard', navLabel: 'Dashboard',
+    title: 'Dashboard', sub: 'Pantalla de inicio: resumen del día de un solo vistazo.',
+    steps: [
+      { title: 'Tarjetas de estadísticas', body: 'Muestran citas de hoy, cuántas faltan por confirmar, pacientes activos totales, e ingresos del mes (suma de citas marcadas como "Completada" con precio cargado).' },
+      { title: 'Aviso de recordatorios listos', body: 'Si hay recordatorios de WhatsApp que ya llegaron a su hora de envío, aparece un aviso naranja arriba con un botón directo a la sección Recordatorios.' },
+      { title: 'Citas de hoy', body: 'Lista con hora, paciente, servicio, doctor asignado y teléfono. Desde cada fila puedes abrir directo el envío de WhatsApp con el botón "💬 WhatsApp".' }
+    ],
+    tips: ['Revisa el Dashboard cada mañana antes de abrir el consultorio para ver qué citas tienes y si algo necesita confirmación.']
+  },
+  {
+    id: 'ms-patients', icon: '🧑', page: 'patients', navLabel: 'Pacientes',
+    title: 'Pacientes', sub: 'Crear, editar y cargar en bloque la lista de pacientes.',
+    steps: [
+      { title: 'Crear uno a uno', body: 'Botón "+ Nuevo paciente": nombre y teléfono son obligatorios (el teléfono es el que se usa para WhatsApp). DNI, email, fecha de nacimiento y notas son opcionales.' },
+      { title: 'Importar varios de una vez (CSV)', body: 'Botón "⭱ Importar CSV": sube un archivo .csv con la primera fila de encabezados <code style="background:var(--bg-card2); padding:1px 5px; border-radius:4px;">nombre, telefono, dni, email, fecha_nacimiento</code> (solo nombre y teléfono son obligatorios). El sistema te muestra una vista previa antes de confirmar la carga.' },
+      { title: 'Editar o eliminar', body: 'Con los íconos ✎ y 🗑 al final de cada fila. Eliminar un paciente también elimina sus citas.' }
+    ],
+    tips: [
+      'El teléfono debe llevar código de país sin espacios ni símbolos, ej. <b>51999039947</b>, para que el link de WhatsApp funcione bien.',
+      'No es posible importar pacientes automáticamente desde WhatsApp — no existe ninguna forma gratuita de exportar contactos/chats de WhatsApp hacia otra app. La vía real es exportar desde donde ya los tengas (Excel, otro sistema) a CSV y subirlos aquí.'
+    ]
+  },
+  {
+    id: 'ms-appointments', icon: '📅', page: 'appointments', navLabel: 'Citas',
+    title: 'Citas', sub: 'Agendar y gestionar el calendario de la clínica.',
+    steps: [
+      { title: 'Agendar una cita', body: 'Botón "+ Nueva cita": elige paciente, fecha, hora, duración, servicio, doctor y precio (opcional, sirve para calcular ingresos del mes).' },
+      { title: 'Recordatorios automáticos', body: 'Al guardar una cita nueva, el sistema programa automáticamente 2 recordatorios de WhatsApp (24h y 1h antes) — no hay que hacer nada más en este paso.' },
+      { title: 'Cambiar el estado', body: 'Pendiente → Confirmada → Completada (o Cancelada / No asistió) según avance la cita, editando desde el ícono ✎.' }
+    ],
+    tips: ['Marca las citas como "Completada" con su precio cargado para que se sumen correctamente al indicador de ingresos del mes en el Dashboard.']
+  },
+  {
+    id: 'ms-reminders', icon: '💬', page: 'reminders', navLabel: 'Recordatorios',
+    title: 'Recordatorios por WhatsApp', sub: 'Envío manual asistido — sin costo, sin API de Meta.',
+    steps: [
+      { title: 'Ver los que están listos', body: 'La lista muestra los recordatorios de citas próximas cuya hora de envío ya llegó (etiqueta "Listo").' },
+      { title: 'Enviar', body: 'Botón "💬 Enviar": se abre el mensaje ya redactado con los datos de la cita. Puedes copiarlo o abrir WhatsApp directamente con el número y el texto precargados — solo falta apretar enviar dentro de WhatsApp.' },
+      { title: 'Marcar como enviado', body: 'Botón "✓ Marcar como enviado" dentro de esa misma ventana, para que el recordatorio desaparezca de la lista de pendientes.' }
+    ],
+    tips: ['El envío no es automático a propósito: así se evita pagar la API de negocio de WhatsApp/Meta. Toma 2 clics por paciente.']
+  }
+];
+
+function renderManual() {
+  document.getElementById('page-title').textContent = 'Manual de uso';
+  document.getElementById('page-sub').textContent = 'Guía paso a paso de cada sección del sistema';
+  document.getElementById('page-actions').innerHTML = '';
+
+  let html = `<div class="manual-hero fade-in">
+    <div class="manual-hero-title">📖 Manual de Usuario</div>
+    <div class="manual-hero-sub">Esta guía explica paso a paso cómo usar cada sección de ORASIC Dental CRM: agendar citas, cargar pacientes (incluida carga masiva por CSV) y enviar recordatorios por WhatsApp sin costo.</div>
+  </div>`;
+
+  html += `<div class="manual-quicknav">`;
+  html += MANUAL_SECTIONS.map(s => `
+    <div class="manual-qn-card" onclick="scrollToManualSection('${s.id}')">
+      <div class="manual-qn-icon">${s.icon}</div>
+      <div class="manual-qn-label">${s.navLabel}</div>
+    </div>`).join('');
+  html += `</div>`;
+
+  html += MANUAL_SECTIONS.map(s => `
+    <div class="manual-section" id="${s.id}">
+      <div class="manual-section-head">
+        <div class="manual-section-icon">${s.icon}</div>
+        <div>
+          <div class="manual-section-title">${s.title}</div>
+          <div class="manual-section-sub">${s.sub}</div>
+        </div>
+      </div>
+      ${s.steps.map((step, i) => `
+        <div class="manual-step">
+          <div class="manual-step-num">${i + 1}</div>
+          <div>
+            <div class="manual-step-title">${step.title}</div>
+            <div class="manual-step-body">${step.body}</div>
+          </div>
+        </div>`).join('')}
+      <div class="manual-tip">
+        <div class="manual-tip-title">💡 Consejos útiles</div>
+        ${s.tips.map(t => `<div class="manual-tip-item"><span>✓</span><span>${t}</span></div>`).join('')}
+      </div>
+      <div class="manual-cta" onclick="${s.id === 'ms-tour' ? "document.getElementById('btn-tour').click()" : `navigate('${s.page}')`}">${s.id === 'ms-tour' ? '🧭 Iniciar el tour ahora' : `Ir a ${s.navLabel} →`}</div>
+    </div>`).join('');
+
+  html += `<div class="form-hint" style="text-align:center; margin-top:8px;">Todos los datos se guardan automáticamente en la base de datos al presionar "Guardar" — no hace falta ningún paso extra.</div>`;
+
+  document.getElementById('page-body').innerHTML = html;
+}
+
+function scrollToManualSection(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ---------- Patients ----------
+function renderPatients() {
+  document.getElementById('page-title').textContent = 'Pacientes';
+  document.getElementById('page-sub').textContent = `${cache.patients.length} registrados`;
+  document.getElementById('page-actions').innerHTML = `
+    <button class="btn btn-secondary" onclick="openImportModal()">⭱ Importar CSV</button>
+    <button class="btn btn-primary" onclick="openPatientModal()">+ Nuevo paciente</button>`;
+
+  let html = `<div class="card">`;
+  if (cache.patients.length === 0) {
+    html += `<div class="empty-state"><div class="es-icon">🧑</div>Todavía no hay pacientes. Crea el primero o usa "Importar CSV" si ya los tienes en un Excel.</div>`;
+  } else {
+    html += `<div class="table-scroll"><table class="data-table"><thead><tr><th>Nombre</th><th>Teléfono</th><th>DNI</th><th>Email</th><th></th></tr></thead><tbody>`;
+    html += cache.patients.map(p => `
+      <tr>
+        <td>${escapeHtml(p.full_name)}</td>
+        <td>${escapeHtml(p.phone)}</td>
+        <td>${escapeHtml(p.dni || '—')}</td>
+        <td>${escapeHtml(p.email || '—')}</td>
+        <td class="row-actions">
+          <button class="btn-icon" title="Editar" onclick="openPatientModal('${p.id}')">✎</button>
+          <button class="btn-icon" title="Eliminar" onclick="deletePatient('${p.id}')">🗑</button>
+        </td>
+      </tr>`).join('');
+    html += `</tbody></table></div>`;
+  }
+  html += `</div>`;
+  document.getElementById('page-body').innerHTML = html;
+}
+
+function openPatientModal(id) {
+  const p = id ? cache.patients.find(x => x.id === id) : null;
+  openModal(p ? 'Editar paciente' : 'Nuevo paciente', `
+    <div class="form-group"><label class="form-label">Nombre completo</label><input class="form-input" id="f-name" value="${p ? escapeHtml(p.full_name) : ''}" required /></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Teléfono (WhatsApp)</label><input class="form-input" id="f-phone" value="${p ? escapeHtml(p.phone) : ''}" placeholder="51999039947" required /></div>
+      <div class="form-group"><label class="form-label">DNI</label><input class="form-input" id="f-dni" value="${p ? escapeHtml(p.dni || '') : ''}" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="f-email" type="email" value="${p ? escapeHtml(p.email || '') : ''}" /></div>
+      <div class="form-group"><label class="form-label">Fecha de nacimiento</label><input class="form-input" id="f-birth" type="date" value="${p ? p.birth_date || '' : ''}" /></div>
+    </div>
+    <div class="form-group"><label class="form-label">Notas / historia clínica</label><textarea class="form-textarea" id="f-notes">${p ? escapeHtml(p.medical_history?.notes || '') : ''}</textarea></div>
+  `, async () => {
+    const payload = {
+      full_name: document.getElementById('f-name').value.trim(),
+      phone: document.getElementById('f-phone').value.trim(),
+      dni: document.getElementById('f-dni').value.trim() || null,
+      email: document.getElementById('f-email').value.trim() || null,
+      birth_date: document.getElementById('f-birth').value || null,
+      medical_history: { notes: document.getElementById('f-notes').value.trim() }
+    };
+    if (!payload.full_name || !payload.phone) { toast('Nombre y teléfono son obligatorios', 'error'); return false; }
+    if (p) {
+      const { error } = await sb.from('patients').update(payload).eq('id', p.id);
+      if (error) { toast(error.message, 'error'); return false; }
+    } else {
+      const { error } = await sb.from('patients').insert({ ...payload, clinic_id: profile.clinic_id });
+      if (error) { toast(error.message, 'error'); return false; }
+    }
+    await loadAll(); renderPatients();
+    toast('Paciente guardado', 'success');
+    return true;
+  });
+}
+
+async function deletePatient(id) {
+  if (!confirm('¿Eliminar este paciente? Esto también elimina sus citas.')) return;
+  const { error } = await sb.from('patients').delete().eq('id', id);
+  if (error) { toast(error.message, 'error'); return; }
+  await loadAll(); renderPatients();
+  toast('Paciente eliminado', 'success');
+}
+
+// ---------- CSV import ----------
+function normalizeHeader(h) {
+  return h.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
+function parseCsv(text) {
+  const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
+  if (lines.length < 2) return { rows: [], error: 'El archivo no tiene filas de datos (solo encabezado o está vacío).' };
+  const headers = lines[0].split(',').map(normalizeHeader);
+  const nameIdx = headers.findIndex(h => h === 'nombre' || h === 'full_name' || h === 'nombre completo');
+  const phoneIdx = headers.findIndex(h => h === 'telefono' || h === 'phone' || h === 'whatsapp');
+  const dniIdx = headers.findIndex(h => h === 'dni');
+  const emailIdx = headers.findIndex(h => h === 'email' || h === 'correo');
+  const birthIdx = headers.findIndex(h => h === 'fecha_nacimiento' || h === 'fecha nacimiento' || h === 'birth_date');
+  if (nameIdx === -1 || phoneIdx === -1) return { rows: [], error: 'El CSV debe tener columnas "nombre" y "telefono" en la primera fila.' };
+
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(',').map(c => c.trim());
+    const full_name = cols[nameIdx];
+    const phone = cols[phoneIdx]?.replace(/[^\d]/g, '');
+    if (!full_name || !phone) continue;
+    rows.push({
+      full_name,
+      phone,
+      dni: dniIdx > -1 ? (cols[dniIdx] || null) : null,
+      email: emailIdx > -1 ? (cols[emailIdx] || null) : null,
+      birth_date: birthIdx > -1 ? (cols[birthIdx] || null) : null
+    });
+  }
+  return { rows, error: null };
+}
+
+function openImportModal() {
+  openModal('Importar pacientes desde CSV', `
+    <div class="form-group">
+      <label class="form-label">Archivo CSV</label>
+      <input class="form-input" id="f-csv-file" type="file" accept=".csv,text/csv" />
+      <div class="form-hint">Primera fila con encabezados: nombre, telefono (obligatorios), dni, email, fecha_nacimiento (opcionales).</div>
+    </div>
+    <div id="csv-preview"></div>
+  `, null, { hideDefaultActions: true, extraCancelLabel: 'Cerrar' });
+
+  document.getElementById('f-csv-file').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    const { rows, error } = parseCsv(text);
+    const previewEl = document.getElementById('csv-preview');
+    if (error) {
+      previewEl.innerHTML = `<div class="login-error" style="display:block;">${escapeHtml(error)}</div>`;
+      return;
+    }
+    previewEl.innerHTML = `
+      <div class="form-hint" style="margin:10px 0;">${rows.length} paciente(s) detectados. Primeros ${Math.min(5, rows.length)}:</div>
+      <div class="card-title" style="margin-bottom:8px;"></div>
+      <div style="font-size:12.5px; color:var(--text-2); margin-bottom:14px;">${rows.slice(0, 5).map(r => escapeHtml(r.full_name) + ' — ' + escapeHtml(r.phone)).join('<br>')}</div>
+      <button class="btn btn-primary btn-full" id="btn-confirm-import">Importar ${rows.length} paciente(s)</button>
+    `;
+    document.getElementById('btn-confirm-import').addEventListener('click', async () => {
+      const payload = rows.map(r => ({ ...r, clinic_id: profile.clinic_id }));
+      const { error: insertErr } = await sb.from('patients').insert(payload);
+      if (insertErr) { toast(insertErr.message, 'error'); return; }
+      closeModal();
+      await loadAll(); renderPatients();
+      toast(`${rows.length} paciente(s) importados`, 'success');
+    });
+  });
+}
+
+// ---------- Chairs ----------
+function renderChairs() {
+  document.getElementById('page-title').textContent = 'Sillones';
+  document.getElementById('page-sub').textContent = `${cache.chairs.length} registrados`;
+  document.getElementById('page-actions').innerHTML = `<button class="btn btn-primary" onclick="openChairModal()">+ Nuevo sillón</button>`;
+
+  let html = `<div class="card">`;
+  if (cache.chairs.length === 0) {
+    html += `<div class="empty-state"><div class="es-icon">🪑</div>Todavía no hay sillones registrados.</div>`;
+  } else {
+    html += `<table class="data-table"><thead><tr><th>Nombre</th><th>Estado</th><th></th></tr></thead><tbody>`;
+    html += cache.chairs.map(c => `
+      <tr>
+        <td>${escapeHtml(c.name)}</td>
+        <td><span class="status-badge ${c.is_active ? 'sb-confirmed' : 'sb-cancelled'}">${c.is_active ? 'Activo' : 'Inactivo'}</span></td>
+        <td class="row-actions">
+          <button class="btn-icon" title="Editar" onclick="openChairModal('${c.id}')">✎</button>
+          <button class="btn-icon" title="Eliminar" onclick="deleteChair('${c.id}')">🗑</button>
+        </td>
+      </tr>`).join('');
+    html += `</tbody></table>`;
+  }
+  html += `</div>`;
+  document.getElementById('page-body').innerHTML = html;
+}
+
+function openChairModal(id) {
+  const c = id ? cache.chairs.find(x => x.id === id) : null;
+  openModal(c ? 'Editar sillón' : 'Nuevo sillón', `
+    <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="f-cname" value="${c ? escapeHtml(c.name) : ''}" placeholder="Sillón 1" required /></div>
+    <div class="form-group"><label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-2);"><input type="checkbox" id="f-cactive" ${!c || c.is_active ? 'checked' : ''} /> Activo</label></div>
+  `, async () => {
+    const payload = { name: document.getElementById('f-cname').value.trim(), is_active: document.getElementById('f-cactive').checked };
+    if (!payload.name) { toast('El nombre es obligatorio', 'error'); return false; }
+    if (c) {
+      const { error } = await sb.from('chairs').update(payload).eq('id', c.id);
+      if (error) { toast(error.message, 'error'); return false; }
+    } else {
+      const { error } = await sb.from('chairs').insert({ ...payload, clinic_id: profile.clinic_id });
+      if (error) { toast(error.message, 'error'); return false; }
+    }
+    await loadAll(); renderChairs();
+    toast('Sillón guardado', 'success');
+    return true;
+  });
+}
+
+async function deleteChair(id) {
+  if (!confirm('¿Eliminar este sillón?')) return;
+  const { error } = await sb.from('chairs').delete().eq('id', id);
+  if (error) { toast(error.message, 'error'); return; }
+  await loadAll(); renderChairs();
+  toast('Sillón eliminado', 'success');
+}
+
+// ---------- Appointments ----------
+function renderAppointments() {
+  document.getElementById('page-title').textContent = 'Citas';
+  document.getElementById('page-sub').textContent = `${cache.appointments.length} en total`;
+  document.getElementById('page-actions').innerHTML = `<button class="btn btn-primary" onclick="openAppointmentModal()">+ Nueva cita</button>`;
+
+  let html = `<div class="card">`;
+  if (cache.appointments.length === 0) {
+    html += `<div class="empty-state"><div class="es-icon">📅</div>Todavía no hay citas. Crea la primera.</div>`;
+  } else {
+    html += `<div class="table-scroll"><table class="data-table"><thead><tr><th>Fecha</th><th>Hora</th><th>Paciente</th><th>Servicio</th><th>Doctor</th>${CHAIRS_ENABLED ? '<th>Sillón</th>' : ''}<th>Estado</th><th></th></tr></thead><tbody>`;
+    html += cache.appointments.map(a => `
+      <tr>
+        <td>${fmtDate(a.appointment_date)}</td>
+        <td>${fmtTime(a.appointment_time)}</td>
+        <td>${escapeHtml(a.patients?.full_name || '—')}</td>
+        <td>${escapeHtml(a.service_type || '—')}</td>
+        <td>${escapeHtml(a.profiles?.full_name || '—')}</td>
+        ${CHAIRS_ENABLED ? `<td>${escapeHtml(a.chairs?.name || '—')}</td>` : ''}
+        <td><span class="status-badge sb-${a.status}">${statusLabel(a.status)}</span></td>
+        <td class="row-actions">
+          <button class="btn-icon" title="Editar" onclick="openAppointmentModal('${a.id}')">✎</button>
+          <button class="btn-icon" title="WhatsApp" onclick="openWhatsappModal('${a.id}')">💬</button>
+          <button class="btn-icon" title="Eliminar" onclick="deleteAppointment('${a.id}')">🗑</button>
+        </td>
+      </tr>`).join('');
+    html += `</tbody></table></div>`;
+  }
+  html += `</div>`;
+  document.getElementById('page-body').innerHTML = html;
+}
+
+function openAppointmentModal(id) {
+  const a = id ? cache.appointments.find(x => x.id === id) : null;
+  if (cache.patients.length === 0) { toast('Primero crea al menos un paciente', 'error'); return; }
+  const patientOptions = cache.patients.map(p => `<option value="${p.id}" ${a && a.patient_id === p.id ? 'selected' : ''}>${escapeHtml(p.full_name)}</option>`).join('');
+  const doctorOptions = `<option value="">— Sin asignar —</option>` + cache.doctors.map(d => `<option value="${d.id}" ${a && a.doctor_id === d.id ? 'selected' : ''}>${escapeHtml(d.full_name || d.email)}</option>`).join('');
+  const chairOptions = `<option value="">— Sin asignar —</option>` + cache.chairs.map(c => `<option value="${c.id}" ${a && a.chair_id === c.id ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('');
+  const statusOptions = ['pending', 'confirmed', 'completed', 'cancelled', 'no_show'].map(s => `<option value="${s}" ${a && a.status === s ? 'selected' : ''}>${statusLabel(s)}</option>`).join('');
+
+  openModal(a ? 'Editar cita' : 'Nueva cita', `
+    <div class="form-group"><label class="form-label">Paciente</label><select class="form-select" id="f-patient">${patientOptions}</select></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" id="f-date" type="date" value="${a ? a.appointment_date : new Date().toISOString().slice(0,10)}" required /></div>
+      <div class="form-group"><label class="form-label">Hora</label><input class="form-input" id="f-time" type="time" value="${a ? fmtTime(a.appointment_time) : '09:00'}" required /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Duración (min)</label><input class="form-input" id="f-duration" type="number" value="${a ? a.duration_minutes : 30}" /></div>
+      <div class="form-group"><label class="form-label">Precio (S/)</label><input class="form-input" id="f-price" type="number" step="0.01" value="${a ? a.price || '' : ''}" /></div>
+    </div>
+    <div class="form-group"><label class="form-label">Tipo de servicio</label><input class="form-input" id="f-service" value="${a ? escapeHtml(a.service_type || '') : ''}" placeholder="Limpieza, ortodoncia, etc." /></div>
+    <div class="form-group"><label class="form-label">Doctor</label><select class="form-select" id="f-doctor">${doctorOptions}</select></div>
+    ${CHAIRS_ENABLED ? `<div class="form-group"><label class="form-label">Sillón</label><select class="form-select" id="f-chair">${chairOptions}</select></div>` : ''}
+    <div class="form-group"><label class="form-label">Estado</label><select class="form-select" id="f-status">${statusOptions}</select></div>
+    <div class="form-group"><label class="form-label">Notas</label><textarea class="form-textarea" id="f-notes">${a ? escapeHtml(a.notes || '') : ''}</textarea></div>
+  `, async () => {
+    const payload = {
+      patient_id: document.getElementById('f-patient').value,
+      appointment_date: document.getElementById('f-date').value,
+      appointment_time: document.getElementById('f-time').value,
+      duration_minutes: Number(document.getElementById('f-duration').value) || 30,
+      price: document.getElementById('f-price').value ? Number(document.getElementById('f-price').value) : null,
+      service_type: document.getElementById('f-service').value.trim() || null,
+      doctor_id: document.getElementById('f-doctor').value || null,
+      chair_id: CHAIRS_ENABLED ? (document.getElementById('f-chair').value || null) : null,
+      status: document.getElementById('f-status').value,
+      notes: document.getElementById('f-notes').value.trim() || null
+    };
+    let appointmentId = a ? a.id : null;
+    if (a) {
+      const { error } = await sb.from('appointments').update(payload).eq('id', a.id);
+      if (error) { toast(error.message, 'error'); return false; }
+    } else {
+      const { data, error } = await sb.from('appointments').insert({ ...payload, clinic_id: profile.clinic_id }).select().single();
+      if (error) { toast(error.message, 'error'); return false; }
+      appointmentId = data.id;
+      await scheduleReminders(appointmentId, payload.appointment_date, payload.appointment_time);
+    }
+    await loadAll();
+    renderers_refresh();
+    toast('Cita guardada', 'success');
+    return true;
+  });
+}
+
+async function scheduleReminders(appointmentId, date, time) {
+  const dt = new Date(`${date}T${time}`);
+  const r24 = new Date(dt.getTime() - 24 * 60 * 60 * 1000);
+  const r1 = new Date(dt.getTime() - 60 * 60 * 1000);
+  await sb.from('reminders').insert([
+    { appointment_id: appointmentId, send_at: r24.toISOString(), channel: 'whatsapp', status: 'pending', message_template: '24h_reminder' },
+    { appointment_id: appointmentId, send_at: r1.toISOString(), channel: 'whatsapp', status: 'pending', message_template: '1h_reminder' }
+  ]);
+}
+
+async function deleteAppointment(id) {
+  if (!confirm('¿Eliminar esta cita?')) return;
+  const { error } = await sb.from('appointments').delete().eq('id', id);
+  if (error) { toast(error.message, 'error'); return; }
+  await loadAll(); renderers_refresh();
+  toast('Cita eliminada', 'success');
+}
+
+function renderers_refresh() {
+  const renderers = { dashboard: renderDashboard, patients: renderPatients, appointments: renderAppointments, chairs: renderChairs, reminders: renderReminders, manual: renderManual };
+  renderers[currentPage]();
+}
+
+// ---------- Reminders (WhatsApp simulado) ----------
+function buildReminderMessage(apt) {
+  const patientName = apt.patients?.full_name || 'paciente';
+  const date = new Date(apt.appointment_date + 'T00:00:00').toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long' });
+  return `Hola ${patientName} 👋\n\nLe recordamos su cita en *${clinic?.name || 'nuestra clínica'}*:\n\n📅 *${date}*\n🕐 *${fmtTime(apt.appointment_time)}*\n🦷 *${apt.service_type || 'Consulta'}*\n\n¿Confirma su asistencia? Responda este mensaje.`;
+}
+
+function renderReminders() {
+  document.getElementById('page-title').textContent = 'Recordatorios';
+  document.getElementById('page-sub').textContent = 'Envío simulado por WhatsApp — se copia el mensaje y se abre wa.me para pegar y enviar manualmente';
+  document.getElementById('page-actions').innerHTML = '';
+
+  const pending = cache.reminders.filter(r => r.status === 'pending');
+  let html = `<div class="card">`;
+  if (pending.length === 0) {
+    html += `<div class="empty-state"><div class="es-icon">✅</div>No hay recordatorios pendientes. Se generan automáticamente al crear una cita (24h y 1h antes).</div>`;
+  } else {
+    html += `<div class="table-scroll"><table class="data-table"><thead><tr><th>Envío programado</th><th>Paciente</th><th>Cita</th><th></th></tr></thead><tbody>`;
+    html += pending.map(r => {
+      const apt = r.appointments;
+      const due = new Date(r.send_at) <= new Date();
+      return `<tr>
+        <td>${new Date(r.send_at).toLocaleString('es-PE')} ${due ? '<span class="status-badge sb-pending">Listo</span>' : '<span class="status-badge sb-completed">Programado</span>'}</td>
+        <td>${escapeHtml(apt?.patients?.full_name || '—')}</td>
+        <td>${apt ? fmtDate(apt.appointment_date) + ' ' + fmtTime(apt.appointment_time) : '—'}</td>
+        <td class="row-actions">
+          <button class="btn btn-sm btn-success" onclick="openWhatsappModalFromReminder('${r.id}')">💬 Enviar</button>
+        </td>
+      </tr>`;
+    }).join('');
+    html += `</tbody></table></div>`;
+  }
+  html += `</div>`;
+  document.getElementById('page-body').innerHTML = html;
+}
+
+function openWhatsappModalFromReminder(reminderId) {
+  const r = cache.reminders.find(x => x.id === reminderId);
+  if (!r || !r.appointments) { toast('No se encontró la cita', 'error'); return; }
+  openWhatsappModal(null, r);
+}
+
+function openWhatsappModal(appointmentId, reminder) {
+  let apt, reminderId = null;
+  if (reminder) {
+    apt = { ...reminder.appointments, id: reminder.appointment_id };
+    reminderId = reminder.id;
+  } else {
+    apt = cache.appointments.find(a => a.id === appointmentId);
+  }
+  if (!apt) { toast('No se encontró la cita', 'error'); return; }
+  const phone = (apt.patients?.phone || '').replace(/[^\d]/g, '');
+  const message = buildReminderMessage(apt);
+  const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+  openModal('Recordatorio por WhatsApp', `
+    <div class="form-group">
+      <div class="form-label">Mensaje generado</div>
+      <textarea class="form-textarea" id="wa-message" style="min-height:180px;">${message}</textarea>
+    </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button type="button" class="btn btn-secondary" id="wa-copy">📋 Copiar mensaje</button>
+      <a class="btn btn-success" href="${waLink}" target="_blank" rel="noopener">💬 Abrir WhatsApp</a>
+    </div>
+    <div class="form-hint" style="margin-top:14px;">Este envío es manual (costo cero): se copia el mensaje y se abre WhatsApp Web/App con el número y texto precargados. La integración automática con la API de Meta queda pendiente para una fase futura.</div>
+  `, null, { hideDefaultActions: true, extraCancelLabel: 'Cerrar' });
+
+  document.getElementById('wa-copy').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('wa-message').value);
+    toast('Mensaje copiado', 'success');
+  });
+
+  if (reminderId) {
+    const modalBody = document.getElementById('modal-body');
+    const markBtn = document.createElement('button');
+    markBtn.className = 'btn btn-primary';
+    markBtn.style.marginTop = '14px';
+    markBtn.textContent = '✓ Marcar como enviado';
+    markBtn.onclick = async () => {
+      await sb.from('reminders').update({ status: 'sent', sent_at: new Date().toISOString() }).eq('id', reminderId);
+      closeModal();
+      await loadAll();
+      renderers_refresh();
+      toast('Recordatorio marcado como enviado', 'success');
+    };
+    modalBody.appendChild(markBtn);
+  }
+}
+
+// ---------- Generic modal ----------
+function openModal(title, bodyHtml, onSave, opts = {}) {
+  closeModal();
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-head"><div class="modal-title">${title}</div><span class="btn-icon" onclick="closeModal()">✕</span></div>
+      <div id="modal-body">${bodyHtml}</div>
+      <div id="modal-footer" style="display:flex; gap:10px; justify-content:flex-end; margin-top:22px;">
+        ${opts.hideDefaultActions ? `<button class="btn btn-secondary" onclick="closeModal()">${opts.extraCancelLabel || 'Cancelar'}</button>` :
+          `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" id="modal-save">Guardar</button>`}
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  if (!opts.hideDefaultActions && onSave) {
+    document.getElementById('modal-save').addEventListener('click', async () => {
+      const ok = await onSave();
+      if (ok) closeModal();
+    });
+  }
+}
+function closeModal() {
+  const el = document.getElementById('modal-overlay');
+  if (el) el.remove();
+}
+
+// ---------- Init ----------
+sb.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') boot();
+});
+boot();
+</script>
+<!-- ORASIC TOUR: INICIO (generado por shared/inyectar-tour.js) -->
+<script>
+/* =========================================================================
+   ORASIC Tour — motor de recorrido guiado, compartido por todas las apps.
+   =========================================================================
+
+   Sin dependencias. Se puede pegar tal cual dentro de un bloque de script si
+   la app es de un solo archivo, o cargarse como archivo suelto.
+
+   Uso:
+
+     OrasicTour.iniciar({
+       clave: 'tourMiApp',          // identificador en localStorage
+       boton: '#btnTour',           // selector del boton "Ver tour" (opcional)
+       autoAbrir: true,             // se abre solo la primera visita
+       tema: { acento: '#A78BFA', fondo: '#0F131C', texto: '#E7ECF5' },
+       pasos: [
+         { titulo, texto, centro: true },
+         { titulo, texto, objetivo: '#algo', antes: async () => {...} },
+       ],
+     });
+
+   Cada paso:
+     titulo   — encabezado del globo
+     texto    — HTML permitido (<b>, <i>, <br>)
+     objetivo — selector CSS del elemento a iluminar
+     centro   — true: sin objetivo, el globo va al medio de la pantalla
+     antes    — funcion (puede ser async) que prepara la pantalla antes de
+                señalar: cambiar de seccion, cargar datos de ejemplo, abrir
+                un detalle. Es lo que hace que el tour *opere* la app en vez
+                de solo describirla.
+   ========================================================================= */
+
+(function (global) {
+  'use strict';
+
+  const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  const TEMA_POR_DEFECTO = {
+    acento: '#A78BFA',
+    acento2: '#22D3EE',
+    fondo: '#0F131C',
+    texto: '#E7ECF5',
+    textoSuave: '#8B97AB',
+    velo: 'rgba(4, 6, 10, .82)',
+  };
+
+  function inyectarEstilos(tema) {
+    if (document.getElementById('orasic-tour-css')) return;
+    const css = `
+.otour { position: fixed; inset: 0; z-index: 2147483000; }
+.otour[hidden] { display: none !important; }
+.otour-foco {
+  position: absolute; border-radius: 12px;
+  box-shadow: 0 0 0 9999px ${tema.velo};
+  border: 2px solid ${tema.acento};
+  transition: all .35s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+}
+.otour-globo {
+  position: absolute; width: min(400px, calc(100vw - 24px));
+  background: ${tema.fondo}; color: ${tema.texto};
+  border: 1px solid ${tema.acento}; border-radius: 16px;
+  padding: 20px 22px; box-shadow: 0 20px 60px rgba(0,0,0,.55);
+  font: 14px/1.6 ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  transition: opacity .2s, left .35s cubic-bezier(.4,0,.2,1), top .35s cubic-bezier(.4,0,.2,1);
+}
+.otour-contador {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+  color: ${tema.acento2}; margin-bottom: 7px;
+}
+.otour-globo h3 { margin: 0 0 10px; font-size: 17px; line-height: 1.3; color: ${tema.texto}; }
+.otour-texto { color: ${tema.textoSuave}; }
+.otour-texto b { color: ${tema.texto}; }
+.otour-pie { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
+.otour-nav { display: flex; gap: 8px; }
+.otour-btn {
+  border: 0; border-radius: 9px; padding: 8px 16px;
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.otour-btn-1 { background: ${tema.acento}; color: #07101A; }
+.otour-btn-2 { background: transparent; color: ${tema.texto}; border: 1px solid ${tema.acento}; }
+.otour-btn:disabled { opacity: .4; cursor: not-allowed; }
+.otour-saltar { background: none; border: 0; color: ${tema.textoSuave}; font: inherit; font-size: 13px; cursor: pointer; padding: 0; }
+.otour-saltar:hover { color: ${tema.texto}; }
+@media (max-width: 720px) { .otour-globo { padding: 16px 18px; } .otour-globo h3 { font-size: 15px; } }`;
+    const el = document.createElement('style');
+    el.id = 'orasic-tour-css';
+    el.textContent = css;
+    document.head.append(el);
+  }
+
+  let temaActivo = TEMA_POR_DEFECTO;
+
+  function iniciar(config) {
+    const pasos = config.pasos || [];
+    if (!pasos.length) return null;
+
+    const clave = config.clave || 'orasicTourVisto';
+    const tema = Object.assign({}, TEMA_POR_DEFECTO, config.tema || {});
+    temaActivo = tema;
+    inyectarEstilos(tema);
+
+    const capa = document.createElement('div');
+    capa.className = 'otour';
+    capa.hidden = true;
+    capa.innerHTML =
+      '<div class="otour-foco"></div>' +
+      '<div class="otour-globo">' +
+      '<div class="otour-contador"></div>' +
+      '<h3></h3><div class="otour-texto"></div>' +
+      '<div class="otour-pie">' +
+      '<button type="button" class="otour-saltar">Saltar</button>' +
+      '<div class="otour-nav">' +
+      '<button type="button" class="otour-btn otour-btn-2 otour-atras">Atrás</button>' +
+      '<button type="button" class="otour-btn otour-btn-1 otour-sig">Siguiente</button>' +
+      '</div></div></div>';
+    document.body.append(capa);
+
+    const foco = capa.querySelector('.otour-foco');
+    const globo = capa.querySelector('.otour-globo');
+    const btnSig = capa.querySelector('.otour-sig');
+    const btnAtras = capa.querySelector('.otour-atras');
+
+    let indice = 0;
+    let activo = false;
+    let generacion = 0; // se incrementa en cada mostrar(): cancela animaciones del paso anterior
+
+    function ubicarGlobo(rect) {
+      const margen = 16;
+      const ancho = globo.offsetWidth;
+      const alto = globo.offsetHeight;
+
+      if (!rect) {
+        globo.style.left = (innerWidth - ancho) / 2 + 'px';
+        globo.style.top = (innerHeight - alto) / 2 + 'px';
+        return;
+      }
+      // Debajo del elemento si entra; si no, arriba; si tampoco, donde quepa.
+      let top = rect.bottom + margen;
+      if (top + alto > innerHeight - 10) top = rect.top - alto - margen;
+      if (top < 10) top = Math.max(10, Math.min(rect.top, innerHeight - alto - 10));
+
+      let left = rect.left + rect.width / 2 - ancho / 2;
+      left = Math.max(12, Math.min(left, innerWidth - ancho - 12));
+
+      globo.style.left = left + 'px';
+      globo.style.top = top + 'px';
+    }
+
+    function iluminar(el) {
+      if (!el) {
+        // Sin objetivo: el recuadro se encoge a nada en el centro, pero su
+        // sombra sigue oscureciendo toda la pantalla.
+        foco.style.borderColor = 'transparent';
+        foco.style.left = innerWidth / 2 + 'px';
+        foco.style.top = innerHeight / 2 + 'px';
+        foco.style.width = '0px';
+        foco.style.height = '0px';
+        ubicarGlobo(null);
+        return;
+      }
+      const r = el.getBoundingClientRect();
+      const p = 8;
+      foco.style.borderColor = tema.acento;
+      foco.style.left = r.left - p + 'px';
+      foco.style.top = r.top - p + 'px';
+      foco.style.width = r.width + p * 2 + 'px';
+      foco.style.height = r.height + p * 2 + 'px';
+      ubicarGlobo(r);
+    }
+
+    async function mostrar(i) {
+      const miGen = ++generacion; // todo lo que dependia de la generacion anterior se corta
+      indice = Math.max(0, Math.min(i, pasos.length - 1));
+      const paso = pasos[indice];
+      const vigente = () => generacion === miGen;
+
+      globo.style.opacity = '0';
+      if (paso.antes) {
+        try {
+          await paso.antes(vigente);
+        } catch (e) {
+          console.warn('[tour] falló la preparación del paso', indice + 1, e);
+        }
+      }
+      if (!vigente()) return; // el usuario ya avanzo a otro paso mientras esperabamos
+
+      let el = null;
+      if (!paso.centro && paso.objetivo) {
+        el = document.querySelector(paso.objetivo);
+        if (el) {
+          el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          await esperar(320);
+          if (!vigente()) return;
+          // El scroll pudo mover el elemento: lo volvemos a medir.
+          el = document.querySelector(paso.objetivo);
+        }
+      }
+
+      capa.querySelector('.otour-contador').textContent =
+        'Paso ' + (indice + 1) + ' de ' + pasos.length;
+      capa.querySelector('h3').textContent = paso.titulo || '';
+      capa.querySelector('.otour-texto').innerHTML = paso.texto || '';
+      btnAtras.disabled = indice === 0;
+      btnSig.textContent = indice === pasos.length - 1 ? 'Terminar' : 'Siguiente';
+
+      iluminar(el);
+      globo.style.opacity = '1';
+
+      // "durante" corre EN PARALELO a que el usuario lee el texto — es lo que
+      // permite ver un formulario llenarse solo mientras el globo explica,
+      // en vez de tener que elegir entre mostrar el texto o la animacion.
+      if (paso.durante) {
+        Promise.resolve(paso.durante(vigente)).catch((e) =>
+          console.warn('[tour] fallo la animacion del paso', indice + 1, e)
+        );
+      }
+    }
+
+    function abrir() {
+      if (activo) return;
+      activo = true;
+      capa.hidden = false;
+      document.body.style.overflow = 'hidden';
+      if (config.alAbrir) config.alAbrir();
+      mostrar(0);
+    }
+
+    function cerrar() {
+      if (!activo) return;
+      activo = false;
+      capa.hidden = true;
+      document.body.style.overflow = '';
+      try {
+        localStorage.setItem(clave, '1');
+      } catch (e) {
+        /* modo incognito: no pasa nada, el tour se volvera a abrir */
+      }
+      // Deja limpio lo que el tour haya preparado (datos de ejemplo, vistas).
+      if (config.alCerrar) config.alCerrar();
+    }
+
+    btnSig.addEventListener('click', () => {
+      if (indice === pasos.length - 1) cerrar();
+      else mostrar(indice + 1);
+    });
+    btnAtras.addEventListener('click', () => mostrar(indice - 1));
+    capa.querySelector('.otour-saltar').addEventListener('click', cerrar);
+
+    document.addEventListener('keydown', (e) => {
+      if (!activo) return;
+      if (e.key === 'Escape') cerrar();
+      if (e.key === 'ArrowRight') btnSig.click();
+      if (e.key === 'ArrowLeft' && indice > 0) mostrar(indice - 1);
+    });
+
+    addEventListener('resize', () => {
+      if (!activo) return;
+      const paso = pasos[indice];
+      iluminar(paso.centro ? null : document.querySelector(paso.objetivo));
+    });
+
+    if (config.boton) {
+      // Delegado en document: asi tambien funciona en botones que el framework
+      // monta despues (por ejemplo el menu mobile de React).
+      document.addEventListener('click', (e) => {
+        if (e.target.closest && e.target.closest(config.boton)) {
+          e.preventDefault();
+          abrir();
+        }
+      });
+    }
+
+    let visto = false;
+    try {
+      visto = Boolean(localStorage.getItem(clave));
+    } catch (e) {
+      /* sin localStorage: se comporta como primera visita */
+    }
+    if (config.autoAbrir !== false && !visto) setTimeout(abrir, config.demora || 700);
+
+    return { abrir, cerrar, mostrar };
+  }
+
+  /* ---------- Escritura animada en un campo ----------
+     Tipea texto letra por letra en un input/textarea, como si alguien lo
+     estuviera llenando en vivo. Dispara los eventos nativos de input/change
+     para que frameworks como React (que escuchan onChange) tambien lo vean.
+     Uso tipico dentro de un paso `antes`: primero se ilumina el campo con
+     `objetivo`, y en `antes` se llama a este helper para que se escriba
+     mientras el globo explica que es. */
+  const inputSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+  const textareaSetter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+
+  function fijarValorNativo(el, texto) {
+    const setter = el.tagName === 'TEXTAREA' ? textareaSetter : inputSetter;
+    setter.call(el, texto);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  // date, datetime-local y number no aceptan bien un valor letra por letra
+  // (el navegador rechaza los estados intermedios invalidos) — en esos se
+  // pone el valor final directo, con un resalte breve en vez de tipeo.
+  const TIPOS_SIN_TIPEO = new Set(['date', 'datetime-local', 'time', 'number']);
+
+  async function escribir(el, texto, opciones = {}) {
+    if (!el) return;
+    const vigente = opciones.vigente || (() => true);
+    const cps = opciones.cps || 22; // caracteres por segundo
+
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    el.focus();
+
+    if (TIPOS_SIN_TIPEO.has(el.type)) {
+      const sombraPrevia = el.style.boxShadow;
+      el.style.transition = 'box-shadow .2s';
+      el.style.boxShadow = `0 0 0 3px ${temaActivo.acento}55`;
+      fijarValorNativo(el, texto);
+      await esperar(350);
+      if (vigente()) el.style.boxShadow = sombraPrevia;
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      return;
+    }
+
+    fijarValorNativo(el, '');
+    let acumulado = '';
+    for (const letra of String(texto)) {
+      if (!vigente()) return; // el usuario ya avanzo: cortamos para no pisar el paso siguiente
+      acumulado += letra;
+      fijarValorNativo(el, acumulado);
+      // Variacion leve de ritmo: se ve mas humano que un tipeo perfectamente parejo.
+      await esperar(1000 / cps + Math.random() * 25);
+    }
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperar(200);
+  }
+
+  async function seleccionar(el, valor, opciones = {}) {
+    if (!el) return;
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    el.focus();
+    const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value')?.set;
+    if (setter) setter.call(el, valor);
+    else el.value = valor;
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperar(opciones.pausaMs ?? 300);
+  }
+
+  global.OrasicTour = { iniciar, escribir, seleccionar };
+})(window);
+
+</script>
+<script>
+/* Pasos del tour de ORASIC Dental CRM. Se inyecta dentro de index.html. */
+(function () {
+  const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+  const irA = async (pagina) => {
+    document.querySelector(`.nav-item[data-page="${pagina}"]`)?.click();
+    await esperar(400);
+  };
+
+  /* ---------- Pacientes y citas de ejemplo ----------
+     Se cargan SOLO en pantalla mientras dura el tour: reemplazamos el `cache`
+     en memoria y volvemos a dibujar. No se escribe nada en Supabase, y al
+     cerrar el tour se restauran los datos reales de la clinica. */
+
+  const hoy = new Date();
+  const dia = (n) => {
+    const d = new Date(hoy);
+    d.setDate(d.getDate() + n);
+    return d.toISOString().split('T')[0];
+  };
+  const haceHoras = (h) => new Date(Date.now() - h * 3600000).toISOString();
+  const enHoras = (h) => new Date(Date.now() + h * 3600000).toISOString();
+
+  const PACIENTES = [
+    { id: 'd1', full_name: 'Rosa Quispe Mamani', phone: '987654321', dni: '45678912', email: 'rosa.quispe@gmail.com', birth_date: '1991-04-18', notes: 'Alergia a la penicilina' },
+    { id: 'd2', full_name: 'Diego Ramírez Soto', phone: '912345678', dni: '41235678', email: 'diego.rs@gmail.com', birth_date: '1988-11-02', notes: '' },
+    { id: 'd3', full_name: 'Valeria Ochoa Restrepo', phone: '956781234', dni: '47891234', email: null, birth_date: '1996-07-25', notes: 'Tratamiento de ortodoncia en curso' },
+    { id: 'd4', full_name: 'Luis Fernández Paz', phone: '998877665', dni: '09876543', email: 'luis.fpaz@gmail.com', birth_date: '1983-01-30', notes: '' },
+    { id: 'd5', full_name: 'Camila Torres Vega', phone: '955443322', dni: '72345678', email: null, birth_date: '1999-09-14', notes: 'Le teme al torno — avisar antes' },
+    { id: 'd6', full_name: 'Sergio Medina Cruz', phone: '944556677', dni: '43219876', email: null, birth_date: '1979-06-11', notes: '' },
+  ];
+
+  const paciente = (id) => PACIENTES.find((p) => p.id === id);
+
+  const CITAS = [
+    { id: 'a1', patient_id: 'd1', appointment_date: dia(0), appointment_time: '09:00', service_type: 'Limpieza dental', status: 'confirmed', notes: '' },
+    { id: 'a2', patient_id: 'd3', appointment_date: dia(0), appointment_time: '11:30', service_type: 'Control de ortodoncia', status: 'confirmed', notes: '' },
+    { id: 'a3', patient_id: 'd5', appointment_date: dia(0), appointment_time: '16:00', service_type: 'Extracción', status: 'scheduled', notes: 'Paciente nerviosa' },
+    { id: 'a4', patient_id: 'd2', appointment_date: dia(1), appointment_time: '10:00', service_type: 'Resina', status: 'scheduled', notes: '' },
+    { id: 'a5', patient_id: 'd4', appointment_date: dia(2), appointment_time: '08:30', service_type: 'Evaluación inicial', status: 'scheduled', notes: '' },
+    { id: 'a6', patient_id: 'd6', appointment_date: dia(3), appointment_time: '15:00', service_type: 'Blanqueamiento', status: 'scheduled', notes: '' },
+  ].map((c) => ({
+    ...c,
+    patients: { full_name: paciente(c.patient_id).full_name, phone: paciente(c.patient_id).phone },
+    profiles: { full_name: 'Dra. Mariana Ruiz' },
+    chairs: { name: 'Sillón 1' },
+  }));
+
+  const cita = (id) => CITAS.find((c) => c.id === id);
+  const recordatorio = (id, citaId, tipo, sendAt, sent) => ({
+    id,
+    appointment_id: citaId,
+    reminder_type: tipo,
+    send_at: sendAt,
+    sent_at: sent ? sendAt : null,
+    status: sent ? 'sent' : 'pending',
+    appointments: {
+      appointment_date: cita(citaId).appointment_date,
+      appointment_time: cita(citaId).appointment_time,
+      service_type: cita(citaId).service_type,
+      patients: cita(citaId).patients,
+    },
+  });
+
+  // Dos ya vencidos (listos para mandar), uno ya mandado, dos a futuro.
+  const RECORDATORIOS = [
+    recordatorio('r1', 'a3', '1h', haceHoras(1), false),
+    recordatorio('r2', 'a4', '24h', haceHoras(3), false),
+    recordatorio('r3', 'a1', '24h', haceHoras(26), true),
+    recordatorio('r4', 'a5', '24h', enHoras(20), false),
+    recordatorio('r5', 'a6', '24h', enHoras(60), false),
+  ];
+
+  let cacheReal = null;
+
+  function activarEjemplo() {
+    if (typeof cache === 'undefined' || cacheReal) return;
+    cacheReal = cache;
+    cache = {
+      ...cacheReal,
+      patients: PACIENTES,
+      appointments: CITAS,
+      reminders: RECORDATORIOS,
+    };
+    if (typeof navigate === 'function') navigate(currentPage);
+  }
+
+  function restaurarReales() {
+    if (!cacheReal) return;
+    cache = cacheReal;
+    cacheReal = null;
+    if (typeof navigate === 'function') navigate(currentPage);
+  }
+
+  window.iniciarTourDental = function () {
+    return OrasicTour.iniciar({
+      clave: 'tourDentalVisto',
+      boton: '#btn-tour',
+      alAbrir: activarEjemplo,
+      alCerrar: restaurarReales,
+      tema: { acento: '#A78BFA', acento2: '#22D3EE', fondo: '#111827', texto: '#F9FAFB', textoSuave: '#9CA3AF' },
+      pasos: [
+        {
+          centro: true,
+          titulo: 'Bienvenido a ORASIC Dental',
+          texto:
+            'En 2 minutos te muestro cada parte. El sistema hace tres cosas: <b>guarda tus pacientes</b>, <b>ordena la agenda de citas</b> y <b>te avisa a quién hay que recordarle</b> para que no falte.<br><br>Para que veas todo funcionando, cargué <b>6 pacientes y 6 citas de ejemplo</b>. Son solo de mentira y en pantalla: <b>no se guarda nada</b>, y al terminar el tour vuelven tus datos reales.',
+        },
+        {
+          objetivo: '#sidebar nav',
+          titulo: 'El menú de la izquierda',
+          texto:
+            'Todo se maneja desde acá.<br><br><b>Dashboard</b> — el resumen del día.<br><b>Pacientes</b> — tu base de datos.<br><b>Citas</b> — la agenda.<br><b>Recordatorios</b> — los avisos por WhatsApp.<br><br>En el celular este menú aparece abajo de la pantalla.',
+          antes: () => irA('dashboard'),
+        },
+        {
+          objetivo: '#page-body',
+          titulo: 'Dashboard: cómo viene el día',
+          texto:
+            'Mirá los números: hay <b>3 citas para hoy</b>, 6 pacientes cargados y recordatorios esperando que los mandes.<br><br>Si abrís el sistema una sola vez al día, que sea acá.',
+        },
+        {
+          objetivo: '#page-actions',
+          titulo: 'Cargar tus pacientes',
+          texto:
+            '<b>+ Nuevo paciente</b> los carga de a uno.<br><br><b>Importar CSV</b> los sube todos juntos si ya los tenés en Excel. Solo hacen falta dos columnas: <b>nombre</b> y <b>telefono</b>.<br><br>Esto se hace una vez al principio. Después solo agregás los nuevos.',
+          antes: () => irA('patients'),
+        },
+        {
+          objetivo: '#modal-overlay .modal-box',
+          titulo: 'Así se llena una ficha',
+          texto:
+            'Mirá cómo se completa — no toques nada, es solo para que lo veas.<br><br>Nombre, teléfono, DNI y una nota. El teléfono es el dato que no puede faltar: por ahí le llega el recordatorio.',
+          antes: async () => {
+            document.querySelector('#page-actions .btn-primary')?.click();
+            for (let i = 0; i < 20 && !document.getElementById('f-name'); i++) await esperar(80);
+          },
+          durante: async (vigente) => {
+            await OrasicTour.escribir(document.getElementById('f-name'), 'Andrea Salinas Coronel', { vigente });
+            if (!vigente()) return;
+            await OrasicTour.escribir(document.getElementById('f-phone'), '987001122', { vigente });
+            if (!vigente()) return;
+            await OrasicTour.escribir(document.getElementById('f-dni'), '48123456', { vigente });
+            if (!vigente()) return;
+            await OrasicTour.escribir(document.getElementById('f-notes'), 'Primera visita — pide presupuesto de ortodoncia', { vigente });
+          },
+        },
+        {
+          centro: true,
+          titulo: 'Esto fue solo una demostración',
+          texto:
+            'Esa ficha <b>no se guardó</b> — era de mentira, para que veas el formulario en acción.<br><br>Cuando cargues un paciente de verdad, completás igual y tocás <b>Guardar</b>. Ahora cerramos sin guardar nada.',
+          antes: async () => {
+            if (typeof closeModal === 'function') closeModal();
+            await esperar(200);
+          },
+        },
+        {
+          objetivo: '#page-body',
+          titulo: 'La ficha de cada paciente',
+          texto:
+            'Ahí está la lista real: Rosa, Diego, Valeria, Luis, Camila y Sergio. De cada uno guardás nombre, teléfono, DNI y notas ("alergia a la penicilina", "le teme al torno").<br><br>El <b>teléfono es el dato clave</b>: es por donde le llega el recordatorio. Sin teléfono no se le puede avisar.',
+        },
+        {
+          objetivo: '#page-actions',
+          titulo: 'Agendar una cita',
+          texto:
+            'Con <b>+ Nueva cita</b> elegís el paciente, el día y la hora.<br><br>Y acá está lo bueno: al guardarla, el sistema <b>crea solo dos recordatorios</b>, uno para 24 horas antes y otro para 1 hora antes. No tenés que acordarte de nada.',
+          antes: () => irA('appointments'),
+        },
+        {
+          objetivo: '#page-body',
+          titulo: 'La agenda',
+          texto:
+            'Acá está la agenda cargada: limpieza, control de ortodoncia, extracción, resina… cada una con su paciente, su hora y su estado.<br><br>Desde acá las editás o las cancelás. Si cancelás una, sus recordatorios se cancelan también.',
+        },
+        {
+          objetivo: '#page-body',
+          titulo: 'Recordatorios: el corazón del sistema',
+          texto:
+            'Acá está la razón de ser de todo esto: <b>que el paciente no falte</b>.<br><br>Fijate que hay dos marcados como <b>listos</b>: ya les llegó la hora de avisar. Tocás <b>Enviar</b> y se abre WhatsApp con el mensaje ya escrito para esa persona y esa cita — vos solo apretás enviar.<br><br>Los de más abajo todavía no llegaron a su hora, y uno ya figura como enviado.',
+          antes: () => irA('reminders'),
+        },
+        {
+          objetivo: '.nav-item[data-page="reminders"] .badge, #badge-reminders',
+          titulo: 'El numerito rojo',
+          texto:
+            'Ese número te dice <b>cuántos recordatorios están esperando</b> que los mandes.<br><br>La rutina es simple: abrís el sistema, mirás ese número, y mandás los que estén listos. Dos minutos por día.',
+        },
+        {
+          objetivo: '.nav-item[data-page="manual"]',
+          titulo: 'El manual escrito',
+          texto:
+            'Todo esto explicado con más detalle, incluida la carga masiva por CSV y qué hacer si algo falla.<br><br>Para repetir este tour: <b>Ver tour guiado</b>, acá mismo en el menú.',
+          antes: () => irA('manual'),
+        },
+        {
+          centro: true,
+          titulo: 'Listo',
+          texto:
+            'La rutina diaria son tres pasos:<br><br><b>1.</b> Agendás las citas que van entrando.<br><b>2.</b> Mirás el numerito de Recordatorios.<br><b>3.</b> Mandás los que estén listos.<br><br>Eso es todo. Lo demás lo hace el sistema.',
+        },
+      ],
+    });
+  };
+})();
+
+</script>
+<!-- ORASIC TOUR: FIN -->
+</body>
+</html>
