@@ -2483,7 +2483,7 @@ const SEED_URL = '/contenido/orasic-articulos-seed.json';
 
 async function importSeedArticles(){
   try {
-    const res = await fetch(SEED_URL);
+    const res = await fetch(SEED_URL + '?t=' + Date.now());
     if (!res.ok) throw new Error('No se encontró el archivo');
     const seed = await res.json();
 
