@@ -1661,5 +1661,38 @@ boot();
 
 </script>
 <!-- ORASIC TOUR: FIN -->
+
+<!-- AUTO-LOGIN PARA DEMO -->
+<script>
+(function() {
+  // Detectar modo demo: ?demo=true en la URL
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('demo') !== 'true') return;
+
+  const demoEmail = 'demo@orasic.com';
+  const demoPassword = 'Demo2024!';
+
+  // Esperar a que los inputs del login estén listos
+  const esperarInputs = async (intentos = 60) => {
+    for (let i = 0; i < intentos; i++) {
+      const emailInput = document.getElementById('signin-email');
+      const passwordInput = document.getElementById('signin-password');
+      if (emailInput && passwordInput) return true;
+      await new Promise(r => setTimeout(r, 100));
+    }
+    return false;
+  };
+
+  (async function() {
+    if (await esperarInputs()) {
+      // Llenar campos y auto-submit
+      document.getElementById('signin-email').value = demoEmail;
+      document.getElementById('signin-password').value = demoPassword;
+      document.getElementById('form-signin').dispatchEvent(new Event('submit'));
+    }
+  })();
+})();
+</script>
+<!-- FIN AUTO-LOGIN -->
 </body>
 </html>
