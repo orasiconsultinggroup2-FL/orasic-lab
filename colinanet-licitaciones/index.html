@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trazabilidad de Licitaciones - ColinaNet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1B3A5C, #2E5C8A);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #1B3A5C;
+        }
+
+        .stat-card .numero {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1B3A5C;
+        }
+
+        .stat-card .etiqueta {
+            color: #666;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #1B3A5C;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #2E5C8A;
+            transform: translateY(-2px);
+        }
+
+        button.secundario {
+            background: #6c757d;
+        }
+
+        button.peligro {
+            background: #dc3545;
+        }
+
+        button.exito {
+            background: #28a745;
+        }
+
+        .seccion {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .seccion h2 {
+            color: #1B3A5C;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .filtros {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filtros input, .filtros select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #1B3A5C;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .estado {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .estado-en-estudio { background: #fff3cd; color: #856404; }
+        .estado-en-preparacion { background: #cce5ff; color: #004085; }
+        .estado-presentada { background: #d1ecf1; color: #0c5460; }
+        .estado-adjudicada { background: #d4edda; color: #155724; }
+        .estado-rechazada { background: #f8d7da; color: #721c24; }
+        .estado-desierta { background: #e2e3e5; color: #383d41; }
+
+        .vencimiento-alerta {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .vencimiento-cuidado {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .vencimiento-ok {
+            color: #28a745;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.activo {
+            display: flex;
+        }
+
+        .modal-contenido {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-contenido h2 {
+            color: #1B3A5C;
+            margin-bottom: 20px;
+        }
+
+        .form-grupo {
+            margin-bottom: 15px;
+        }
+
+        .form-grupo label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .form-grupo input,
+        .form-grupo select,
+        .form-grupo textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-grupo textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .botones-modal {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .documento-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #1B3A5C;
+        }
+
+        .documento-item .info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .documento-item .nombre {
+            font-weight: 600;
+            color: #1B3A5C;
+        }
+
+        .historial {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .historial-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .historial-item:last-child {
+            border-bottom: none;
+        }
+
+        .badge-version {
+            background: #6c757d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .stats { grid-template-columns: 1fr 1fr; }
+            table { font-size: 12px; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Trazabilidad de Licitaciones</h1>
+            <p>ColinaNet | Sistema de control documental y seguimiento</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="numero" id="stat-total">0</div>
+                <div class="etiqueta">Total Licitaciones</div>
+            </div>
+            <div class="stat-card">
+                <div class="numero" id="stat-activas">0</div>
+                <div class="etiqueta">En Proceso</div>
+            </div>
+            <div class="stat-card">
+                <div class="numero" id="stat-adjudicadas">0</div>
+                <div class="etiqueta">Adjudicadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="numero" id="stat-valor">S/ 0</div>
+                <div class="etiqueta">Valor Total en Juego</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #dc3545;">
+                <div class="numero" id="stat-vencidos">0</div>
+                <div class="etiqueta">Documentos por Vencer</div>
+            </div>
+        </div>
+
+        <div class="acciones">
+            <button onclick="abrirModalNuevaLicitacion()">➕ Nueva Licitación</button>
+            <button class="exito" onclick="exportarDatos()">📥 Exportar</button>
+            <button class="secundario" onclick="cargarDatosEjemplo()">📋 Cargar Ejemplo</button>
+            <button class="secundario" id="btn-tour" type="button">🧭 Ver tour</button>
+            <button class="secundario" onclick="document.getElementById('modal-manual').classList.add('activo')" type="button">📖 Manual</button>
+        </div>
+
+        <div class="seccion">
+            <h2>📊 Licitaciones Registradas</h2>
+
+            <div class="filtros">
+                <input type="text" id="filtro-buscar" placeholder="🔍 Buscar por nombre o código..." onkeyup="filtrarLicitaciones()">
+                <select id="filtro-estado" onchange="filtrarLicitaciones()">
+                    <option value="">Todos los estados</option>
+                    <option value="En Estudio">En Estudio</option>
+                    <option value="En Preparación">En Preparación</option>
+                    <option value="Presentada">Presentada</option>
+                    <option value="Adjudicada">Adjudicada</option>
+                    <option value="Rechazada">Rechazada</option>
+                    <option value="Desierta">Desierta</option>
+                </select>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table id="tabla-licitaciones">
+                    <thead>
+                        <tr>
+                            <th>Código OSCE</th>
+                            <th>Nombre</th>
+                            <th>Entidad</th>
+                            <th>Valor (S/)</th>
+                            <th>Fecha Cierre</th>
+                            <th>Estado</th>
+                            <th>Avance</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-licitaciones">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Manual de uso -->
+    <div class="modal" id="modal-manual">
+        <div class="modal-contenido" style="max-width:700px;">
+            <h2>📖 Manual de uso</h2>
+
+            <div class="documento-item" style="border-left-color:#28a745;">
+                <div class="nombre">🧭 Antes que nada: el tour guiado</div>
+                <p style="margin-top:6px; font-size:14px; color:#555;">
+                    El botón <b>Ver tour</b> te lleva de la mano por toda la pantalla en 2 minutos: te muestra
+                    cómo se registra una licitación completándola en vivo (con datos de ejemplo, sin tocar
+                    los tuyos hasta que vos guardes uno real) y dónde está cada cosa. Es más rápido verlo que leerlo.
+                </p>
+                <button type="button" class="secundario" style="margin-top:8px; padding:8px 14px; font-size:13px;"
+                    onclick="document.getElementById('modal-manual').classList.remove('activo'); document.getElementById('btn-tour').click()">
+                    Iniciar el tour ahora
+                </button>
+            </div>
+
+            <div class="documento-item">
+                <div class="nombre">1. Los números de arriba</div>
+                <p style="margin-top:4px; font-size:14px; color:#555;">
+                    El tablero del día. <b>Documentos por Vencer</b> es el que más importa: si no está en cero, hay algo
+                    que atender hoy. <b>Valor Total en Juego</b> suma el valor de todo lo que estás disputando ahora.
+                </p>
+            </div>
+            <div class="documento-item">
+                <div class="nombre">2. Registrar una licitación</div>
+                <p style="margin-top:4px; font-size:14px; color:#555;">
+                    Botón <b>➕ Nueva Licitación</b>: código OSCE, entidad, valor y la <b>fecha de cierre</b>, que es
+                    la que manda — de ahí sale la cuenta regresiva y las alertas de vencimiento.
+                </p>
+            </div>
+            <div class="documento-item">
+                <div class="nombre">3. El expediente de cada una</div>
+                <p style="margin-top:4px; font-size:14px; color:#555;">
+                    Tocá <b>👁️ Ver</b> en cualquier fila para abrir su expediente: ahí agregás documentos con
+                    <b>➕ Documento</b>, les cambiás el estado con <b>🔄</b>, y queda un <b>historial</b> de todo lo
+                    que pasó — útil si después hay que explicar por qué algo se presentó tarde.
+                </p>
+            </div>
+            <div class="documento-item">
+                <div class="nombre">4. Buscar y filtrar</div>
+                <p style="margin-top:4px; font-size:14px; color:#555;">
+                    El buscador filtra por nombre o código OSCE. El selector de estado te deja ver solo lo que está,
+                    por ejemplo, <b>En Preparación</b> — lo que necesita trabajo esta semana.
+                </p>
+            </div>
+            <div class="documento-item">
+                <div class="nombre">5. Sacar la información afuera</div>
+                <p style="margin-top:4px; font-size:14px; color:#555;">
+                    <b>📥 Exportar</b> baja todo a un archivo para Excel o para el reporte a gerencia. Como los datos
+                    viven solo en este navegador (no hay servidor detrás), exportar de vez en cuando es también tu
+                    copia de seguridad — si limpiás el navegador o cambiás de computadora, se pierde lo que no
+                    hayas exportado.
+                </p>
+            </div>
+
+            <div class="botones-modal">
+                <button type="button" class="secundario" onclick="cerrarModal('modal-manual')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Licitación -->
+    <div class="modal" id="modal-nueva">
+        <div class="modal-contenido">
+            <h2>➕ Nueva Licitación</h2>
+            <form id="form-nueva-licitacion" onsubmit="guardarLicitacion(event)">
+                <div class="form-grupo">
+                    <label>Código OSCE *</label>
+                    <input type="text" id="codigo" required placeholder="Ej: LP-SM-1-2024-CS/1">
+                </div>
+                <div class="form-grupo">
+                    <label>Nombre de la Licitación *</label>
+                    <input type="text" id="nombre" required>
+                </div>
+                <div class="form-grupo">
+                    <label>Entidad Convocante *</label>
+                    <input type="text" id="entidad" required>
+                </div>
+                <div class="form-grupo">
+                    <label>RUC Entidad</label>
+                    <input type="text" id="ruc" maxlength="11">
+                </div>
+                <div class="form-grupo">
+                    <label>Tipo de Proceso *</label>
+                    <select id="tipo" required>
+                        <option value="Licitación Pública">Licitación Pública</option>
+                        <option value="Concurso Público">Concurso Público</option>
+                        <option value="Adjudicación Simplificada">Adjudicación Simplificada</option>
+                        <option value="Contratación Directa">Contratación Directa</option>
+                        <option value="Subasta Inversa Electrónica">Subasta Inversa Electrónica</option>
+                    </select>
+                </div>
+                <div class="form-grupo">
+                    <label>Valor Referencial (S/) *</label>
+                    <input type="number" id="valor" required min="0" step="0.01">
+                </div>
+                <div class="form-grupo">
+                    <label>Fecha de Publicación *</label>
+                    <input type="date" id="fecha-publicacion" required>
+                </div>
+                <div class="form-grupo">
+                    <label>Fecha y Hora de Cierre *</label>
+                    <input type="datetime-local" id="fecha-cierre" required>
+                </div>
+                <div class="form-grupo">
+                    <label>Responsable</label>
+                    <input type="text" id="responsable">
+                </div>
+                <div class="form-grupo">
+                    <label>Observaciones</label>
+                    <textarea id="observaciones"></textarea>
+                </div>
+                <div class="botones-modal">
+                    <button type="button" class="secundario" onclick="cerrarModal('modal-nueva')">Cancelar</button>
+                    <button type="submit" class="exito">💾 Guardar Licitación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detalle Licitación -->
+    <div class="modal" id="modal-detalle">
+        <div class="modal-contenido">
+            <h2>📄 Detalle de Licitación</h2>
+            <div id="detalle-contenido"></div>
+            <div class="botones-modal">
+                <button type="button" class="secundario" onclick="cerrarModal('modal-detalle')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Documento -->
+    <div class="modal" id="modal-documento">
+        <div class="modal-contenido">
+            <h2>📎 Agregar Documento</h2>
+            <form id="form-nuevo-documento" onsubmit="guardarDocumento(event)">
+                <input type="hidden" id="doc-licitacion-id">
+                <div class="form-grupo">
+                    <label>Nombre del Documento *</label>
+                    <input type="text" id="doc-nombre" required>
+                </div>
+                <div class="form-grupo">
+                    <label>Categoría *</label>
+                    <select id="doc-categoria" required>
+                        <option value="Legal">Legal</option>
+                        <option value="Técnico">Técnico</option>
+                        <option value="Económico">Económico</option>
+                        <option value="Contrato">Contrato</option>
+                        <option value="Garantía">Garantía</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+                <div class="form-grupo">
+                    <label>Subcategoría</label>
+                    <input type="text" id="doc-subcategoria" placeholder="Ej: Vigencia de Poder, RUC, DNI...">
+                </div>
+                <div class="form-grupo">
+                    <label>Fecha de Vencimiento (si aplica)</label>
+                    <input type="date" id="doc-vencimiento">
+                </div>
+                <div class="form-grupo">
+                    <label>Observaciones</label>
+                    <textarea id="doc-observaciones"></textarea>
+                </div>
+                <div class="botones-modal">
+                    <button type="button" class="secundario" onclick="cerrarModal('modal-documento')">Cancelar</button>
+                    <button type="submit" class="exito">💾 Guardar Documento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Almacenamiento local
+        let licitaciones = JSON.parse(localStorage.getItem('licitaciones_colinanet')) || [];
+        let documentos = JSON.parse(localStorage.getItem('documentos_colinanet')) || [];
+
+        // Guardar en localStorage
+        function guardarStorage() {
+            localStorage.setItem('licitaciones_colinanet', JSON.stringify(licitaciones));
+            localStorage.setItem('documentos_colinanet', JSON.stringify(documentos));
+        }
+
+        // Generar ID único
+        function generarId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Escapa texto antes de insertarlo en innerHTML (evita XSS con datos ingresados por el usuario)
+        function escapeHtml(texto) {
+            if (texto === null || texto === undefined) return '';
+            return String(texto)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // Parsea "YYYY-MM-DD" como fecha local (evita el corrimiento de un día por UTC)
+        function parsearFechaLocal(fecha) {
+            if (!fecha) return null;
+            if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+                const [anio, mes, dia] = fecha.split('-').map(Number);
+                return new Date(anio, mes - 1, dia);
+            }
+            return new Date(fecha);
+        }
+
+        // Calcular días para vencer
+        function diasParaVencer(fecha) {
+            if (!fecha) return null;
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            const vencimiento = parsearFechaLocal(fecha);
+            const diff = Math.ceil((vencimiento - hoy) / (1000 * 60 * 60 * 24));
+            return diff;
+        }
+
+        // Formato de fecha
+        function formatearFecha(fecha) {
+            if (!fecha) return '-';
+            const d = parsearFechaLocal(fecha);
+            return d.toLocaleDateString('es-PE', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        }
+
+        // Formato de moneda
+        function formatearMoneda(valor) {
+            return 'S/ ' + parseFloat(valor || 0).toLocaleString('es-PE', { minimumFractionDigits: 2 });
+        }
+
+        // Actualizar estadísticas
+        function actualizarStats() {
+            document.getElementById('stat-total').textContent = licitaciones.length;
+            document.getElementById('stat-activas').textContent =
+                licitaciones.filter(l => ['En Estudio', 'En Preparación', 'Presentada'].includes(l.estado)).length;
+            document.getElementById('stat-adjudicadas').textContent =
+                licitaciones.filter(l => l.estado === 'Adjudicada').length;
+
+            const valorTotal = licitaciones.reduce((sum, l) => sum + parseFloat(l.valor || 0), 0);
+            document.getElementById('stat-valor').textContent = formatearMoneda(valorTotal);
+
+            const hoy = new Date();
+            const vencidos = documentos.filter(d => {
+                if (!d.vencimiento || d.estado === 'Aprobado') return false;
+                return parsearFechaLocal(d.vencimiento) < hoy;
+            }).length;
+            document.getElementById('stat-vencidos').textContent = vencidos;
+        }
+
+        // Renderizar tabla
+        function renderizarTabla() {
+            const tbody = document.getElementById('tbody-licitaciones');
+            const filtro = document.getElementById('filtro-buscar').value.toLowerCase();
+            const estadoFiltro = document.getElementById('filtro-estado').value;
+
+            let licitacionesFiltradas = licitaciones.filter(l => {
+                const matchBusqueda = !filtro ||
+                    l.nombre.toLowerCase().includes(filtro) ||
+                    l.codigo.toLowerCase().includes(filtro) ||
+                    l.entidad.toLowerCase().includes(filtro);
+                const matchEstado = !estadoFiltro || l.estado === estadoFiltro;
+                return matchBusqueda && matchEstado;
+            });
+
+            if (licitacionesFiltradas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:#999;">No hay licitaciones registradas. Haz clic en "Nueva Licitación" para empezar.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = licitacionesFiltradas.map(l => {
+                const docsLicitacion = documentos.filter(d => d.licitacionId === l.id);
+                const totalDocs = docsLicitacion.length;
+                const docsAprobados = docsLicitacion.filter(d => d.estado === 'Aprobado').length;
+                const avance = totalDocs > 0 ? Math.round((docsAprobados / totalDocs) * 100) : 0;
+
+                const estadoClass = 'estado-' + l.estado.toLowerCase().replace(/ /g, '-').replace(/ó/g, 'o');
+
+                const diasCierre = diasParaVencer(l.fechaCierre);
+                let claseCierre = 'vencimiento-ok';
+                if (diasCierre !== null) {
+                    if (diasCierre < 0) claseCierre = 'vencimiento-alerta';
+                    else if (diasCierre <= 7) claseCierre = 'vencimiento-alerta';
+                    else if (diasCierre <= 15) claseCierre = 'vencimiento-cuidado';
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${escapeHtml(l.codigo)}</strong></td>
+                        <td>${escapeHtml(l.nombre)}</td>
+                        <td>${escapeHtml(l.entidad)}</td>
+                        <td>${formatearMoneda(l.valor)}</td>
+                        <td class="${claseCierre}">${formatearFecha(l.fechaCierre)}<br><small>${diasCierre !== null ? diasCierre + ' días' : ''}</small></td>
+                        <td><span class="estado ${estadoClass}">${escapeHtml(l.estado)}</span></td>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <div style="flex:1; background:#e0e0e0; border-radius:10px; overflow:hidden; height:14px;">
+                                    <div style="background:#1B3A5C; height:100%; width:${avance}%; transition:width 0.3s;"></div>
+                                </div>
+                                <span style="font-size:12px; color:#1B3A5C; font-weight:700; min-width:32px; text-align:right;">${avance}%</span>
+                            </div>
+                            <small style="color:#666;">${docsAprobados}/${totalDocs} docs</small>
+                        </td>
+                        <td>
+                            <button onclick="verDetalle('${l.id}')" style="padding:6px 10px; font-size:12px;">👁️ Ver</button>
+                            <button class="peligro" onclick="eliminarLicitacion('${l.id}')" style="padding:6px 10px; font-size:12px;">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filtrar licitaciones
+        function filtrarLicitaciones() {
+            renderizarTabla();
+        }
+
+        // Abrir modal
+        function abrirModalNuevaLicitacion() {
+            document.getElementById('modal-nueva').classList.add('activo');
+            document.getElementById('form-nueva-licitacion').reset();
+        }
+
+        // Cerrar modal
+        function cerrarModal(id) {
+            document.getElementById(id).classList.remove('activo');
+        }
+
+        // Guardar licitación
+        function guardarLicitacion(e) {
+            e.preventDefault();
+
+            const licitacion = {
+                id: generarId(),
+                codigo: document.getElementById('codigo').value,
+                nombre: document.getElementById('nombre').value,
+                entidad: document.getElementById('entidad').value,
+                ruc: document.getElementById('ruc').value,
+                tipo: document.getElementById('tipo').value,
+                valor: document.getElementById('valor').value,
+                fechaPublicacion: document.getElementById('fecha-publicacion').value,
+                fechaCierre: document.getElementById('fecha-cierre').value,
+                responsable: document.getElementById('responsable').value,
+                observaciones: document.getElementById('observaciones').value,
+                estado: 'En Estudio',
+                fechaCreacion: new Date().toISOString(),
+                historial: [{
+                    fecha: new Date().toISOString(),
+                    accion: 'Licitación creada'
+                }]
+            };
+
+            licitaciones.push(licitacion);
+            guardarStorage();
+            cerrarModal('modal-nueva');
+            renderizarTabla();
+            actualizarStats();
+            alert('✅ Licitación guardada exitosamente');
+        }
+
+        // Ver detalle
+        function verDetalle(id) {
+            const l = licitaciones.find(x => x.id === id);
+            if (!l) return;
+
+            const docs = documentos.filter(d => d.licitacionId === id);
+            const docsAprobados = docs.filter(d => d.estado === 'Aprobado').length;
+            const totalDocs = docs.length;
+            const avance = totalDocs > 0 ? Math.round((docsAprobados / totalDocs) * 100) : 0;
+
+            const docsHtml = docs.length > 0 ? docs.map(d => {
+                const dias = diasParaVencer(d.vencimiento);
+                let claseVenc = '';
+                if (dias !== null && d.estado !== 'Aprobado') {
+                    if (dias < 0) claseVenc = 'vencimiento-alerta';
+                    else if (dias <= 7) claseVenc = 'vencimiento-alerta';
+                    else if (dias <= 30) claseVenc = 'vencimiento-cuidado';
+                }
+                return `
+                    <div class="documento-item">
+                        <div class="info">
+                            <span class="nombre">${escapeHtml(d.nombre)} <span class="badge-version">${escapeHtml(d.version || 'V1')}</span></span>
+                            <span>
+                                <button onclick="cambiarEstadoDoc('${d.id}')" style="padding:4px 8px; font-size:11px;">🔄 ${escapeHtml(d.estado)}</button>
+                                <button class="peligro" onclick="eliminarDocumento('${d.id}')" style="padding:4px 8px; font-size:11px;">🗑️</button>
+                            </span>
+                        </div>
+                        <div style="font-size:12px; color:#666;">
+                            <strong>Categoría:</strong> ${escapeHtml(d.categoria)}${d.subcategoria ? ' - ' + escapeHtml(d.subcategoria) : ''} |
+                            <strong>Subido:</strong> ${formatearFecha(d.fechaCreacion)}
+                            ${d.vencimiento ? `| <strong class="${claseVenc}">Vence: ${formatearFecha(d.vencimiento)} (${dias} días)</strong>` : ''}
+                        </div>
+                        ${d.observaciones ? `<div style="font-size:12px; color:#666; margin-top:5px;"><em>${escapeHtml(d.observaciones)}</em></div>` : ''}
+                    </div>
+                `;
+            }).join('') : '<p style="color:#999; padding:20px; text-align:center;">No hay documentos registrados</p>';
+
+            const historialHtml = l.historial.map(h => `
+                <div class="historial-item">
+                    <strong>${formatearFecha(h.fecha)}</strong> - ${escapeHtml(h.accion)}
+                </div>
+            `).join('');
+
+            const estadoClass = 'estado-' + l.estado.toLowerCase().replace(/ /g, '-').replace(/ó/g, 'o');
+
+            document.getElementById('detalle-contenido').innerHTML = `
+                <div style="margin-bottom:20px;">
+                    <h3 style="color:#1B3A5C; margin-bottom:10px;">${escapeHtml(l.nombre)}</h3>
+                    <p style="color:#666; font-size:13px;"><strong>Código:</strong> ${escapeHtml(l.codigo)} | <strong>Tipo:</strong> ${escapeHtml(l.tipo)}</p>
+                    <p style="color:#666; font-size:13px;"><strong>Entidad:</strong> ${escapeHtml(l.entidad)}${l.ruc ? ' (RUC: ' + escapeHtml(l.ruc) + ')' : ''}</p>
+                    <p style="color:#666; font-size:13px;"><strong>Valor Referencial:</strong> ${formatearMoneda(l.valor)}</p>
+                    <p style="color:#666; font-size:13px;"><strong>Publicación:</strong> ${formatearFecha(l.fechaPublicacion)} | <strong>Cierre:</strong> ${formatearFecha(l.fechaCierre)}</p>
+                    <p style="color:#666; font-size:13px;"><strong>Responsable:</strong> ${escapeHtml(l.responsable) || 'Sin asignar'}</p>
+                    <p style="margin-top:10px;"><span class="estado ${estadoClass}">${escapeHtml(l.estado)}</span></p>
+                    ${l.observaciones ? `<p style="margin-top:10px; padding:10px; background:#f8f9fa; border-radius:6px; font-size:13px;"><strong>Observaciones:</strong> ${escapeHtml(l.observaciones)}</p>` : ''}
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h4 style="color:#1B3A5C;">📎 Documentos (${docsAprobados}/${totalDocs} aprobados - ${avance}%)</h4>
+                        <div>
+                            <select id="nuevo-estado" onchange="cambiarEstadoLicitacion('${l.id}')" style="padding:6px; font-size:13px;">
+                                <option value="">Cambiar estado...</option>
+                                <option value="En Estudio" ${l.estado === 'En Estudio' ? 'disabled' : ''}>En Estudio</option>
+                                <option value="En Preparación" ${l.estado === 'En Preparación' ? 'disabled' : ''}>En Preparación</option>
+                                <option value="Presentada" ${l.estado === 'Presentada' ? 'disabled' : ''}>Presentada</option>
+                                <option value="Adjudicada" ${l.estado === 'Adjudicada' ? 'disabled' : ''}>Adjudicada</option>
+                                <option value="Rechazada" ${l.estado === 'Rechazada' ? 'disabled' : ''}>Rechazada</option>
+                                <option value="Desierta" ${l.estado === 'Desierta' ? 'disabled' : ''}>Desierta</option>
+                            </select>
+                            <button onclick="abrirModalDocumento('${l.id}')" style="padding:6px 12px; font-size:13px;">➕ Documento</button>
+                        </div>
+                    </div>
+                    ${docsHtml}
+                </div>
+
+                <div>
+                    <h4 style="color:#1B3A5C; margin-bottom:10px;">📜 Historial de Cambios</h4>
+                    <div class="historial">${historialHtml}</div>
+                </div>
+            `;
+
+            document.getElementById('modal-detalle').classList.add('activo');
+        }
+
+        // Cambiar estado de licitación
+        function cambiarEstadoLicitacion(id) {
+            const nuevoEstado = document.getElementById('nuevo-estado').value;
+            if (!nuevoEstado) return;
+
+            const l = licitaciones.find(x => x.id === id);
+            if (!l) return;
+            l.estado = nuevoEstado;
+            l.historial.push({
+                fecha: new Date().toISOString(),
+                accion: 'Estado cambiado a: ' + nuevoEstado
+            });
+
+            guardarStorage();
+            verDetalle(id);
+            renderizarTabla();
+            actualizarStats();
+        }
+
+        // Abrir modal documento
+        function abrirModalDocumento(licitacionId) {
+            document.getElementById('form-nuevo-documento').reset();
+            document.getElementById('doc-licitacion-id').value = licitacionId;
+            document.getElementById('modal-documento').classList.add('activo');
+        }
+
+        // Guardar documento
+        function guardarDocumento(e) {
+            e.preventDefault();
+
+            const licitacionId = document.getElementById('doc-licitacion-id').value;
+            const docsExistentes = documentos.filter(d => d.licitacionId === licitacionId).length;
+
+            const documento = {
+                id: generarId(),
+                licitacionId: licitacionId,
+                nombre: document.getElementById('doc-nombre').value,
+                categoria: document.getElementById('doc-categoria').value,
+                subcategoria: document.getElementById('doc-subcategoria').value,
+                vencimiento: document.getElementById('doc-vencimiento').value,
+                observaciones: document.getElementById('doc-observaciones').value,
+                estado: 'Pendiente',
+                version: 'V' + (docsExistentes + 1),
+                fechaCreacion: new Date().toISOString(),
+                historial: [{
+                    fecha: new Date().toISOString(),
+                    accion: 'Documento creado V1'
+                }]
+            };
+
+            documentos.push(documento);
+
+            // Agregar al historial de la licitación
+            const l = licitaciones.find(x => x.id === licitacionId);
+            if (l) {
+                l.historial.push({
+                    fecha: new Date().toISOString(),
+                    accion: `Documento agregado: ${documento.nombre}`
+                });
+            }
+
+            guardarStorage();
+            cerrarModal('modal-documento');
+            verDetalle(licitacionId);
+            renderizarTabla();
+            actualizarStats();
+            alert('✅ Documento agregado');
+        }
+
+        // Cambiar estado documento
+        function cambiarEstadoDoc(id) {
+            const d = documentos.find(x => x.id === id);
+            if (!d) return;
+            const estados = ['Pendiente', 'En Revisión', 'Aprobado', 'Rechazado'];
+            const idxActual = estados.indexOf(d.estado);
+            const nuevoEstado = estados[(idxActual + 1) % estados.length];
+            d.estado = nuevoEstado;
+            d.historial.push({
+                fecha: new Date().toISOString(),
+                accion: 'Estado cambiado a: ' + nuevoEstado
+            });
+
+            const l = licitaciones.find(x => x.id === d.licitacionId);
+            if (l) {
+                l.historial.push({
+                    fecha: new Date().toISOString(),
+                    accion: `Doc "${d.nombre}" → ${nuevoEstado}`
+                });
+            }
+
+            guardarStorage();
+            verDetalle(d.licitacionId);
+            renderizarTabla();
+            actualizarStats();
+        }
+
+        // Eliminar documento
+        function eliminarDocumento(id) {
+            if (!confirm('¿Eliminar este documento?')) return;
+            const d = documentos.find(x => x.id === id);
+            if (!d) return;
+            const licitacionId = d.licitacionId;
+            documentos = documentos.filter(x => x.id !== id);
+
+            const l = licitaciones.find(x => x.id === licitacionId);
+            if (l) {
+                l.historial.push({
+                    fecha: new Date().toISOString(),
+                    accion: `Doc eliminado: ${d.nombre}`
+                });
+            }
+
+            guardarStorage();
+            verDetalle(licitacionId);
+            renderizarTabla();
+            actualizarStats();
+        }
+
+        // Eliminar licitación
+        function eliminarLicitacion(id) {
+            if (!confirm('¿Eliminar esta licitación y todos sus documentos?')) return;
+            documentos = documentos.filter(d => d.licitacionId !== id);
+            licitaciones = licitaciones.filter(l => l.id !== id);
+            guardarStorage();
+            renderizarTabla();
+            actualizarStats();
+        }
+
+        // Exportar datos
+        function exportarDatos() {
+            const datos = {
+                licitaciones: licitaciones,
+                documentos: documentos,
+                fechaExportacion: new Date().toISOString()
+            };
+
+            const json = JSON.stringify(datos, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `licitaciones_colinanet_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Suma/resta días a la fecha actual y devuelve "YYYY-MM-DD"
+        function fechaRelativa(diasOffset) {
+            const d = new Date();
+            d.setDate(d.getDate() + diasOffset);
+            const anio = d.getFullYear();
+            const mes = String(d.getMonth() + 1).padStart(2, '0');
+            const dia = String(d.getDate()).padStart(2, '0');
+            return `${anio}-${mes}-${dia}`;
+        }
+
+        // Cargar datos de ejemplo
+        function cargarDatosEjemplo() {
+            if (licitaciones.length > 0) {
+                if (!confirm('Ya tienes datos. ¿Agregar ejemplos a los existentes?')) return;
+            }
+
+            const ejemplo1 = {
+                id: generarId(),
+                codigo: 'LP-SM-1-2026-CS/1',
+                nombre: 'Servicio de Internet Dedicado para Sede Central',
+                entidad: 'Ministerio de Transportes y Comunicaciones',
+                ruc: '20131379944',
+                tipo: 'Licitación Pública',
+                valor: '450000',
+                fechaPublicacion: fechaRelativa(-15),
+                fechaCierre: fechaRelativa(20) + 'T18:00',
+                responsable: 'Juan Pérez',
+                observaciones: 'Cliente prioritario - proceso estratégico',
+                estado: 'En Preparación',
+                fechaCreacion: new Date().toISOString(),
+                historial: [
+                    { fecha: new Date().toISOString(), accion: 'Licitación creada' }
+                ]
+            };
+
+            const ejemplo2 = {
+                id: generarId(),
+                codigo: 'AS-SM-2-2026-CE/3',
+                nombre: 'Enlace Satelital para Zona Rural - Cusco',
+                entidad: 'Municipalidad Provincial de Cusco',
+                ruc: '20177274630',
+                tipo: 'Adjudicación Simplificada',
+                valor: '120000',
+                fechaPublicacion: fechaRelativa(-5),
+                fechaCierre: fechaRelativa(10) + 'T18:00',
+                responsable: 'María López',
+                observaciones: '',
+                estado: 'En Estudio',
+                fechaCreacion: new Date().toISOString(),
+                historial: [
+                    { fecha: new Date().toISOString(), accion: 'Licitación creada' }
+                ]
+            };
+
+            licitaciones.push(ejemplo1, ejemplo2);
+
+            // Documentos de ejemplo
+            documentos.push(
+                { id: generarId(), licitacionId: ejemplo1.id, nombre: 'Vigencia de Poder', categoria: 'Legal', subcategoria: 'Poderes', vencimiento: fechaRelativa(60), estado: 'Aprobado', version: 'V1', fechaCreacion: new Date().toISOString(), observaciones: 'Renovada recientemente', historial: [] },
+                { id: generarId(), licitacionId: ejemplo1.id, nombre: 'RUC y Ficha RUC', categoria: 'Legal', subcategoria: 'RUC', vencimiento: '', estado: 'Aprobado', version: 'V1', fechaCreacion: new Date().toISOString(), observaciones: '', historial: [] },
+                { id: generarId(), licitacionId: ejemplo1.id, nombre: 'DNI Representante Legal', categoria: 'Legal', subcategoria: 'DNI', vencimiento: fechaRelativa(-3), estado: 'En Revisión', version: 'V1', fechaCreacion: new Date().toISOString(), observaciones: '', historial: [] },
+                { id: generarId(), licitacionId: ejemplo1.id, nombre: 'Experiencia del Postor', categoria: 'Técnico', subcategoria: 'Experiencia', vencimiento: '', estado: 'Pendiente', version: 'V1', fechaCreacion: new Date().toISOString(), observaciones: 'Falta actualizar con contratos recientes', historial: [] },
+                { id: generarId(), licitacionId: ejemplo1.id, nombre: 'Propuesta Económica', categoria: 'Económico', subcategoria: 'Oferta', vencimiento: '', estado: 'Pendiente', version: 'V1', fechaCreacion: new Date().toISOString(), observaciones: '', historial: [] },
+                { id: generarId(), licitacionId: ejemplo2.id, nombre: 'Vigencia de Poder', categoria: 'Legal', subcategoria: 'Poderes', vencimiento: fechaRelativa(5), estado: 'Pendiente', version: 'V1', fechaCreacion: new Date().toISOString(), observaciones: 'Por vencer pronto', historial: [] }
+            );
+
+            guardarStorage();
+            renderizarTabla();
+            actualizarStats();
+            alert('✅ Datos de ejemplo cargados');
+        }
+
+        // Inicializar
+        renderizarTabla();
+        actualizarStats();
+    </script>
+<!-- ORASIC TOUR: INICIO (generado por shared/inyectar-tour.js) -->
+<script>
+/* =========================================================================
+   ORASIC Tour — motor de recorrido guiado, compartido por todas las apps.
+   =========================================================================
+
+   Sin dependencias. Se puede pegar tal cual dentro de un bloque de script si
+   la app es de un solo archivo, o cargarse como archivo suelto.
+
+   Uso:
+
+     OrasicTour.iniciar({
+       clave: 'tourMiApp',          // identificador en localStorage
+       boton: '#btnTour',           // selector del boton "Ver tour" (opcional)
+       autoAbrir: true,             // se abre solo la primera visita
+       tema: { acento: '#A78BFA', fondo: '#0F131C', texto: '#E7ECF5' },
+       pasos: [
+         { titulo, texto, centro: true },
+         { titulo, texto, objetivo: '#algo', antes: async () => {...} },
+       ],
+     });
+
+   Cada paso:
+     titulo   — encabezado del globo
+     texto    — HTML permitido (<b>, <i>, <br>)
+     objetivo — selector CSS del elemento a iluminar
+     centro   — true: sin objetivo, el globo va al medio de la pantalla
+     antes    — funcion (puede ser async) que prepara la pantalla antes de
+                señalar: cambiar de seccion, cargar datos de ejemplo, abrir
+                un detalle. Es lo que hace que el tour *opere* la app en vez
+                de solo describirla.
+   ========================================================================= */
+
+(function (global) {
+  'use strict';
+
+  const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  const TEMA_POR_DEFECTO = {
+    acento: '#A78BFA',
+    acento2: '#22D3EE',
+    fondo: '#0F131C',
+    texto: '#E7ECF5',
+    textoSuave: '#8B97AB',
+    velo: 'rgba(4, 6, 10, .82)',
+  };
+
+  function inyectarEstilos(tema) {
+    if (document.getElementById('orasic-tour-css')) return;
+    const css = `
+.otour { position: fixed; inset: 0; z-index: 2147483000; }
+.otour[hidden] { display: none !important; }
+.otour-foco {
+  position: absolute; border-radius: 12px;
+  box-shadow: 0 0 0 9999px ${tema.velo};
+  border: 2px solid ${tema.acento};
+  transition: all .35s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+}
+.otour-globo {
+  position: absolute; width: min(400px, calc(100vw - 24px));
+  background: ${tema.fondo}; color: ${tema.texto};
+  border: 1px solid ${tema.acento}; border-radius: 16px;
+  padding: 20px 22px; box-shadow: 0 20px 60px rgba(0,0,0,.55);
+  font: 14px/1.6 ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  transition: opacity .2s, left .35s cubic-bezier(.4,0,.2,1), top .35s cubic-bezier(.4,0,.2,1);
+}
+.otour-contador {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+  color: ${tema.acento2}; margin-bottom: 7px;
+}
+.otour-globo h3 { margin: 0 0 10px; font-size: 17px; line-height: 1.3; color: ${tema.texto}; }
+.otour-texto { color: ${tema.textoSuave}; }
+.otour-texto b { color: ${tema.texto}; }
+.otour-pie { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
+.otour-nav { display: flex; gap: 8px; }
+.otour-btn {
+  border: 0; border-radius: 9px; padding: 8px 16px;
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.otour-btn-1 { background: ${tema.acento}; color: #07101A; }
+.otour-btn-2 { background: transparent; color: ${tema.texto}; border: 1px solid ${tema.acento}; }
+.otour-btn:disabled { opacity: .4; cursor: not-allowed; }
+.otour-saltar { background: none; border: 0; color: ${tema.textoSuave}; font: inherit; font-size: 13px; cursor: pointer; padding: 0; }
+.otour-saltar:hover { color: ${tema.texto}; }
+@media (max-width: 720px) { .otour-globo { padding: 16px 18px; } .otour-globo h3 { font-size: 15px; } }`;
+    const el = document.createElement('style');
+    el.id = 'orasic-tour-css';
+    el.textContent = css;
+    document.head.append(el);
+  }
+
+  let temaActivo = TEMA_POR_DEFECTO;
+
+  function iniciar(config) {
+    const pasos = config.pasos || [];
+    if (!pasos.length) return null;
+
+    const clave = config.clave || 'orasicTourVisto';
+    const tema = Object.assign({}, TEMA_POR_DEFECTO, config.tema || {});
+    temaActivo = tema;
+    inyectarEstilos(tema);
+
+    const capa = document.createElement('div');
+    capa.className = 'otour';
+    capa.hidden = true;
+    capa.innerHTML =
+      '<div class="otour-foco"></div>' +
+      '<div class="otour-globo">' +
+      '<div class="otour-contador"></div>' +
+      '<h3></h3><div class="otour-texto"></div>' +
+      '<div class="otour-pie">' +
+      '<button type="button" class="otour-saltar">Saltar</button>' +
+      '<div class="otour-nav">' +
+      '<button type="button" class="otour-btn otour-btn-2 otour-atras">Atrás</button>' +
+      '<button type="button" class="otour-btn otour-btn-1 otour-sig">Siguiente</button>' +
+      '</div></div></div>';
+    document.body.append(capa);
+
+    const foco = capa.querySelector('.otour-foco');
+    const globo = capa.querySelector('.otour-globo');
+    const btnSig = capa.querySelector('.otour-sig');
+    const btnAtras = capa.querySelector('.otour-atras');
+
+    let indice = 0;
+    let activo = false;
+    let generacion = 0; // se incrementa en cada mostrar(): cancela animaciones del paso anterior
+
+    function ubicarGlobo(rect) {
+      const margen = 16;
+      const ancho = globo.offsetWidth;
+      const alto = globo.offsetHeight;
+
+      if (!rect) {
+        globo.style.left = (innerWidth - ancho) / 2 + 'px';
+        globo.style.top = (innerHeight - alto) / 2 + 'px';
+        return;
+      }
+      // Debajo del elemento si entra; si no, arriba; si tampoco, donde quepa.
+      let top = rect.bottom + margen;
+      if (top + alto > innerHeight - 10) top = rect.top - alto - margen;
+      if (top < 10) top = Math.max(10, Math.min(rect.top, innerHeight - alto - 10));
+
+      let left = rect.left + rect.width / 2 - ancho / 2;
+      left = Math.max(12, Math.min(left, innerWidth - ancho - 12));
+
+      globo.style.left = left + 'px';
+      globo.style.top = top + 'px';
+    }
+
+    function iluminar(el) {
+      if (!el) {
+        // Sin objetivo: el recuadro se encoge a nada en el centro, pero su
+        // sombra sigue oscureciendo toda la pantalla.
+        foco.style.borderColor = 'transparent';
+        foco.style.left = innerWidth / 2 + 'px';
+        foco.style.top = innerHeight / 2 + 'px';
+        foco.style.width = '0px';
+        foco.style.height = '0px';
+        ubicarGlobo(null);
+        return;
+      }
+      const r = el.getBoundingClientRect();
+      const p = 8;
+      foco.style.borderColor = tema.acento;
+      foco.style.left = r.left - p + 'px';
+      foco.style.top = r.top - p + 'px';
+      foco.style.width = r.width + p * 2 + 'px';
+      foco.style.height = r.height + p * 2 + 'px';
+      ubicarGlobo(r);
+    }
+
+    async function mostrar(i) {
+      const miGen = ++generacion; // todo lo que dependia de la generacion anterior se corta
+      indice = Math.max(0, Math.min(i, pasos.length - 1));
+      const paso = pasos[indice];
+      const vigente = () => generacion === miGen;
+
+      globo.style.opacity = '0';
+      if (paso.antes) {
+        try {
+          await paso.antes(vigente);
+        } catch (e) {
+          console.warn('[tour] falló la preparación del paso', indice + 1, e);
+        }
+      }
+      if (!vigente()) return; // el usuario ya avanzo a otro paso mientras esperabamos
+
+      let el = null;
+      if (!paso.centro && paso.objetivo) {
+        el = document.querySelector(paso.objetivo);
+        if (el) {
+          el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          await esperar(320);
+          if (!vigente()) return;
+          // El scroll pudo mover el elemento: lo volvemos a medir.
+          el = document.querySelector(paso.objetivo);
+        }
+      }
+
+      capa.querySelector('.otour-contador').textContent =
+        'Paso ' + (indice + 1) + ' de ' + pasos.length;
+      capa.querySelector('h3').textContent = paso.titulo || '';
+      capa.querySelector('.otour-texto').innerHTML = paso.texto || '';
+      btnAtras.disabled = indice === 0;
+      btnSig.textContent = indice === pasos.length - 1 ? 'Terminar' : 'Siguiente';
+
+      iluminar(el);
+      globo.style.opacity = '1';
+
+      // "durante" corre EN PARALELO a que el usuario lee el texto — es lo que
+      // permite ver un formulario llenarse solo mientras el globo explica,
+      // en vez de tener que elegir entre mostrar el texto o la animacion.
+      if (paso.durante) {
+        Promise.resolve(paso.durante(vigente)).catch((e) =>
+          console.warn('[tour] fallo la animacion del paso', indice + 1, e)
+        );
+      }
+    }
+
+    function abrir() {
+      if (activo) return;
+      activo = true;
+      capa.hidden = false;
+      document.body.style.overflow = 'hidden';
+      if (config.alAbrir) config.alAbrir();
+      mostrar(0);
+    }
+
+    function cerrar() {
+      if (!activo) return;
+      activo = false;
+      capa.hidden = true;
+      document.body.style.overflow = '';
+      try {
+        localStorage.setItem(clave, '1');
+      } catch (e) {
+        /* modo incognito: no pasa nada, el tour se volvera a abrir */
+      }
+      // Deja limpio lo que el tour haya preparado (datos de ejemplo, vistas).
+      if (config.alCerrar) config.alCerrar();
+    }
+
+    btnSig.addEventListener('click', () => {
+      if (indice === pasos.length - 1) cerrar();
+      else mostrar(indice + 1);
+    });
+    btnAtras.addEventListener('click', () => mostrar(indice - 1));
+    capa.querySelector('.otour-saltar').addEventListener('click', cerrar);
+
+    document.addEventListener('keydown', (e) => {
+      if (!activo) return;
+      if (e.key === 'Escape') cerrar();
+      if (e.key === 'ArrowRight') btnSig.click();
+      if (e.key === 'ArrowLeft' && indice > 0) mostrar(indice - 1);
+    });
+
+    addEventListener('resize', () => {
+      if (!activo) return;
+      const paso = pasos[indice];
+      iluminar(paso.centro ? null : document.querySelector(paso.objetivo));
+    });
+
+    if (config.boton) {
+      // Delegado en document: asi tambien funciona en botones que el framework
+      // monta despues (por ejemplo el menu mobile de React).
+      document.addEventListener('click', (e) => {
+        if (e.target.closest && e.target.closest(config.boton)) {
+          e.preventDefault();
+          abrir();
+        }
+      });
+    }
+
+    let visto = false;
+    try {
+      visto = Boolean(localStorage.getItem(clave));
+    } catch (e) {
+      /* sin localStorage: se comporta como primera visita */
+    }
+    if (config.autoAbrir !== false && !visto) setTimeout(abrir, config.demora || 700);
+
+    return { abrir, cerrar, mostrar };
+  }
+
+  /* ---------- Escritura animada en un campo ----------
+     Tipea texto letra por letra en un input/textarea, como si alguien lo
+     estuviera llenando en vivo. Dispara los eventos nativos de input/change
+     para que frameworks como React (que escuchan onChange) tambien lo vean.
+     Uso tipico dentro de un paso `antes`: primero se ilumina el campo con
+     `objetivo`, y en `antes` se llama a este helper para que se escriba
+     mientras el globo explica que es. */
+  const inputSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+  const textareaSetter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+
+  function fijarValorNativo(el, texto) {
+    const setter = el.tagName === 'TEXTAREA' ? textareaSetter : inputSetter;
+    setter.call(el, texto);
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  // date, datetime-local y number no aceptan bien un valor letra por letra
+  // (el navegador rechaza los estados intermedios invalidos) — en esos se
+  // pone el valor final directo, con un resalte breve en vez de tipeo.
+  const TIPOS_SIN_TIPEO = new Set(['date', 'datetime-local', 'time', 'number']);
+
+  async function escribir(el, texto, opciones = {}) {
+    if (!el) return;
+    const vigente = opciones.vigente || (() => true);
+    const cps = opciones.cps || 22; // caracteres por segundo
+
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    el.focus();
+
+    if (TIPOS_SIN_TIPEO.has(el.type)) {
+      const sombraPrevia = el.style.boxShadow;
+      el.style.transition = 'box-shadow .2s';
+      el.style.boxShadow = `0 0 0 3px ${temaActivo.acento}55`;
+      fijarValorNativo(el, texto);
+      await esperar(350);
+      if (vigente()) el.style.boxShadow = sombraPrevia;
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      return;
+    }
+
+    fijarValorNativo(el, '');
+    let acumulado = '';
+    for (const letra of String(texto)) {
+      if (!vigente()) return; // el usuario ya avanzo: cortamos para no pisar el paso siguiente
+      acumulado += letra;
+      fijarValorNativo(el, acumulado);
+      // Variacion leve de ritmo: se ve mas humano que un tipeo perfectamente parejo.
+      await esperar(1000 / cps + Math.random() * 25);
+    }
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperar(200);
+  }
+
+  async function seleccionar(el, valor, opciones = {}) {
+    if (!el) return;
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    el.focus();
+    const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value')?.set;
+    if (setter) setter.call(el, valor);
+    else el.value = valor;
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+    await esperar(opciones.pausaMs ?? 300);
+  }
+
+  global.OrasicTour = { iniciar, escribir, seleccionar };
+})(window);
+
+</script>
+<script>
+/* Pasos del tour de Trazabilidad de Licitaciones (ColinaNet). */
+(function () {
+  const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  // cargarDatosEjemplo() pregunta y avisa con ventanas del navegador. Durante
+  // el tour eso corta el hilo, asi que las silenciamos solo por ese instante.
+  async function cargarEjemploSilencioso() {
+    if (document.querySelector('#tbody-licitaciones tr td button')) return;
+    if (typeof cargarDatosEjemplo !== 'function') return;
+    const alertOriginal = window.alert;
+    const confirmOriginal = window.confirm;
+    window.alert = () => {};
+    window.confirm = () => true;
+    try {
+      cargarDatosEjemplo();
+    } finally {
+      window.alert = alertOriginal;
+      window.confirm = confirmOriginal;
+    }
+    await esperar(250);
+  }
+
+  function cerrarModales() {
+    document.querySelectorAll('.modal').forEach((m) => (m.style.display = 'none'));
+  }
+
+  window.iniciarTourLicitaciones = function () {
+    return OrasicTour.iniciar({
+      clave: 'tourLicitacionesVisto',
+      boton: '#btn-tour',
+      tema: {
+        acento: '#2E5C8A',
+        acento2: '#1B3A5C',
+        fondo: '#ffffff',
+        texto: '#1B3A5C',
+        textoSuave: '#5a6b7d',
+        velo: 'rgba(20, 35, 50, .72)',
+      },
+      pasos: [
+        {
+          centro: true,
+          titulo: 'Bienvenido al control de licitaciones',
+          texto:
+            'En 2 minutos te muestro cada parte. El sistema resuelve una sola pregunta, la que cuesta plata: <b>¿qué documento me falta y para cuándo?</b><br><br>Podés salir cuando quieras con <b>Saltar</b>.',
+        },
+        {
+          objetivo: '.stats',
+          titulo: 'Los cinco números de arriba',
+          texto:
+            'Es el tablero del día. El que más importa es el último, <b>Documentos por Vencer</b>: si ese número no está en cero, hay algo que atender hoy.<br><br><b>Valor Total en Juego</b> es la suma de todo lo que estás disputando ahora mismo.',
+        },
+        {
+          objetivo: '#modal-nueva .modal-contenido',
+          titulo: 'Así se registra una licitación',
+          texto:
+            'Mirá cómo se completa un proceso real — no toques nada, es solo para que lo veas.<br><br>Código OSCE, nombre, entidad y valor.',
+          antes: async () => {
+            if (typeof abrirModalNuevaLicitacion === 'function') abrirModalNuevaLicitacion();
+            await esperar(250);
+          },
+          durante: async (vigente) => {
+            await OrasicTour.escribir(document.getElementById('codigo'), 'AS-SM-4-2026-MPT/1', { vigente });
+            if (!vigente()) return;
+            await OrasicTour.escribir(document.getElementById('nombre'), 'Mantenimiento de vías urbanas — Zona Norte', { vigente });
+            if (!vigente()) return;
+            await OrasicTour.escribir(document.getElementById('entidad'), 'Municipalidad Provincial de Trujillo', { vigente });
+            if (!vigente()) return;
+            await OrasicTour.escribir(document.getElementById('valor'), '285000', { vigente });
+          },
+        },
+        {
+          objetivo: '#modal-nueva .modal-contenido',
+          titulo: 'La fecha de cierre es la que manda',
+          texto:
+            'De ahí sale la cuenta regresiva y las alertas de vencimiento. Le sumamos las fechas y el responsable, y guardamos de verdad para que la veas aparecer en la tabla.',
+          durante: async (vigente) => {
+            const hoyStr = new Date().toISOString().split('T')[0];
+            const cierre = new Date();
+            cierre.setDate(cierre.getDate() + 25);
+            await OrasicTour.escribir(document.getElementById('fecha-publicacion'), hoyStr, { vigente });
+            if (!vigente()) return;
+            await OrasicTour.escribir(
+              document.getElementById('fecha-cierre'),
+              cierre.toISOString().slice(0, 16),
+              { vigente }
+            );
+            if (!vigente()) return;
+            await OrasicTour.escribir(document.getElementById('responsable'), 'Juan Pérez', { vigente });
+            if (!vigente()) return;
+            await esperar(400);
+            if (!vigente()) return;
+            // Guardamos de verdad: esta app vive en localStorage del navegador,
+            // no hay ningun backend real detras — es un ejemplo tan seguro como
+            // los que ya carga "Cargar Ejemplo".
+            const alertOriginal = window.alert;
+            window.alert = () => {};
+            document.querySelector('#form-nueva-licitacion button[type="submit"]')?.click();
+            await esperar(150);
+            window.alert = alertOriginal;
+          },
+        },
+        {
+          objetivo: '#tbody-licitaciones tr:last-child',
+          titulo: 'Ahí está, ya en la tabla',
+          texto:
+            'Apenas guardás, el proceso aparece en la lista con estado <b>En Estudio</b> y su barra de avance en 0%.<br><br>A partir de acá le vas sumando documentos y moviéndola de estado a medida que avanza.',
+        },
+        {
+          objetivo: '#tabla-licitaciones',
+          titulo: 'Todo lo que tenés en juego',
+          texto:
+            'Cada fila es una licitación, con su estado y su barra de <b>avance documental</b> — qué porcentaje del expediente ya está listo.<br><br>Acabo de cargar tres ejemplos para que veas cómo se ve funcionando.',
+          antes: cargarEjemploSilencioso,
+        },
+        {
+          objetivo: '.filtros',
+          titulo: 'Cuando ya tengas muchas',
+          texto:
+            'Buscás por nombre o por código OSCE, o filtrás por estado para ver solo lo que está <b>En Preparación</b> y necesita trabajo esta semana.',
+        },
+        {
+          objetivo: '#detalle-contenido',
+          titulo: 'El expediente de cada licitación',
+          texto:
+            'Acá está el corazón del sistema: <b>la lista de documentos</b> de esa licitación, cada uno con su estado y su vencimiento.<br><br>Los que están por vencer se marcan solos. Eso es lo que evita que un expediente se caiga por un papel viejo.',
+          antes: async () => {
+            const fila = document.querySelector('#tbody-licitaciones button');
+            if (fila) fila.click();
+            await esperar(320);
+          },
+        },
+        {
+          objetivo: '#modal-detalle .modal-contenido',
+          titulo: 'Documentos, estado e historial',
+          texto:
+            '<b>➕ Documento</b> agrega un papel al expediente.<br><b>🔄</b> le cambia el estado (pendiente, en trámite, listo).<br><br>Abajo queda el <b>historial</b>: quién hizo qué y cuándo. Si mañana alguien pregunta por qué se presentó tarde, la respuesta está ahí.',
+        },
+        {
+          objetivo: '.acciones button:nth-child(2)',
+          titulo: 'Sacar la información afuera',
+          texto:
+            '<b>Exportar</b> baja todo a un archivo que podés abrir en Excel o mandar por correo.<br><br>Sirve para el reporte a gerencia y como respaldo: los datos viven en este navegador, así que exportar de vez en cuando es tu copia de seguridad.',
+          antes: async () => {
+            cerrarModales();
+            await esperar(200);
+          },
+        },
+        {
+          centro: true,
+          titulo: 'Listo',
+          texto:
+            'La rutina es corta:<br><br><b>1.</b> Mirás <i>Documentos por Vencer</i>.<br><b>2.</b> Entrás a las licitaciones que tengan algo pendiente.<br><b>3.</b> Actualizás el estado de cada documento a medida que avanza.<br><br>Para repetir este tour: el botón <b>🧭 Ver tour</b> arriba.',
+        },
+      ],
+    });
+  };
+
+  // Este bloque se inyecta al final del body, cuando la app ya se inicializo.
+  window.iniciarTourLicitaciones();
+})();
+
+</script>
+<!-- ORASIC TOUR: FIN -->
+</body>
+</html>

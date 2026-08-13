@@ -429,6 +429,120 @@ function saveState() {
   updateBadges();
 }
 
+function openFotosFolder() {
+  // Intenta abrir la carpeta fotos-articulos en el explorador
+  const folderPath = '../fotos-articulos';
+
+  // Opción 1: Si estamos en un entorno con acceso a sistema de archivos (Electron, etc)
+  if (window.electronAPI && window.electronAPI.openFolder) {
+    window.electronAPI.openFolder(folderPath);
+  }
+  // Opción 2: Navegar a una URL que muestra el contenido
+  else if (window.location.protocol === 'file:') {
+    // Si es file://, intenta abrir el explorador del SO
+    alert('📁 Abre tu explorador de archivos y navega a:\n\nOneDrive > Documentos > ORASIC LAB > fotos-articulos\n\nDescarga las fotos ahí y escribe el nombre del archivo arriba.');
+  }
+  // Opción 3: Si está sirviendo por HTTP, abre en nueva pestaña
+  else {
+    window.open(folderPath, '_blank');
+  }
+}
+
+function showBlogPreview(title, intro, body, photoFile) {
+  const ov = document.createElement('div');
+  ov.className = 'vs-overlay';
+  const photoHtml = photoFile ? `<div style="margin:20px 0;padding:20px;background:var(--bg-card2);border-radius:8px;border:1px solid var(--border);text-align:center;color:var(--text-2);font-size:12px;">📷 ${photoFile}</div>` : '';
+
+  ov.innerHTML = `
+    <div class="vs-modal" style="max-width:700px;max-height:90vh;overflow-y:auto;">
+      <div class="vs-head">
+        <div class="vs-title">👁 Preview - Blog</div>
+        <button class="btn btn-secondary btn-sm" onclick="this.closest('.vs-overlay').remove()">✕</button>
+      </div>
+      <div style="padding:20px;color:var(--text-1);">
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">Así se vería en blog.html:</div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:32px;max-width:600px;">
+          <div style="font-size:12px;color:var(--text-3);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.08em;">Notas de ORASIC Lab</div>
+          <h2 style="font-size:28px;font-weight:700;margin-bottom:12px;line-height:1.2;">${escHtml(title)}</h2>
+          ${intro ? `<div style="font-size:14px;color:var(--text-2);margin-bottom:20px;line-height:1.6;">${escHtml(intro)}</div>` : ''}
+          ${photoHtml}
+          <div style="font-size:14px;color:var(--text-1);line-height:1.7;white-space:pre-wrap;margin:20px 0;">${escHtml(body.substring(0, 300))}...</div>
+        </div>
+      </div>
+      <div style="padding:0 20px 20px 20px;display:flex;gap:10px;border-top:1px solid var(--border);margin-top:20px;padding-top:20px;">
+        <button class="btn btn-primary" onclick="publishBlogArticle();this.closest('.vs-overlay').remove();">🚀 Publicar en Blog</button>
+        <button class="btn btn-secondary" onclick="this.closest('.vs-overlay').remove()">Cancelar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.onclick = e => { if (e.target === ov) ov.remove(); };
+}
+
+function publishBlogArticle() {
+  // Guardar el artículo actual como "published"
+  const lastEdited = sessionStorage.getItem('lastEditedBlogId');
+  if (!lastEdited) { alert('No hay artículo para publicar'); return; }
+
+  const article = state.blogArticles.find(a => a.id === lastEdited);
+  if (!article) { alert('No se encontró el artículo'); return; }
+
+  article.status = 'published';
+  article.publishedAt = new Date().toISOString();
+  saveState();
+
+  if (typeof showToast === 'function') {
+    showToast('🚀 Artículo publicado en Blog', 'success');
+  }
+  render();
+}
+
+function copyForLinkedIn(title, body, hashtags, photoFile) {
+  // Construir el contenido para copiar
+  let content = `${toBoldUnicode(title)}\n\n${body}\n\n${hashtags}`.trim();
+
+  if (photoFile) {
+    content += `\n\n---\n📷 Foto: fotos-articulos/${photoFile}\n\n💡 Paso: En LinkedIn, clic en "📷 Agregar imagen" → navega a fotos-articulos/ → selecciona ${photoFile}`;
+  }
+
+  // Copiar al portapapeles
+  navigator.clipboard.writeText(content).then(() => {
+    if (typeof showToast === 'function') {
+      showToast(photoFile ? '✓ Copiado + instrucciones de foto' : '✓ Copiado para LinkedIn', 'success');
+    }
+  }).catch(err => {
+    alert('Error al copiar: ' + err);
+  });
+}
+
+function showLinkedInPreview(title, body, hashtags, photoFile) {
+  const ov = document.createElement('div');
+  ov.className = 'vs-overlay';
+  const photoHtml = photoFile ? `<div style="margin:16px 0;padding:16px;background:var(--bg-card2);border-radius:6px;border:1px solid var(--border);text-align:center;color:var(--text-2);font-size:11px;">📷 ${photoFile}</div>` : '';
+
+  ov.innerHTML = `
+    <div class="vs-modal" style="max-width:600px;max-height:90vh;overflow-y:auto;">
+      <div class="vs-head">
+        <div class="vs-title">👁 Preview - LinkedIn</div>
+        <button class="btn btn-secondary btn-sm" onclick="this.closest('.vs-overlay').remove()">✕</button>
+      </div>
+      <div style="padding:20px;color:var(--text-1);">
+        <div style="font-size:11px;color:var(--text-3);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">Así se vería en LinkedIn:</div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;max-width:550px;">
+          <div style="font-size:15px;font-weight:700;margin-bottom:12px;line-height:1.3;">${escHtml(title)}</div>
+          ${photoHtml}
+          <div style="font-size:13px;color:var(--text-1);line-height:1.6;white-space:pre-wrap;margin:16px 0;">${escHtml(body.substring(0, 250))}...</div>
+          ${hashtags ? `<div style="font-size:12px;color:var(--cyan);margin-top:12px;">${escHtml(hashtags)}</div>` : ''}
+        </div>
+      </div>
+      <div style="padding:0 20px 20px 20px;display:flex;gap:10px;border-top:1px solid var(--border);margin-top:20px;padding-top:20px;">
+        <button class="btn btn-primary" onclick="copyForLinkedIn('${escAttr(title)}','${escAttr(body)}','${escAttr(hashtags)}','${escAttr(photoFile)}');this.closest('.vs-overlay').remove();">📋 Copiar para LinkedIn</button>
+        <button class="btn btn-secondary" onclick="this.closest('.vs-overlay').remove()">Cancelar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.onclick = e => { if (e.target === ov) ov.remove(); };
+}
+
 let state = loadState();
 
 // ═══════════════════════════════════════════════════════════
@@ -2420,10 +2534,15 @@ function openArticleForm(id){
         <input class="form-input" id="la-tags" value="${escAttr(a?.hashtags||'#ORASICLab #Pymes #TransformacionDigital')}" /></div>
       <div class="form-group"><label class="form-label">Sugerencia visual (concepto)</label>
         <div style="background:var(--bg-card2);border:1px solid var(--border2);border-radius:8px;padding:12px;font-size:12.5px;color:var(--text-2);line-height:1.5;">${escHtml(a?.sugerencia_imagen||'(sin sugerencia)')}</div></div>
-      <div class="form-group"><label class="form-label">Foto (opcional — pégala del Banco de fotos)</label>
-        <input class="form-input" id="la-photo" value="${escAttr(a?.imageUrl||'')}" placeholder="https://..." /></div>
+      <div class="form-group"><label class="form-label">Foto (nombre del archivo en fotos-articulos/)</label>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" id="la-photo" value="${escAttr(a?.photoFile||'')}" placeholder="ej: panel-control.jpg" style="flex:1;" />
+          <button class="btn btn-secondary btn-sm" type="button" onclick="openFotosFolder()">📁 Abrir</button>
+        </div>
+        <div class="form-hint">Descarga la foto de Unsplash/Pexels, guárdala en la carpeta <b>fotos-articulos/</b>, y escribe el nombre del archivo aquí (ej: panel-control.jpg)</div>
+      </div>
       <div style="font-size:12px;color:var(--text-3);margin-top:10px;margin-bottom:12px;padding:10px;background:rgba(34,211,238,0.05);border-radius:6px;border-left:2px solid var(--cyan);">
-        <div style="margin-bottom:6px;">🔗 Buscar recursos gratuitos en:</div>
+        <div style="margin-bottom:6px;">🔗 Descargar fotos de:</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <a href="https://unsplash.com" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;font-size:12px;padding:4px 8px;background:rgba(34,211,238,0.1);border-radius:4px;transition:all 0.2s;cursor:pointer;" onmouseover="this.style.background='rgba(34,211,238,0.2)';this.style.color='#00E5FF';" onmouseout="this.style.background='rgba(34,211,238,0.1)';this.style.color='var(--cyan)';">Unsplash</a>
           <a href="https://pexels.com" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;font-size:12px;padding:4px 8px;background:rgba(34,211,238,0.1);border-radius:4px;transition:all 0.2s;cursor:pointer;" onmouseover="this.style.background='rgba(34,211,238,0.2)';this.style.color='#00E5FF';" onmouseout="this.style.background='rgba(34,211,238,0.1)';this.style.color='var(--cyan)';">Pexels</a>
@@ -2433,6 +2552,7 @@ function openArticleForm(id){
       </div>
       <div style="display:flex;gap:10px;margin-top:6px;">
         <button class="btn btn-primary" id="la-save">💾 Guardar</button>
+        <button class="btn btn-secondary" type="button" onclick="showLinkedInPreview(document.getElementById('la-title').value, document.getElementById('la-body').value, document.getElementById('la-tags').value, document.getElementById('la-photo').value)">👁 Preview</button>
         <button class="btn btn-secondary" id="la-cancel">Cancelar</button>
       </div>
     </div>`;
@@ -2445,10 +2565,112 @@ function openArticleForm(id){
     const g = id2 => document.getElementById(id2).value.trim();
     const title = g('la-title'); const body = g('la-body');
     if (!title || !body){ alert('Falta título o cuerpo del artículo.'); return; }
+
+    const idx = a ? state.linkedinArticles.indexOf(a) : -1;
+    const isNewStructure = a ? idx >= 2 : true; // #3+ = índice 2+
+
     if (a){
-      a.title = title; a.body = body; a.hashtags = g('la-tags'); a.imageUrl = g('la-photo');
+      a.title = title;
+      if (isNewStructure) {
+        a.body_linkedin = body;
+        a.platforms = ['LinkedIn'];
+      } else {
+        a.body = body;
+      }
+      a.hashtags = g('la-tags');
+      a.photoFile = g('la-photo');
     } else {
-      state.linkedinArticles.push({ id: uuid(), title, body, hashtags: g('la-tags'), imageUrl: g('la-photo'), status: 'draft', plataforma: 'LinkedIn', createdAt: new Date().toISOString() });
+      const newArticle = {
+        id: uuid(),
+        title,
+        hashtags: g('la-tags'),
+        photoFile: g('la-photo'),
+        status: 'draft',
+        plataforma: 'LinkedIn',
+        createdAt: new Date().toISOString(),
+        platforms: ['LinkedIn']
+      };
+      newArticle.body_linkedin = body;
+      state.linkedinArticles.push(newArticle);
+    }
+    saveState(); close(); render();
+    if (typeof showToast==='function') showToast('✅ Artículo guardado','success');
+  };
+}
+
+function openBlogArticleFormNew(id){
+  const a = id ? state.blogArticles.find(x=>x.id===id) : null;
+  const idx = a ? state.blogArticles.indexOf(a) : -1;
+  const isNewStructure = a ? idx >= 2 : true; // #3+ = índice 2+
+
+  const ov = document.createElement('div');
+  ov.className = 'vs-overlay';
+  const bodyContent = isNewStructure ? (a?.body_blog || '') : (a?.body || '');
+
+  ov.innerHTML = `
+    <div class="vs-modal" style="max-width:640px;">
+      <div class="vs-head">
+        <div class="vs-title">📝 ${a?'Editar':'Nuevo'} artículo de blog</div>
+        <button class="btn btn-secondary btn-sm" id="ba-close">✕</button>
+      </div>
+      <div class="form-group"><label class="form-label">Título</label>
+        <input class="form-input" id="ba-title" value="${escAttr(a?.title||'')}" placeholder="Ej. Por qué el software genérico no calza con tu negocio" /></div>
+      ${!isNewStructure ? `<div class="form-group"><label class="form-label">Intro (1-2 líneas, para la tarjeta del listado)</label>
+        <textarea class="form-input" id="ba-intro" rows="2" style="resize:vertical;">${escHtml(a?.intro||'')}</textarea></div>` : ''}
+      <div class="form-group"><label class="form-label">Cuerpo del artículo</label>
+        <textarea class="form-input" id="ba-body" rows="10" style="resize:vertical;">${escHtml(bodyContent)}</textarea></div>
+      ${!isNewStructure ? `<div class="form-group"><label class="form-label">Etiqueta / categoría</label>
+        <input class="form-input" id="ba-tag" value="${escAttr(a?.tag||'')}" placeholder="Ej. Software a medida" /></div>` : ''}
+      ${!isNewStructure ? `<div class="form-group"><label class="form-label">Sugerencia visual (concepto para la imagen)</label>
+        <textarea class="form-input" id="ba-sugerencia" rows="2" style="resize:vertical;">${escHtml(a?.sugerencia_imagen||'')}</textarea></div>` : ''}
+      <div class="form-group"><label class="form-label">Foto (nombre del archivo en fotos-articulos/)</label>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" id="ba-photo" value="${escAttr(a?.photoFile||'')}" placeholder="ej: panel-control.jpg" style="flex:1;" />
+          <button class="btn btn-secondary btn-sm" type="button" onclick="openFotosFolder()">📁 Abrir</button>
+        </div>
+        <div class="form-hint">Guarda la foto en <b>fotos-articulos/</b> y escribe el nombre del archivo (ej: panel-control.jpg)</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:6px;">
+        <button class="btn btn-primary" id="ba-save">💾 Guardar</button>
+        <button class="btn btn-secondary" type="button" onclick="showBlogPreview(document.getElementById('ba-title').value, ${!isNewStructure ? 'document.getElementById(\"ba-intro\").value' : '\"\"'}, document.getElementById('ba-body').value, document.getElementById('ba-photo').value)">👁 Preview</button>
+        <button class="btn btn-secondary" id="ba-cancel">Cancelar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.querySelector('#ba-close').onclick = close;
+  ov.querySelector('#ba-cancel').onclick = close;
+  ov.onclick = e => { if (e.target === ov) close(); };
+  ov.querySelector('#ba-save').onclick = () => {
+    const g = id2 => document.getElementById(id2)?.value.trim() || '';
+    const title = g('ba-title'); const body = g('ba-body');
+    if (!title || !body){ alert('Falta título o cuerpo del artículo.'); return; }
+    if (a){
+      a.title = title;
+      if (isNewStructure) {
+        a.body_blog = body;
+        a.platforms = ['Blog'];
+      } else {
+        a.body = body;
+        a.intro = g('ba-intro');
+        a.tag = g('ba-tag');
+        a.sugerencia_imagen = g('ba-sugerencia');
+      }
+      a.photoFile = g('ba-photo');
+      sessionStorage.setItem('lastEditedBlogId', a.id);
+    } else {
+      const newArticle = {
+        id: uuid(),
+        title,
+        status: 'draft',
+        plataforma: 'Blog',
+        createdAt: new Date().toISOString(),
+        platforms: ['Blog'],
+        photoFile: g('ba-photo')
+      };
+      newArticle.body_blog = body;
+      state.blogArticles.push(newArticle);
+      sessionStorage.setItem('lastEditedBlogId', newArticle.id);
     }
     saveState(); close(); render();
     if (typeof showToast==='function') showToast('✅ Artículo guardado','success');
@@ -2472,8 +2694,12 @@ function toBoldUnicode(str){
 
 function copyArticle(id){
   const a = state.linkedinArticles.find(x=>x.id===id); if(!a) return;
-  const text = `${toBoldUnicode(a.title)}\n\n${a.body}\n\n${a.hashtags||''}`.trim();
-  navigator.clipboard.writeText(text).then(()=>{ if(typeof showToast==='function') showToast('✓ Copiado (título en negrita)','success'); });
+  let text = `${toBoldUnicode(a.title)}\n\n${a.body}\n\n${a.hashtags||''}`.trim();
+  // Agregar instrucción de foto al final si existe
+  if (a.photoFile) {
+    text += `\n\n---\n📷 Foto: fotos-articulos/${a.photoFile}\n\n💡 Paso: En LinkedIn, clic en "📷 Agregar imagen" → navega a fotos-articulos/ → selecciona ${a.photoFile}`;
+  }
+  navigator.clipboard.writeText(text).then(()=>{ if(typeof showToast==='function') showToast(a.photoFile ? '✓ Copiado + instrucciones de foto' : '✓ Copiado','success'); });
 }
 function markArticlePublished(id){
   const a = state.linkedinArticles.find(x=>x.id===id); if(!a) return;
@@ -2587,10 +2813,15 @@ function openBlogArticleForm(id){
         <input class="form-input" id="ba-tag" value="${escAttr(a?.tag||'')}" placeholder="Ej. Software a medida" /></div>
       <div class="form-group"><label class="form-label">Sugerencia visual (concepto para la imagen)</label>
         <textarea class="form-input" id="ba-sugerencia" rows="2" style="resize:vertical;">${escHtml(a?.sugerencia_imagen||'')}</textarea></div>
-      <div class="form-group"><label class="form-label">Foto (opcional — pégala del Banco de fotos, en LinkedIn)</label>
-        <input class="form-input" id="ba-photo" value="${escAttr(a?.imageUrl||'')}" placeholder="https://..." /></div>
+      <div class="form-group"><label class="form-label">Foto (nombre del archivo en fotos-articulos/)</label>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" id="ba-photo" value="${escAttr(a?.photoFile||'')}" placeholder="ej: panel-control.jpg" style="flex:1;" />
+          <button class="btn btn-secondary btn-sm" type="button" onclick="openFotosFolder()">📁 Abrir</button>
+        </div>
+        <div class="form-hint">Descarga la foto de Unsplash/Pexels, guárdala en la carpeta <b>fotos-articulos/</b>, y escribe el nombre del archivo aquí (ej: panel-control.jpg)</div>
+      </div>
       <div style="font-size:12px;color:var(--text-3);margin-top:10px;margin-bottom:12px;padding:10px;background:rgba(34,211,238,0.05);border-radius:6px;border-left:2px solid var(--cyan);">
-        <div style="margin-bottom:6px;">🔗 Buscar recursos gratuitos en:</div>
+        <div style="margin-bottom:6px;">🔗 Descargar fotos de:</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <a href="https://unsplash.com" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;font-size:12px;padding:4px 8px;background:rgba(34,211,238,0.1);border-radius:4px;transition:all 0.2s;cursor:pointer;" onmouseover="this.style.background='rgba(34,211,238,0.2)';this.style.color='#00E5FF';" onmouseout="this.style.background='rgba(34,211,238,0.1)';this.style.color='var(--cyan)';">Unsplash</a>
           <a href="https://pexels.com" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;font-size:12px;padding:4px 8px;background:rgba(34,211,238,0.1);border-radius:4px;transition:all 0.2s;cursor:pointer;" onmouseover="this.style.background='rgba(34,211,238,0.2)';this.style.color='#00E5FF';" onmouseout="this.style.background='rgba(34,211,238,0.1)';this.style.color='var(--cyan)';">Pexels</a>
@@ -2613,9 +2844,9 @@ function openBlogArticleForm(id){
     const title = g('ba-title'); const body = g('ba-body');
     if (!title || !body){ alert('Falta título o cuerpo del artículo.'); return; }
     if (a){
-      a.title = title; a.intro = g('ba-intro'); a.body = body; a.tag = g('ba-tag'); a.sugerencia_imagen = g('ba-sugerencia'); a.imageUrl = g('ba-photo');
+      a.title = title; a.intro = g('ba-intro'); a.body = body; a.tag = g('ba-tag'); a.sugerencia_imagen = g('ba-sugerencia'); a.photoFile = g('ba-photo');
     } else {
-      state.blogArticles.push({ id: uuid(), title, intro: g('ba-intro'), body, tag: g('ba-tag'), sugerencia_imagen: g('ba-sugerencia'), imageUrl: g('ba-photo'), status: 'draft', plataforma: 'Blog', createdAt: new Date().toISOString() });
+      state.blogArticles.push({ id: uuid(), title, intro: g('ba-intro'), body, tag: g('ba-tag'), sugerencia_imagen: g('ba-sugerencia'), photoFile: g('ba-photo'), status: 'draft', plataforma: 'Blog', createdAt: new Date().toISOString() });
     }
     saveState(); close(); render();
     if (typeof showToast==='function') showToast('✅ Artículo guardado','success');
@@ -2624,8 +2855,12 @@ function openBlogArticleForm(id){
 
 function copyBlogArticle(id){
   const a = state.blogArticles.find(x=>x.id===id); if(!a) return;
-  const text = `${a.title}\n\n${a.intro||''}\n\n${a.body}`.trim();
-  navigator.clipboard.writeText(text).then(()=>{ if(typeof showToast==='function') showToast('✓ Copiado — pégalo cuando me pidas agregarlo a blog.html','success'); });
+  let text = `${a.title}\n\n${a.intro||''}\n\n${a.body}`.trim();
+  // Agregar instrucción de foto al final si existe
+  if (a.photoFile) {
+    text += `\n\n---\n📷 Foto: fotos-articulos/${a.photoFile}\n\n💡 Paso: En LinkedIn, clic en "📷 Agregar imagen" → navega a fotos-articulos/ → selecciona ${a.photoFile}`;
+  }
+  navigator.clipboard.writeText(text).then(()=>{ if(typeof showToast==='function') showToast(a.photoFile ? '✓ Copiado + instrucciones de foto' : '✓ Copiado','success'); });
 }
 function markBlogPublished(id){
   const a = state.blogArticles.find(x=>x.id===id); if(!a) return;

@@ -38,7 +38,7 @@ Buscar y elegir: **Desarrollador de software**
 
 ### Información de contacto
 - **Correo:** orasiclab@gmail.com
-- **Teléfono:** 986 375 900
+- **Teléfono:** 999 039 947
 - **Ciudad:** Lima, Perú
 
 ### Recomendación
@@ -88,7 +88,7 @@ En "Editar perfil" hay una opción para agregar tu Instagram → pon `orasiclab`
 - **Qué hacemos:** Desarrollo de aplicaciones a medida con IA para negocios
 - **Web:** https://orasic-lab.vercel.app/
 - **Correo:** orasiclab@gmail.com
-- **WhatsApp:** +51 986 375 900
+- **WhatsApp:** +51 999 039 947
 - **Cobertura:** Perú y Colombia
 - **Rubros:** salud, belleza, minería, deporte, retail, educación, ventas B2B, fintech, coaching, marketing, productividad, institucional
 

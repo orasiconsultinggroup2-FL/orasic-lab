@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ORASIC Lead Hunter</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="glow glow-a"></div>
+<div class="glow glow-b"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">OL</span>
+    <div>
+      <strong>ORASIC Lead Hunter</strong>
+      <small>Leads de LinkedIn analizados con IA</small>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tab is-active" data-vista="buscar">Buscar</button>
+    <button class="tab" data-vista="leads">Leads <span class="pill" id="contadorLeads">0</span></button>
+    <button class="tab" data-vista="ajustes">Ajustes</button>
+    <button class="tab" data-vista="manual">Manual</button>
+  </nav>
+  <button class="btn btn-suave btn-mini" id="btnTour">Ver tour</button>
+  <div class="estado-claves" id="estadoClaves"></div>
+</header>
+
+<main>
+
+  <!-- ============ BUSCAR ============ -->
+  <section class="vista is-active" id="vista-buscar">
+    <div class="card">
+      <h1>Encontrá tu próximo cliente</h1>
+      <p class="sub">Buscamos perfiles reales en LinkedIn, leemos sus últimas publicaciones y escribimos un mensaje distinto para cada uno.</p>
+
+      <form id="formBusqueda" class="form">
+        <label class="campo">
+          <span>Rubro o palabra clave</span>
+          <input name="keyword" placeholder="clinica dental, gimnasio, agencia de marketing..." required>
+          <em>Lo que hace la empresa del lead. Una sola idea funciona mejor que varias.</em>
+        </label>
+
+        <label class="campo">
+          <span>Cargos a los que apuntás</span>
+          <div class="etiquetas" id="cajaCargos"></div>
+          <input id="inputCargo" placeholder="Escribí un cargo y presioná Enter — ej: Fundador">
+          <em>Dejalo vacío para no filtrar por cargo.</em>
+        </label>
+
+        <div class="fila">
+          <label class="campo">
+            <span>País</span>
+            <input name="pais" id="inputPais" list="paises" placeholder="Peru">
+            <datalist id="paises">
+              <option value="Peru"><option value="Colombia"><option value="Chile">
+              <option value="Mexico"><option value="Argentina"><option value="Espana">
+              <option value="United States">
+            </datalist>
+          </label>
+          <label class="campo">
+            <span>Región / Estado <i>(opcional)</i></span>
+            <input name="estado" placeholder="Lima, Antioquia...">
+          </label>
+          <label class="campo">
+            <span>Ciudad <i>(opcional)</i></span>
+            <input name="ciudad" placeholder="Lima, Medellin...">
+          </label>
+        </div>
+
+        <div class="fila">
+          <label class="campo">
+            <span>Cuántos leads traer</span>
+            <input type="range" name="limite" id="inputLimite" min="5" max="150" step="5" value="20">
+            <em id="etiquetaLimite"></em>
+          </label>
+          <label class="campo campo-check">
+            <input type="checkbox" id="chkPosts" checked>
+            <span>Traer últimas publicaciones</span>
+            <em>Hace el mensaje mucho más personal. Suma un poco de tiempo.</em>
+          </label>
+        </div>
+
+        <div class="acciones">
+          <button type="submit" class="btn btn-primario" id="btnBuscar">Buscar leads</button>
+          <span class="costo" id="costoEstimado"></span>
+        </div>
+      </form>
+
+      <div class="credito" id="credito">
+        <div class="credito-cab">
+          <strong>Crédito gratis de Apify — <span id="creditoMes"></span></strong>
+          <span id="creditoCifras"></span>
+        </div>
+        <div class="credito-barra"><div class="credito-fill" id="creditoFill"></div></div>
+        <div class="credito-pie" id="creditoPie"></div>
+      </div>
+
+      <div class="demo-caja">
+        <div>
+          <strong>¿Todavía sin claves? Mirá cómo funciona.</strong>
+          <span>Carga 6 leads de ejemplo con su análisis y su mensaje ya escrito. No busca nada en LinkedIn, no gasta nada y no necesita ninguna clave.</span>
+        </div>
+        <div class="demo-botones">
+          <button type="button" class="btn btn-suave btn-mini" id="btnDemo">Cargar demo</button>
+          <button type="button" class="btn btn-suave btn-mini" id="btnBorrarDemo">Borrar demo</button>
+        </div>
+      </div>
+
+      <div class="progreso" id="progreso" hidden>
+        <div class="barra"><div class="barra-fill" id="barraFill"></div></div>
+        <div class="progreso-info">
+          <span id="progresoTexto">Iniciando...</span>
+          <span id="progresoTiempo" class="mono">0s</span>
+        </div>
+        <ul class="registro" id="registro"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEADS ============ -->
+  <section class="vista" id="vista-leads">
+    <div class="rafaga-banner">
+      <div class="rafaga-banner-icono">⚡</div>
+      <div class="rafaga-banner-texto">
+        <strong>Modo ráfaga</strong>
+        <span id="rafagaBannerSub">Contactá tus leads nuevos de a uno, con un solo toque de tecla por cada uno.</span>
+      </div>
+      <button class="btn btn-primario rafaga-banner-btn" id="btnRafaga">⚡ Empezar ráfaga</button>
+    </div>
+
+    <div class="leads-head">
+      <input id="filtroLeads" class="buscador" placeholder="Filtrar por nombre, empresa o cargo...">
+      <button class="btn btn-suave" id="btnExportar">Exportar CSV</button>
+    </div>
+    <div class="kanban" id="kanban"></div>
+    <p class="vacio" id="leadsVacio" hidden>Todavía no hay leads. Hacé tu primera búsqueda.</p>
+  </section>
+
+  <!-- ============ AJUSTES ============ -->
+  <section class="vista" id="vista-ajustes">
+    <div class="card">
+      <h1>Tu identidad</h1>
+      <p class="sub">La IA usa esto para escribir los mensajes. Cuanto más concreto, mejor salen.</p>
+      <form id="formAjustes" class="form">
+        <div class="fila">
+          <label class="campo"><span>Tu nombre</span><input name="nombre"></label>
+          <label class="campo"><span>Tu cargo</span><input name="cargo"></label>
+          <label class="campo"><span>Empresa</span><input name="empresa"></label>
+        </div>
+        <label class="campo">
+          <span>Qué hace tu empresa</span>
+          <textarea name="descripcionEmpresa" rows="4"></textarea>
+        </label>
+        <label class="campo">
+          <span>Oferta concreta del mensaje</span>
+          <textarea name="oferta" rows="4"></textarea>
+          <em>Qué le proponés al lead en el primer contacto. Ej: un diagnóstico gratuito de 20 minutos.</em>
+        </label>
+        <div class="fila">
+          <label class="campo">
+            <span>Idioma de los mensajes</span>
+            <select name="idiomaMensajes">
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+              <option value="pt">Portugués</option>
+            </select>
+          </label>
+          <label class="campo">
+            <span>País por defecto</span>
+            <input name="paisPorDefecto">
+          </label>
+          <label class="campo">
+            <span>Modelo de IA <i>(solo si usás Claude)</i></span>
+            <select name="modeloIA">
+              <option value="claude-sonnet-5">Claude Sonnet 5</option>
+              <option value="claude-opus-5">Claude Opus 5</option>
+              <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
+            </select>
+            <em>Con Gemini (el modo gratis) este campo se ignora.</em>
+          </label>
+        </div>
+        <div class="acciones">
+          <button type="submit" class="btn btn-primario">Guardar ajustes</button>
+          <span class="costo" id="avisoAjustes"></span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ MANUAL DE USO ============ -->
+  <section class="vista" id="vista-manual">
+    <div class="card manual">
+      <h1>Manual de uso</h1>
+      <p class="sub">Todo lo que necesitás saber para usar Lead Hunter, de principio a fin. Costo total: <strong>US$ 0</strong>.</p>
+
+      <nav class="manual-indice">
+        <a href="#m1">1. Qué hace esta app</a>
+        <a href="#m2">2. Probarla sin claves (2 min)</a>
+        <a href="#m3">3. Las dos claves gratis</a>
+        <a href="#m4">4. Encender la app</a>
+        <a href="#m5">5. Configurar tus Ajustes</a>
+        <a href="#m6">6. Tu primera búsqueda real</a>
+        <a href="#m7">7. Trabajar el tablero</a>
+        <a href="#m8">8. Enviar el mensaje en LinkedIn</a>
+        <a href="#m9">9. Cuánto cuesta y cómo no pagar</a>
+        <a href="#m10">10. Si algo falla</a>
+        <a href="#m11">11. Reglas de convivencia</a>
+      </nav>
+
+      <section class="paso" id="m1">
+        <h2>1. Qué hace esta app</h2>
+        <p>Lead Hunter hace tres cosas, en este orden:</p>
+        <ol>
+          <li><strong>Busca</strong> personas reales en LinkedIn según el rubro, el cargo y la ciudad que le pidas. Por ejemplo: dueños de clínicas dentales en Lima.</li>
+          <li><strong>Lee</strong> el perfil de cada una y sus últimas publicaciones, y te dice quién es, qué le duele y qué tan buen cliente sería para vos (puntaje del 1 al 10).</li>
+          <li><strong>Escribe</strong> un mensaje de contacto distinto para cada persona, mencionando algo real de su perfil. Vos lo revisás, lo copiás y lo pegás en LinkedIn.</li>
+        </ol>
+        <p class="nota">Lo que la app <strong>no</strong> hace: enviar los mensajes sola. Eso lo hacés vos a mano, y está bien que así sea — un mensaje enviado a mano no te hace perder la cuenta de LinkedIn.</p>
+      </section>
+
+      <section class="paso" id="m2">
+        <h2>2. Probarla sin claves — empezá por acá</h2>
+        <p>Antes de crear ninguna cuenta, mirá cómo funciona:</p>
+        <ol>
+          <li>Andá a la pestaña <strong>Buscar</strong>.</li>
+          <li>Abajo del todo, tocá <strong>Cargar demo</strong>.</li>
+          <li>Te lleva solo a la pestaña <strong>Leads</strong> con 6 perfiles de ejemplo.</li>
+          <li>Tocá cualquier tarjeta: vas a ver el análisis, la publicación que usó como gancho y el mensaje ya escrito.</li>
+        </ol>
+        <p class="nota">Esos 6 perfiles son <strong>inventados</strong>, no son personas reales, y no se buscó nada en LinkedIn. Es solo para que veas la pantalla. Cuando quieras sacarlos, tocá <strong>Borrar demo</strong>.</p>
+        <p>Y si preferís que te lo muestren en vez de leerlo: el botón <strong>Ver tour</strong>, arriba a la derecha, te lleva de la mano por cada parte de la app con globos explicativos. Son 2 minutos y se puede saltar en cualquier momento.</p>
+      </section>
+
+      <section class="paso" id="m3">
+        <h2>3. Las dos claves gratis</h2>
+        <p>Para buscar de verdad hacen falta dos llaves. Las dos son gratis y <strong>ninguna pide tarjeta de crédito</strong>.</p>
+
+        <h3>Llave 1 — Google Gemini (escribe los mensajes)</h3>
+        <ol>
+          <li>Entrá a <strong>aistudio.google.com/apikey</strong> con tu Gmail de siempre.</li>
+          <li>Tocá <em>Create API key</em>.</li>
+          <li>Copiá el texto largo que aparece. Empieza con <code>AIza…</code></li>
+        </ol>
+
+        <h3>Llave 2 — Apify (entra a LinkedIn)</h3>
+        <ol>
+          <li>Registrate en <strong>console.apify.com</strong>. Te dan US$ 5 de crédito por mes, sin tarjeta.</li>
+          <li>Andá a <em>Settings → Integrations</em>.</li>
+          <li>Tocá el ojito para revelar el <em>Personal API token</em> y copialo. Empieza con <code>apify_api_…</code></li>
+        </ol>
+
+        <h3>Dónde se pegan</h3>
+        <p>En la carpeta <code>lead-hunter</code> hay un archivo llamado <code>.env.example</code>. Hacé una copia y ponele de nombre <code>.env</code> (solo eso, con el punto adelante). Abrilo con el Bloc de notas y pegá cada clave después del signo igual:</p>
+        <pre>GEMINI_API_KEY=AIza...tu-clave-aca
+APIFY_TOKEN=apify_api_...tu-token-aca</pre>
+        <p>Guardá y cerrá. Ese archivo nunca se sube a internet ni a GitHub — queda solo en tu computadora.</p>
+      </section>
+
+      <section class="paso" id="m4">
+        <h2>4. Encender la app</h2>
+        <p>Abrí PowerShell en la carpeta de ORASIC LAB y escribí:</p>
+        <pre>node lead-hunter/server.js</pre>
+        <p>Después abrí el navegador en <code>http://localhost:5070</code></p>
+        <p>Arriba a la derecha vas a ver dos indicadores. Si dicen <strong>Apify conectado</strong> y <strong>IA gemini</strong> en verde, está todo listo. Si alguno está naranja, la clave no se leyó bien: revisá el archivo <code>.env</code> y volvé a encender la app.</p>
+        <p class="nota">Para apagarla, volvé a PowerShell y apretá <kbd>Ctrl</kbd> + <kbd>C</kbd>. Los leads quedan guardados.</p>
+      </section>
+
+      <section class="paso" id="m5">
+        <h2>5. Configurar tus Ajustes (una sola vez)</h2>
+        <p>Andá a la pestaña <strong>Ajustes</strong>. Ya viene cargado con los datos de ORASIC Lab, pero leelo y ajustalo, porque de acá sale el tono de todos los mensajes.</p>
+        <ul>
+          <li><strong>Tu nombre y cargo</strong> — con esto se firman los mensajes.</li>
+          <li><strong>Qué hace tu empresa</strong> — en qué rubros trabajás y qué construís.</li>
+          <li><strong>Oferta concreta</strong> — el campo más importante. Es lo que le proponés al lead en el primer contacto. Cuanto más específico, mejor sale el mensaje. «Un diagnóstico gratuito de 20 minutos» funciona mucho mejor que «servicios de software».</li>
+          <li><strong>Idioma</strong> — español si buscás en Perú o Colombia; inglés si algún día buscás afuera.</li>
+        </ul>
+        <p>Tocá <strong>Guardar ajustes</strong>. Si algún día le vendés este sistema a un cliente, esta pantalla es lo único que cambia.</p>
+      </section>
+
+      <section class="paso" id="m6">
+        <h2>6. Tu primera búsqueda real</h2>
+        <p>Andá a <strong>Buscar</strong> y completá:</p>
+        <ul>
+          <li><strong>Rubro o palabra clave</strong> — qué hace el negocio del lead. Una sola idea: <em>clinica dental</em>, <em>gimnasio</em>, <em>agencia de marketing</em>. No pongas tres cosas juntas.</li>
+          <li><strong>Cargos</strong> — escribí uno y apretá Enter; se convierte en etiqueta. Podés poner varios: Fundador, Gerente General, CEO, Dueño. Apuntá siempre a quien decide y firma.</li>
+          <li><strong>País / Región / Ciudad</strong> — arrancá solo con el país. Si te trae poco, después probá ciudad.</li>
+          <li><strong>Cuántos leads</strong> — <strong>empezá con 10</strong>. Antes de buscar mirá el costo estimado que aparece al lado del botón.</li>
+          <li><strong>Traer últimas publicaciones</strong> — dejalo activado. Es lo que hace que el mensaje mencione algo real y no suene a robot.</li>
+        </ul>
+        <p>Tocá <strong>Buscar leads</strong>. La barra te va mostrando en vivo qué está haciendo: buscando perfiles → trayendo publicaciones → redactando mensajes uno por uno. Con 20 leads tarda unos 3 minutos. No cierres la pestaña.</p>
+        <p class="nota">Cuando termina, te lleva sola a <strong>Leads</strong>.</p>
+      </section>
+
+      <section class="paso" id="m7">
+        <h2>7. Trabajar el tablero</h2>
+        <p>Cada persona es una tarjeta. Las columnas son el recorrido del lead:</p>
+        <p><strong>Nuevos</strong> → <strong>Contactados</strong> → <strong>Respondieron</strong> / <strong>Sin respuesta</strong> → <strong>Reunión agendada</strong></p>
+        <p>Arrastrá las tarjetas de una columna a otra con el mouse. Ese arrastre es todo tu seguimiento: si no lo movés, en dos semanas no vas a saber a quién le escribiste.</p>
+        <p>El número al lado del nombre (<strong>9/10</strong>) es el puntaje de encaje que puso la IA. Empezá siempre por los de 8 y 9 — son los que ya publicaron el problema que vos resolvés.</p>
+        <p>Al tocar una tarjeta se abre el detalle con:</p>
+        <ul>
+          <li><strong>Análisis</strong> — quién es y por qué te conviene.</li>
+          <li><strong>Gancho</strong> — el dato exacto del perfil que se usó para personalizar.</li>
+          <li><strong>Últimas publicaciones</strong> — leelas antes de escribir, siempre.</li>
+          <li><strong>Mensaje</strong> — editable. Lo que cambies se guarda solo.</li>
+          <li><strong>Regenerar</strong> — si el mensaje no te convence, pide otro.</li>
+          <li><strong>Nota interna</strong> — «me respondió que lo ve en marzo», «pedir que me presente al socio».</li>
+        </ul>
+        <p>El buscador de arriba filtra por nombre, empresa o cargo. <strong>Exportar CSV</strong> te baja todo a Excel.</p>
+      </section>
+
+      <section class="paso" id="m8">
+        <h2>8. Enviar el mensaje en LinkedIn</h2>
+        <ol>
+          <li>Abrí la tarjeta y <strong>leé el mensaje completo</strong>. Nunca envíes sin leer: la IA a veces se equivoca de empresa o de contexto.</li>
+          <li>Editalo si hace falta. Es el primer contacto con un cliente potencial, vale el minuto.</li>
+          <li>Tocá <strong>Copiar mensaje</strong> — respeta los saltos de línea que hayas puesto.</li>
+          <li>Tocá <strong>Abrir LinkedIn</strong>; se abre el perfil en otra pestaña.</li>
+          <li>Botón <em>Mensaje</em> en LinkedIn, pegá con <kbd>Ctrl</kbd>+<kbd>V</kbd>, enviá.</li>
+          <li>Volvé a la app y arrastrá la tarjeta a <strong>Contactados</strong>.</li>
+        </ol>
+        <p class="nota">Perfil bajo: <strong>de 5 a 10 mensajes por día como máximo</strong>, repartidos, no todos juntos. LinkedIn detecta el envío masivo y restringe cuentas. Diez mensajes buenos por día son 200 al mes — más que suficiente.</p>
+
+        <h3>El atajo: Modo ráfaga</h3>
+        <p>Hacer ese proceso tarjeta por tarjeta es lento. El botón <strong>⚡ Modo ráfaga</strong>, arriba de la pestaña Leads, hace lo mismo pero en un solo toque de tecla:</p>
+        <ol>
+          <li>Toma todos los leads en <strong>Nuevos</strong>, ordenados del puntaje más alto al más bajo.</li>
+          <li>Te muestra uno a la vez con su mensaje.</li>
+          <li>Apretás <kbd>Enter</kbd>: copia el mensaje, abre el perfil en LinkedIn y marca el lead como <strong>Contactado</strong> — los tres pasos juntos.</li>
+          <li><kbd>→</kbd> salta ese lead sin marcarlo (si no te convence el mensaje). <kbd>←</kbd> vuelve al anterior. <kbd>Esc</kbd> sale en cualquier momento.</li>
+          <li>Cuando llegás al mensaje 10 del día, un aviso te avisa que es el tope recomendado — la app no te bloquea, pero te lo recuerda.</li>
+        </ol>
+        <p class="nota">Esto <strong>no reemplaza</strong> el paso de pegar el mensaje adentro de LinkedIn: seguís siendo vos quien aprieta "Enviar" ahí. Es justo esa parte manual la que mantiene la cuenta segura — nunca va a haber un botón en esta app que envíe por vos.</p>
+      </section>
+
+      <section class="paso" id="m9">
+        <h2>9. Cuánto cuesta y cómo no pagar nunca</h2>
+        <ul>
+          <li><strong>Gemini:</strong> gratis. El plan gratuito alcanza de sobra para el volumen que vas a manejar.</li>
+          <li><strong>Apify:</strong> US$ 5 de crédito gratis <em>por mes</em>, que se renuevan solos. Cada búsqueda cuesta US$ 0.10 por cada 25 perfiles, más medio centavo por perfil.</li>
+        </ul>
+        <table class="tabla">
+          <tr><th>Leads que buscás</th><th>Cuesta</th><th>Del crédito mensual</th></tr>
+          <tr><td>10</td><td>US$ 0.14</td><td>3 %</td></tr>
+          <tr><td>20</td><td>US$ 0.18</td><td>4 %</td></tr>
+          <tr><td>50</td><td>US$ 0.40</td><td>8 %</td></tr>
+          <tr><td>150</td><td>US$ 1.20</td><td>24 %</td></tr>
+        </table>
+        <p>Con los US$ 5 mensuales entran unos <strong>625 leads por mes</strong>. Como no cargaste tarjeta en ningún lado, <strong>no hay forma de que te cobren sin querer.</strong></p>
+
+        <h3>Pedí siempre múltiplos de 25</h3>
+        <p>Ese US$ 0.10 es un <strong>peaje fijo por página</strong>, y una página trae hasta 25 perfiles: pagás lo mismo si sacás 1 que si sacás 25. Por eso buscar de a 10 desperdicia casi la mitad del crédito.</p>
+        <table class="tabla">
+          <tr><th>Si buscás de a</th><th>Costo por lead</th><th>Leads con los US$ 5</th></tr>
+          <tr><td>25, 50, 75, 100…</td><td>0.8 ¢</td><td><strong>625</strong></td></tr>
+          <tr><td>10</td><td>1.4 ¢</td><td>357</td></tr>
+          <tr><td>5</td><td>2.4 ¢</td><td>208</td></tr>
+        </table>
+        <p><strong>Mi recomendación:</strong> una búsqueda de 25 cada dos semanas. Son US$ 0.40 al mes — el 8 % del crédito — y te da leads frescos sin acumular una lista que no llegás a trabajar.</p>
+
+        <h3>La alarma de crédito</h3>
+        <p>Abajo del botón de buscar hay una <strong>barra que lleva la cuenta sola</strong>: cuánto llevás gastado del mes, cuánto te queda y para cuántos leads más alcanza. Se pone naranja al 70 % y rosa al 90 %.</p>
+        <p>Y si una búsqueda te dejaría sin saldo, <strong>el botón se deshabilita y no arranca</strong>, avisándote cuántos leads sí te alcanzan. El contador se reinicia solo el día 1 de cada mes, igual que el crédito de Apify.</p>
+        <p class="nota">Aclaración importante: aunque te pasaras, <strong>nadie te cobra</strong>. Sin tarjeta cargada, Apify simplemente deja de buscar hasta el mes siguiente. La alarma está para que no te quedes sin herramienta a mitad de mes, no para evitar un cobro.</p>
+      </section>
+
+      <section class="paso" id="m10">
+        <h2>10. Si algo falla</h2>
+        <dl class="faq">
+          <dt>Los indicadores de arriba están en naranja</dt>
+          <dd>Falta la clave o está mal pegada. Revisá el archivo <code>.env</code>: sin espacios, sin comillas, y apagá y encendé la app.</dd>
+
+          <dt>La búsqueda no devuelve ningún perfil</dt>
+          <dd>Casi siempre es la ubicación. Borrá ciudad y región y dejá solo el país. Si sigue vacío, cambiá la palabra clave por una más común (<em>dentista</em> en vez de <em>odontología estética avanzada</em>).</dd>
+
+          <dt>Los mensajes salen genéricos</dt>
+          <dd>Dos causas: el campo <strong>Oferta</strong> en Ajustes está muy vago, o el perfil no tenía publicaciones. Mejorá la oferta y usá <strong>Regenerar</strong>.</dd>
+
+          <dt>Dice que se agotó el crédito de Apify</dt>
+          <dd>Ya usaste los US$ 5 del mes. Se renuevan solos el mes que viene. No pagues nada.</dd>
+
+          <dt>Cerré PowerShell y la página no abre</dt>
+          <dd>Se apagó la app. Volvé a correr <code>node lead-hunter/server.js</code>. Los leads siguen ahí.</dd>
+
+          <dt>¿Pierdo los leads si apago la computadora?</dt>
+          <dd>No. Están en <code>lead-hunter/data/leads.json</code>. De todos modos, exportá el CSV de vez en cuando.</dd>
+        </dl>
+      </section>
+
+      <section class="paso" id="m11">
+        <h2>11. Reglas de convivencia</h2>
+        <ul>
+          <li><strong>Leé antes de enviar, siempre.</strong> Un mensaje que se equivoca de empresa quema al lead para siempre.</li>
+          <li><strong>Volumen bajo y constante</strong> gana. 10 por día, todos los días, le gana a 200 en una tarde.</li>
+          <li><strong>Si alguien te dice que no, no insistas</strong> y movelo a Sin respuesta.</li>
+          <li>Los datos de los perfiles son <strong>datos personales de terceros</strong>. Están en tu computadora y no se suben a ningún lado. Usalos para contactar, no los compartas ni los revendas.</li>
+          <li>Scrapear LinkedIn va contra sus términos de servicio, aunque la herramienta no toque tu cuenta. A volumen bajo el riesgo es mínimo; a volumen alto, no. Otra razón para ir de a poco.</li>
+        </ul>
+      </section>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ DETALLE DEL LEAD ============ -->
+<div class="modal" id="modal" hidden>
+  <div class="modal-fondo" data-cerrar></div>
+  <div class="modal-caja">
+    <button class="modal-cerrar" data-cerrar aria-label="Cerrar">&times;</button>
+    <div id="modalContenido"></div>
+  </div>
+</div>
+
+<!-- ============ MODO RAFAGA ============ -->
+<div class="rafaga" id="rafaga" hidden>
+  <div class="rafaga-fondo" data-cerrar-rafaga></div>
+  <div class="rafaga-caja">
+    <div class="rafaga-cab">
+      <div>
+        <strong>⚡ Modo ráfaga</strong>
+        <span class="rafaga-progreso" id="rafagaProgreso"></span>
+      </div>
+      <button class="rafaga-cerrar" data-cerrar-rafaga aria-label="Salir">&times;</button>
+    </div>
+    <div class="rafaga-aviso" id="rafagaAviso" hidden></div>
+    <div id="rafagaContenido"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="app.js"></script>
+<script src="tour.js"></script>
+</body>
+</html>

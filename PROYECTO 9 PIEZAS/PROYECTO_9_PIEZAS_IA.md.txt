@@ -1,0 +1,75 @@
+PROYECTO_9_PIEZAS_IA.md
+markdown
+# 🎯 Proyecto: Sistema de 9 Piezas de IA en ORASIC LAB## ¿De qué se trata?Es un **sistema operativo interno** que estandariza cómo ORASIC LAB construye aplicaciones con IA, usando 9 componentes esenciales que convierten cualquier proyecto en un sistema robusto, mantenible y escalable.---## Las 9 Piezas| # | Pieza | Qué hace ||---|---|---|| 1 | **Tokens** | Medir costo real por tarea completada (no por uso) || 2 | **Modelos** | Elegir la IA correcta según la complejidad de cada tarea || 3 | **Instrucciones** | Definir personalidad, límites y reglas del sistema || 4 | **RAG + Memoria** | Base de conocimiento que aprende del negocio del cliente || 5 | **MCPs** | Llavero de integraciones con herramientas LATAM || 6 | **Skills** | Funciones reutilizables escritas una vez, usadas mil veces || 7 | **Arnés Agéntico** | Arquitectura completa que une todas las piezas || 8 | **Workflows** | Mapeo de procesos antes de construir || 9 | **Evaluaciones** | Test suite que garantiza que funciona siempre |---## ¿Para qué sirve?### Para ORASIC LAB internamente:- Construir cualquier aplicación más rápido (reutilizando 70%+ de componentes)- Reducir costos eligiendo modelos de IA según la tarea- Documentar cada sistema de forma estandarizada- Crear una biblioteca creciente de funciones probadas### Para el cliente (Sello ORASIC):- Recibir una app con "cerebro empresarial" que aprende- Tener transparencia total en costos de IA operativa- Recibir documentación técnica completa del sistema- Contar con test suite que garantiza calidad continua- Tener acompañamiento post-entrega (ORASIC Care)---## ¿Cómo se implementa?### Estructura de trabajo:
+ORASIC_OS/
+├── 01-skills/ # Biblioteca de funciones reutilizables
+├── 02-mcps/ # Llavero de integraciones LATAM
+├── 03-arnes-templates/ # Plantillas de arquitectura
+├── 04-arquitecturas/ # Patrones genéricos (chatbot, CRM, etc.)
+├── 05-workflows/ # Procesos mapeados
+├── 06-evaluaciones/ # Test suites
+└── 07-sello-cliente/ # Entregables diferenciadores
+### Flujo por proyecto:1. **Diagnóstico** → Mapear workflow del cliente2. **Diseño** → Seleccionar piezas a usar3. **Construcción** → Reutilizar + crear nuevas piezas4. **Evaluación** → Test suite obligatorio5. **Entrega** → Con sello ORASIC + activar Care---## Resultado Esperado**ORASIC LAB se convierte en:**- Una empresa que construye software personalizado para CUALQUIER industria y tamaño- Más rápido (40% menos tiempo) usando IA en el desarrollo- Más barato optimizando costos de IA por tarea- Con diferenciación técnica real (arnés, RAG, MCPs LATAM)- Con modelo de ingresos recurrentes (ORASIC Care)---*Documento creado como parte de la implementación del sistema ORASIC OS**Última actualización: Agosto 2026*
+
+Sistema de 9 Piezas de IA en ORASIC LAB
+¿De qué se trata?
+Es un sistema operativo interno que estandariza cómo ORASIC LAB construye aplicaciones con IA, usando 9 componentes esenciales que convierten cualquier proyecto en un sistema robusto, mantenible y escalable.
+Las 9 Piezas
+#
+Pieza
+Qué hace
+1
+Tokens
+Medir costo real por tarea completada (no por uso)
+2
+Modelos
+Elegir la IA correcta según la complejidad de cada tarea
+3
+Instrucciones
+Definir personalidad, límites y reglas del sistema
+4
+RAG + Memoria
+Base de conocimiento que aprende del negocio del cliente
+5
+MCPs
+Llavero de integraciones con herramientas LATAM
+6
+Skills
+Funciones reutilizables escritas una vez, usadas mil veces
+7
+Arnés Agéntico
+Arquitectura completa que une todas las piezas
+8
+Workflows
+Mapeo de procesos antes de construir
+9
+Evaluaciones
+Test suite que garantiza que funciona siempre
+¿Para qué sirve?
+Para ORASIC LAB internamente:
+Construir cualquier aplicación más rápido (reutilizando 70%+ de componentes)
+Reducir costos eligiendo modelos de IA según la tarea
+Documentar cada sistema de forma estandarizada
+Crear una biblioteca creciente de funciones probadas
+Para el cliente (Sello ORASIC):
+Recibir una app con "cerebro empresarial" que aprende
+Tener transparencia total en costos de IA operativa
+Recibir documentación técnica completa del sistema
+Contar con test suite que garantiza calidad continua
+Tener acompañamiento post-entrega (ORASIC Care)
+¿Cómo se implementa?
+Estructura de trabajo:
+12345678
+Flujo por proyecto:
+Diagnóstico → Mapear workflow del cliente
+Diseño → Seleccionar piezas a usar
+Construcción → Reutilizar + crear nuevas piezas
+Evaluación → Test suite obligatorio
+Entrega → Con sello ORASIC + activar Care
+Resultado Esperado
+ORASIC LAB se convierte en:
+Una empresa que construye software personalizado para CUALQUIER industria y tamaño
+Más rápido (40% menos tiempo) usando IA en el desarrollo
+Más barato optimizando costos de IA por tarea
+Con diferenciación técnica real (arnés, RAG, MCPs LATAM)
+Con modelo de ingresos recurrentes (ORASIC Care)

@@ -1,0 +1,7 @@
+# Claves de API — nunca subir
+.env
+
+# Base de datos local de leads (datos personales de terceros)
+data/
+
+.vercel

@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Manual de Usuario — ORASIC Content Studio</title>
+<style>
+  :root {
+    --bg:#080A0F;--bg-card:#111827;--bg-card2:#1a2236;
+    --sidebar:#0C0E16;--border:#1F2937;--border2:#2D3748;
+    --t1:#F9FAFB;--t2:#9CA3AF;--t3:#6B7280;
+    --violet:#A78BFA;--violet-d:#7C3AED;
+    --cyan:#22D3EE;--pink:#F472B6;--orange:#FB923C;
+    --green:#34D399;--red:#F87171;--yellow:#FCD34D;
+  }
+  @media(prefers-color-scheme:light){:root{
+    --bg:#F4F6FB;--bg-card:#FFFFFF;--bg-card2:#EEF1F8;
+    --sidebar:#FFFFFF;--border:#E2E6EF;--border2:#CDD3E0;
+    --t1:#111827;--t2:#4B5563;--t3:#9CA3AF;
+    --violet:#7C3AED;--violet-d:#5B21B6;--cyan:#0891B2;
+    --orange:#D97706;--green:#059669;--red:#DC2626;
+  }}
+  :root[data-theme="dark"]{--bg:#080A0F;--bg-card:#111827;--bg-card2:#1a2236;--sidebar:#0C0E16;--border:#1F2937;--border2:#2D3748;--t1:#F9FAFB;--t2:#9CA3AF;--t3:#6B7280;--violet:#A78BFA;--violet-d:#7C3AED;--cyan:#22D3EE;--pink:#F472B6;--orange:#FB923C;--green:#34D399;--red:#F87171;}
+  :root[data-theme="light"]{--bg:#F4F6FB;--bg-card:#FFFFFF;--bg-card2:#EEF1F8;--sidebar:#FFFFFF;--border:#E2E6EF;--border2:#CDD3E0;--t1:#111827;--t2:#4B5563;--t3:#9CA3AF;--violet:#7C3AED;--violet-d:#5B21B6;--cyan:#0891B2;--pink:#DB2777;--orange:#D97706;--green:#059669;--red:#DC2626;}
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--t1);display:flex;min-height:100vh;font-size:14px;line-height:1.65;}
+
+  /* ─── SIDEBAR ─── */
+  #sidebar{width:256px;min-height:100vh;background:var(--sidebar);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;overflow-y:auto;z-index:50;}
+  .sb-brand{padding:18px 16px 14px;border-bottom:1px solid var(--border);}
+  .sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+  .sb-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--violet),var(--cyan));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+  .sb-name{font-weight:700;font-size:13px;}.sb-name span{color:var(--violet);}
+  .sb-sub{font-size:10px;color:var(--t3);margin-top:1px;}
+  .sb-chip{display:inline-block;margin-top:8px;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.2);padding:2px 8px;border-radius:99px;}
+  nav{flex:1;padding:12px 8px;}
+  .nav-sec{margin-bottom:18px;}
+  .nav-sec-label{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;padding:0 8px;margin-bottom:4px;}
+  .nav-a{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;font-size:12.5px;color:var(--t2);text-decoration:none;cursor:pointer;transition:all .12s;margin-bottom:1px;}
+  .nav-a:hover{background:var(--bg-card);color:var(--t1);}
+  .nav-a.active{background:rgba(167,139,250,.12);color:var(--violet);}
+  .nav-icon{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
+  .nav-step{width:18px;height:18px;border-radius:50%;background:var(--bg-card2);color:var(--t3);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .sb-footer{padding:12px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--t3);}
+  .sb-footer code{font-size:9px;}
+
+  /* ─── THEME TOGGLE ─── */
+  .theme-btn{position:fixed;top:12px;right:14px;z-index:200;background:var(--bg-card);border:1px solid var(--border);border-radius:7px;padding:6px 12px;font-size:12px;color:var(--t2);cursor:pointer;font-family:inherit;transition:all .12s;}
+  .theme-btn:hover{color:var(--violet);border-color:var(--violet);}
+
+  /* ─── MAIN ─── */
+  #main{margin-left:256px;flex:1;max-width:calc(100% - 256px);}
+
+  /* ─── SECTIONS ─── */
+  .section{padding:44px 44px 0;scroll-margin-top:20px;}
+  .section:last-child{padding-bottom:80px;}
+  .sec-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+  .sec-icon{width:42px;height:42px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .ic-v{background:rgba(167,139,250,.14);}
+  .ic-c{background:rgba(34,211,238,.11);}
+  .ic-o{background:rgba(251,146,60,.11);}
+  .ic-p{background:rgba(244,114,182,.11);}
+  .ic-g{background:rgba(52,211,153,.11);}
+  .sec-num{font-size:9px;font-weight:700;color:var(--violet);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;}
+  .sec-title{font-size:20px;font-weight:700;line-height:1.2;margin-bottom:3px;}
+  .sec-sub{font-size:12px;color:var(--t3);}
+  .lead{font-size:13.5px;color:var(--t2);margin-bottom:18px;line-height:1.7;}
+
+  /* ─── CARDS ─── */
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:14px;}
+  .card-title{font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px;}
+  .al-v{border-left:3px solid var(--violet);}
+  .al-c{border-left:3px solid var(--cyan);}
+  .al-o{border-left:3px solid var(--orange);}
+  .al-g{border-left:3px solid var(--green);}
+  .al-p{border-left:3px solid var(--pink);}
+  .al-r{border-left:3px solid var(--red);}
+
+  /* ─── GRID ─── */
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+
+  /* ─── WIZARD STEPS ─── */
+  .wiz{display:flex;margin-bottom:22px;}
+  .wstep{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;padding:0 3px;}
+  .wstep:not(:last-child)::after{content:'';position:absolute;top:17px;left:55%;right:-45%;height:2px;background:var(--border2);}
+  .wcirc{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid var(--violet);color:var(--violet);background:rgba(167,139,250,.08);position:relative;z-index:1;margin-bottom:7px;}
+  .wlabel{font-size:10.5px;color:var(--violet);font-weight:600;text-align:center;line-height:1.3;}
+
+  /* ─── STEP BLOCKS ─── */
+  .step-block{background:var(--bg-card);border:1px solid var(--border);border-radius:11px;margin-bottom:12px;overflow:hidden;}
+  .step-head{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--bg-card2);border-bottom:1px solid var(--border);}
+  .snum{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet-d));color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .stitle{font-size:13.5px;font-weight:700;}
+  .ssub{font-size:11px;color:var(--t3);}
+  .sbody{padding:16px;}
+
+  /* ─── BADGES ─── */
+  .b{display:inline-flex;align-items:center;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:99px;}
+  .bv{background:rgba(167,139,250,.14);color:var(--violet);}
+  .bc{background:rgba(34,211,238,.11);color:var(--cyan);}
+  .bo{background:rgba(251,146,60,.11);color:var(--orange);}
+  .bg{background:rgba(52,211,153,.11);color:var(--green);}
+  .br{background:rgba(248,113,113,.11);color:var(--red);}
+  .bx{background:var(--bg-card2);color:var(--t3);}
+
+  /* ─── CALLOUTS ─── */
+  .tip{border-radius:9px;padding:13px 15px;margin-bottom:13px;display:flex;gap:11px;font-size:12.5px;line-height:1.55;}
+  .tip-icon{font-size:17px;flex-shrink:0;margin-top:1px;}
+  .tip-title{font-size:12.5px;font-weight:700;margin-bottom:2px;}
+  .tip-text{color:var(--t2);}
+  .tp-v{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);}
+  .tp-c{background:rgba(34,211,238,.07);border:1px solid rgba(34,211,238,.2);}
+  .tp-o{background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2);}
+  .tp-r{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);}
+  .tp-g{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2);}
+
+  /* ─── TABLE ─── */
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th{text-align:left;padding:9px 13px;background:var(--bg-card2);color:var(--t3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);}
+  td{padding:10px 13px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--t2);}
+  td strong{color:var(--t1);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(167,139,250,.025);}
+
+  /* ─── ACTION ROWS ─── */
+  .arow{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+  .arow:last-child{border-bottom:none;}
+  .abtn{font-size:11.5px;font-weight:700;background:var(--bg-card2);border:1px solid var(--border2);border-radius:6px;padding:4px 9px;color:var(--t2);flex-shrink:0;white-space:nowrap;font-family:inherit;}
+  .adesc{font-size:12px;color:var(--t2);}
+
+  /* ─── FLOW STEPS ─── */
+  .flow{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);}
+  .flow:last-child{border-bottom:none;}
+  .fnum{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--cyan));color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .ftitle{font-size:13px;font-weight:700;margin-bottom:3px;}
+  .fdesc{font-size:12px;color:var(--t2);}
+
+  /* ─── OUTPUT BLOCKS ─── */
+  .out{background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:7px;}
+  .out-label{font-size:9.5px;font-weight:700;color:var(--cyan);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;}
+  .out-desc{font-size:12px;color:var(--t2);}
+
+  /* ─── SWATCHES ─── */
+  .swatch-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .sw{text-align:center;}
+  .sw-dot{width:44px;height:44px;border-radius:9px;border:1px solid var(--border2);margin:0 auto 5px;}
+  .sw-name{font-size:11px;color:var(--t2);}
+  .sw-hex{font-size:10px;color:var(--t3);font-family:monospace;}
+
+  /* ─── VOICE ─── */
+  .vitem{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+  .vitem:last-child{border-bottom:none;}
+  .vdot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
+
+  /* ─── WEEK GRID ─── */
+  .week{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0;}
+  .wday{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:13px 11px;}
+  .wday-name{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);margin-bottom:9px;}
+  .wtask{font-size:11px;color:var(--t2);margin-bottom:4px;line-height:1.4;display:flex;gap:5px;align-items:flex-start;}
+  .wtask::before{content:'·';color:var(--violet);flex-shrink:0;}
+
+  /* ─── CHEAT GRID ─── */
+  .cheat{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:14px 0;}
+  .ccard{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:13px;}
+  .clabel{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+  .citem{font-size:12px;color:var(--t2);margin-bottom:4px;line-height:1.45;}
+  .citem strong{color:var(--t1);}
+
+  /* ─── PLATFORM ROW ─── */
+  .prow{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid var(--border);}
+  .prow:last-child{border-bottom:none;}
+  .picon{width:34px;height:34px;border-radius:8px;background:var(--bg-card2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .pname{font-size:12.5px;font-weight:700;margin-bottom:2px;}
+  .pdesc{font-size:11.5px;color:var(--t2);}
+
+  /* ─── DIVIDER ─── */
+  .div{height:1px;background:var(--border);margin:32px 0;}
+
+  code{font-family:'Menlo','Consolas',monospace;font-size:11.5px;background:var(--bg-card2);border:1px solid var(--border2);padding:1px 6px;border-radius:4px;color:var(--cyan);}
+
+  /* ─── RESPONSIVE ─── */
+  @media(max-width:860px){#sidebar{width:200px;}#main{margin-left:200px;max-width:calc(100% - 200px);}.section{padding:28px 20px 0;}.g2,.g3,.week,.cheat{grid-template-columns:1fr;}}
+  @media(max-width:600px){#sidebar{display:none;}#main{margin-left:0;max-width:100%;}.section{padding:20px 14px 0;}}
+  ::-webkit-scrollbar{width:5px;height:5px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<button class="theme-btn" id="tbtn" onclick="toggleTheme()">☀ Claro</button>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">
+      <div class="sb-icon">✦</div>
+      <div><div class="sb-name">ORASIC <span>Studio</span></div><div class="sb-sub">Content Platform</div></div>
+    </div>
+    <div class="sb-chip">MANUAL DE USUARIO v4</div>
+  </div>
+  <nav>
+    <div class="nav-sec">
+      <div class="nav-sec-label">Introducción</div>
+      <a class="nav-a" href="#intro"><span class="nav-icon">◎</span>¿Qué es?</a>
+      <a class="nav-a" href="#inicio"><span class="nav-icon">▶</span>Primeros pasos</a>
+      <a class="nav-a" href="#dashboard"><span class="nav-icon">⬡</span>Dashboard</a>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-sec-label">Funciones</div>
+      <a class="nav-a" href="#crear"><span class="nav-icon">✦</span>Crear Contenido</a>
+      <a class="nav-a" href="#paso1" style="padding-left:26px;font-size:12px;"><span class="nav-step">1</span>Plataforma &amp; Objetivo</a>
+      <a class="nav-a" href="#paso2" style="padding-left:26px;font-size:12px;"><span class="nav-step">2</span>Brief de Contenido</a>
+      <a class="nav-a" href="#paso3" style="padding-left:26px;font-size:12px;"><span class="nav-step">3</span>Generación IA</a>
+      <a class="nav-a" href="#paso4" style="padding-left:26px;font-size:12px;"><span class="nav-step">4</span>Programar &amp; Guardar</a>
+      <a class="nav-a" href="#banco"><span class="nav-icon">▤</span>Banco de Contenido</a>
+      <a class="nav-a" href="#calendario"><span class="nav-icon">◫</span>Calendario</a>
+      <a class="nav-a" href="#guiones"><span class="nav-icon">✍</span>Guiones por lote</a>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-sec-label">Producción y publicación</div>
+      <a class="nav-a" href="#video"><span class="nav-icon">🎬</span>Estudio de video</a>
+      <a class="nav-a" href="#voz"><span class="nav-icon">🎙</span>Voz en off</a>
+      <a class="nav-a" href="#publicar"><span class="nav-icon">↗</span>Publicar</a>
+      <a class="nav-a" href="#rendimiento"><span class="nav-icon">📊</span>Rendimiento</a>
+      <a class="nav-a" href="#linkedin"><span class="nav-icon">📰</span>LinkedIn</a>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-sec-label">Referencia</div>
+      <a class="nav-a" href="#estrategia"><span class="nav-icon">◎</span>Estrategia de Marca</a>
+      <a class="nav-a" href="#config"><span class="nav-icon">⚙</span>Configuración</a>
+      <a class="nav-a" href="#flujo"><span class="nav-icon">⟳</span>Flujo de trabajo</a>
+      <a class="nav-a" href="#glosario"><span class="nav-icon">≡</span>Glosario</a>
+      <div style="font-size:10.5px;color:var(--t3);padding:10px 12px 0;">Se abre desde el menú <b>❓ Ayuda / Manual</b> dentro de la app.</div>
+    </div>
+  </nav>
+  <div class="sb-footer">
+    Versión 2.0 · Agosto 2026<br>
+    <code>localhost:5050/content-studio/</code>
+  </div>
+</aside>
+
+<main id="main">
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 1. ¿QUÉ ES? -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="intro">
+  <div class="sec-header">
+    <div class="sec-icon ic-v">✦</div>
+    <div><div class="sec-num">Sección 01</div><div class="sec-title">¿Qué es ORASIC Content Studio?</div><div class="sec-sub">Plataforma interna de gestión de contenido</div></div>
+  </div>
+  <p class="lead">ORASIC Content Studio es una aplicación web interna que centraliza toda la producción de contenido para TikTok, Instagram, Blog, LinkedIn y Facebook de ORASIC Lab. Desde la estrategia editorial hasta el guion generado con IA y la fecha de publicación, todo vive en un solo lugar.</p>
+
+  <div class="g3">
+    <div class="card al-v"><div style="font-size:22px;margin-bottom:9px;">🤖</div><div style="font-size:12.5px;font-weight:700;margin-bottom:4px;">Generación con Claude AI</div><div style="font-size:11.5px;color:var(--t2);">Con tu API key de Anthropic genera guiones, captions, hashtags y prompts de imagen en segundos.</div></div>
+    <div class="card al-c"><div style="font-size:22px;margin-bottom:9px;">📅</div><div style="font-size:12.5px;font-weight:700;margin-bottom:4px;">Calendario de 30 días</div><div style="font-size:11.5px;color:var(--t2);">30 piezas planificadas (28 Jul – 26 Ago 2026) con pilar, rubro, formato y fecha definidos.</div></div>
+    <div class="card al-o"><div style="font-size:22px;margin-bottom:9px;">💾</div><div style="font-size:12.5px;font-weight:700;margin-bottom:4px;">Sin servidor ni login</div><div style="font-size:11.5px;color:var(--t2);">Todo en <code>localStorage</code>. Funciona offline. No requiere cuenta ni contraseña.</div></div>
+  </div>
+
+  <div class="tip tp-c"><div class="tip-icon">ℹ️</div><div><div class="tip-title">Cómo abrir la app</div><div class="tip-text">Abre PowerShell en la carpeta del proyecto y ejecuta <code>python -m http.server 5050</code>. Luego navega a <code>http://localhost:5050/content-studio/</code>.</div></div></div>
+  <div class="tip tp-o"><div class="tip-icon">⚠️</div><div><div class="tip-title">Los datos solo existen en este navegador</div><div class="tip-text">Si limpias el caché o abres en modo incógnito, el banco de contenido no estará disponible. Todo vive en <code>localStorage</code> bajo la clave <code>orasic_studio_v2</code>.</div></div></div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 2. PRIMEROS PASOS -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="inicio">
+  <div class="sec-header">
+    <div class="sec-icon ic-c">▶</div>
+    <div><div class="sec-num">Sección 02</div><div class="sec-title">Primeros pasos</div><div class="sec-sub">Configuración inicial y carga del calendario</div></div>
+  </div>
+
+  <div class="tip tp-o"><div class="tip-icon">⚠️</div><div><div class="tip-title">Ábrela siempre por localhost, nunca como archivo</div><div class="tip-text">
+    Usa <code>http://localhost:5050/content-studio/</code>. Si el servidor no está corriendo, levántalo desde la carpeta ORASIC LAB con <code>python -m http.server 5050</code>.<br><br>
+    Abrirla con doble clic (<code>file:///C:/...</code>) causa dos problemas: el navegador <strong>bloquea las llamadas a Claude y ElevenLabs</strong>, y usa un <strong>almacenamiento distinto</strong>, así que tus piezas y claves parecerán haber desaparecido.
+  </div></div></div>
+
+  <div class="step-block">
+    <div class="step-head"><div class="snum">1</div><div><div class="stitle">Importar el calendario de 30 días</div><div class="ssub">Solo se necesita hacer una vez</div></div></div>
+    <div class="sbody">
+      <p class="lead" style="margin-bottom:10px;">Al abrir la app por primera vez el banco estará vacío. Haz clic en el botón verde <strong>📥 Importar calendario (30 días)</strong> en el Dashboard.</p>
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:8px;">Esto carga automáticamente las 30 piezas con:</p>
+      <ul style="font-size:12.5px;color:var(--t2);margin-left:16px;line-height:1.9;">
+        <li>Tema / gancho y pilar editorial</li>
+        <li>Formato (Narrado / Silencioso) y rubro objetivo</li>
+        <li>Fecha asignada (28 Jul – 26 Ago 2026)</li>
+        <li>Estado <span class="b bg">published</span> para los días 1-3 ya publicados, <span class="b bo">ready</span> para el resto</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-head"><div class="snum">2</div><div><div class="stitle">Configurar la API key de Claude</div><div class="ssub">Opcional — habilita generación real con IA</div></div></div>
+    <div class="sbody">
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px;">Ve a <strong>⚙ Configuración</strong>. En el campo <em>API Key de Claude</em> pega tu clave de Anthropic (formato <code>sk-ant-api03-...</code>). Haz clic en <strong>💾 Guardar</strong>.</p>
+      <div class="tip tp-g" style="margin:0;"><div class="tip-icon">✓</div><div><div class="tip-title">Sin key también funciona</div><div class="tip-text">Sin la clave, la app usa plantillas inteligentes como fallback. Verás ⚡ en lugar de 🤖.</div></div></div>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-head"><div class="snum">3</div><div><div class="stitle">Configurar la voz en off</div><div class="ssub">Opcional — habilita la narración automática del video</div></div></div>
+    <div class="sbody">
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px;">En <strong>⚙ Configuración</strong>: pega tu <em>API Key de ElevenLabs</em> (formato <code>sk_...</code>), luego agrega una voz con su <strong>Voice ID</strong> y pruébala con 🎧.</p>
+      <div class="tip tp-c" style="margin:0;"><div class="tip-icon">💡</div><div><div class="tip-text">Paso a paso completo, incluido el límite del plan gratuito, en <a href="#voz" style="color:var(--cyan);">Sección 09 · Voz en off</a>.</div></div></div>
+    </div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-head"><div class="snum">4</div><div><div class="stitle">Explorar el Dashboard</div><div class="ssub">El punto de partida de cada sesión</div></div></div>
+    <div class="sbody"><p style="font-size:12.5px;color:var(--t2);">Con el calendario importado el Dashboard muestra los contadores y una alerta roja si hoy hay una pieza pendiente. Desde el menú lateral puedes navegar a cualquier sección.</p></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 3. DASHBOARD -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="dashboard">
+  <div class="sec-header">
+    <div class="sec-icon ic-v">⬡</div>
+    <div><div class="sec-num">Sección 03</div><div class="sec-title">Dashboard</div><div class="sec-sub">Vista general del estado de tu contenido</div></div>
+  </div>
+  <p class="lead">Pantalla de inicio. Muestra un resumen en tiempo real de todo el banco.</p>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">Contadores</div>
+      <div class="arow"><span class="b bv">Total piezas</span><div class="adesc">Todas las piezas en el banco (importadas + creadas manualmente).</div></div>
+      <div class="arow"><span class="b bg">Publicadas</span><div class="adesc">Las marcadas como <em>published</em>. Los días 1-3 vienen así por defecto.</div></div>
+      <div class="arow"><span class="b bo">Programadas</span><div class="adesc">Con estado <em>scheduled</em> y fecha/hora asignadas.</div></div>
+      <div class="arow"><span class="b bc">Pendientes</span><div class="adesc">En <em>draft</em> o <em>ready</em> — sin publicar aún.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Secciones del Dashboard</div>
+      <div class="arow"><span style="font-size:11px;font-weight:700;color:var(--red);">🔴 Alerta HOY</span><div class="adesc">Banner rojo si hay piezas con fecha de hoy en estado <em>ready</em> o <em>scheduled</em>. Clic en el nombre para abrir la pieza.</div></div>
+      <div class="arow"><span style="font-size:11px;font-weight:700;color:var(--violet);">Contenido reciente</span><div class="adesc">Últimas 6 piezas creadas o modificadas.</div></div>
+      <div class="arow"><span style="font-size:11px;font-weight:700;color:var(--orange);">Próximas publicaciones</span><div class="adesc">Las 5 piezas más próximas con fecha. Las de hoy en rojo.</div></div>
+      <div class="arow"><span style="font-size:11px;font-weight:700;color:var(--cyan);">Distribución por plataforma</span><div class="adesc">Barras horizontales por TikTok, Instagram, Blog, LinkedIn, Facebook.</div></div>
+    </div>
+  </div>
+  <div class="tip tp-v"><div class="tip-icon">💡</div><div><div class="tip-title">Rutina diaria</div><div class="tip-text">Abre el Dashboard cada mañana. Si hay alerta roja, esa es la pieza del día — revisa el guion y publícala. Luego ve a <strong>Guiones por lote</strong> para preparar los próximos días.</div></div></div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 4. CREAR CONTENIDO -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="crear">
+  <div class="sec-header">
+    <div class="sec-icon ic-v">✦</div>
+    <div><div class="sec-num">Sección 04</div><div class="sec-title">Crear Contenido</div><div class="sec-sub">Wizard de 4 pasos para generar y guardar una pieza</div></div>
+  </div>
+  <p class="lead">El wizard guía la creación de cada pieza desde cero. Al editar una pieza del banco con contenido ya generado entra directamente al Paso 3.</p>
+  <div class="wiz">
+    <div class="wstep"><div class="wcirc">1</div><div class="wlabel">Plataforma<br>&amp; Objetivo</div></div>
+    <div class="wstep"><div class="wcirc">2</div><div class="wlabel">Brief de<br>Contenido</div></div>
+    <div class="wstep"><div class="wcirc">3</div><div class="wlabel">Generación<br>IA</div></div>
+    <div class="wstep"><div class="wcirc">4</div><div class="wlabel">Programar<br>&amp; Guardar</div></div>
+  </div>
+</section>
+
+<section class="section" id="paso1" style="padding-top:6px;">
+  <div class="step-block">
+    <div class="step-head"><div class="snum">1</div><div><div class="stitle">Plataforma &amp; Objetivo</div><div class="ssub">¿Dónde se publica y para qué?</div></div></div>
+    <div class="sbody">
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px;">Selecciona una o varias plataformas y define el objetivo. Ambos son obligatorios para continuar.</p>
+      <div class="card-title">Plataformas</div>
+      <div class="prow"><div class="picon">🎵</div><div><div class="pname">TikTok</div><div class="pdesc">Script estructurado, caption, hashtags + prompt Higgsfield AI.</div></div></div>
+      <div class="prow"><div class="picon">📸</div><div><div class="pname">Instagram</div><div class="pdesc">Guión de carrusel (5 slides), caption, hashtags + prompt de imagen.</div></div></div>
+      <div class="prow"><div class="picon">📝</div><div><div class="pname">Blog</div><div class="pdesc">Título SEO, introducción, artículo completo (+600 palabras) y meta descripción.</div></div></div>
+      <div class="prow"><div class="picon">💼</div><div><div class="pname">LinkedIn</div><div class="pdesc">Post profesional (400–600 caracteres) + hashtags.</div></div></div>
+      <div class="prow"><div class="picon">👥</div><div><div class="pname">Facebook</div><div class="pdesc">Post con tono cálido (200–350 palabras), hashtags + prompt de imagen.</div></div></div>
+      <div class="div" style="margin:14px 0;"></div>
+      <div class="card-title">Objetivos de conversión</div>
+      <table>
+        <tr><th>Objetivo</th><th>Cuándo usarlo</th></tr>
+        <tr><td><span class="b bv">📢 Awareness</span></td><td>Dar a conocer la marca. Piezas de alcance amplio.</td></tr>
+        <tr><td><span class="b bc">🎯 Leads</span></td><td>Atraer clientes potenciales con CTA directa al WhatsApp.</td></tr>
+        <tr><td><span class="b bo">💡 Educación</span></td><td>Tips, mitos vs realidad, antes/después. Construye autoridad.</td></tr>
+        <tr><td><span class="b br">⚡ Conversión</span></td><td>Empujar a la acción inmediata. Urgencia y prueba social.</td></tr>
+        <tr><td><span class="b bv">🤝 Comunidad</span></td><td>Construir confianza. Detrás de cámara, historia real.</td></tr>
+        <tr><td><span class="b bg">🏆 Portafolio</span></td><td>Mostrar casos y resultados reales de clientes.</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="paso2" style="padding-top:6px;">
+  <div class="step-block">
+    <div class="step-head"><div class="snum">2</div><div><div class="stitle">Brief de Contenido</div><div class="ssub">Los inputs que la IA necesita para generar</div></div></div>
+    <div class="sbody">
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px;"><strong>Tema</strong> y <strong>Mensaje clave</strong> son obligatorios. Ambos son <strong>selectores desplegables</strong> — no campos de texto libre. Las opciones de Tema cambian según el objetivo elegido en el Paso 1.</p>
+
+      <div class="tip tp-v" style="margin-bottom:12px;"><div class="tip-icon">🎯</div><div><div class="tip-title">Temas dinámicos por objetivo</div><div class="tip-text">Si en el Paso 1 elegiste <strong>Awareness</strong>, verás temas de presentación de marca. Si elegiste <strong>Leads</strong>, verás temas de objeciones y captación. Si elegiste <strong>Portafolio</strong>, verás casos por rubro. <strong>Siempre elige el objetivo primero</strong> para que los temas tengan sentido.</div></div></div>
+
+      <table>
+        <tr><th>Campo</th><th>Descripción</th><th>Tipo</th></tr>
+        <tr><td><strong>Tema / Gancho *</strong></td><td>El gancho principal de la pieza. Opciones distintas según el objetivo del Paso 1 (6 temas por objetivo × 6 objetivos).</td><td>Selector — obligatorio</td></tr>
+        <tr><td><strong>Rubro / Caso</strong></td><td>Industria objetivo: Belleza, Salud, Retail, CRM, Educación, Minería, etc.</td><td>Selector</td></tr>
+        <tr><td><strong>Mensaje clave *</strong></td><td>La idea que debe quedar grabada en el espectador. 14 opciones fijas alineadas con los pilares de marca.</td><td>Selector — obligatorio</td></tr>
+        <tr><td><strong>Público objetivo</strong></td><td>Pre-rellena desde Configuración. Editable por pieza.</td><td>Texto libre</td></tr>
+        <tr><td><strong>Tono</strong></td><td>Chips de selección. Afecta el estilo del guion generado.</td><td>Chips — 6 opciones</td></tr>
+        <tr><td><strong>CTA</strong></td><td>Llamada a la acción que cierra el guion. Por defecto: <em>"Escríbenos al WhatsApp +51 999 039 947"</em></td><td>Texto libre</td></tr>
+        <tr><td><strong>Hashtags base</strong></td><td>La IA los incluye en captions y posts.</td><td>Texto libre</td></tr>
+      </table>
+
+      <div class="card al-c" style="margin-top:13px;">
+        <div class="card-title">Temas disponibles por objetivo</div>
+        <table>
+          <tr><th>Objetivo</th><th>Tipos de tema</th></tr>
+          <tr><td><span class="b bv">Awareness</span></td><td>Presentación de marca, alcance amplio, geografía (Colombia), qué hace ORASIC</td></tr>
+          <tr><td><span class="b bc">Leads</span></td><td>Objeciones de tamaño, dudas técnicas, FAQs, costos y tiempos</td></tr>
+          <tr><td><span class="b bo">Educación</span></td><td>Tips de automatización, proceso de construcción, dashboards, soporte</td></tr>
+          <tr><td><span class="b br">Conversión</span></td><td>Urgencia, tiempo real, CTA directa, casos que cierran la venta</td></tr>
+          <tr><td><span class="b bv">Comunidad</span></td><td>Detrás de cámara, confianza, historia real del equipo</td></tr>
+          <tr><td><span class="b bg">Portafolio</span></td><td>Casos por rubro: spa, clínica, CRM, educación, retail, dashboards</td></tr>
+        </table>
+      </div>
+
+      <div class="tip tp-o" style="margin-top:12px;"><div class="tip-icon">⚠️</div><div><div class="tip-title">Piezas del calendario importado</div><div class="tip-text">Cuando editas una pieza importada, el Tema ya viene pre-seleccionado con la idea del plan. El Pilar (<span class="b bv" style="font-size:10px;">Mito vs Realidad</span>) y el Formato (<span class="b bc" style="font-size:10px;">Narrado</span> / <span class="b bc" style="font-size:10px;">Silencioso</span>) son visibles en el encabezado y guían la estructura del guion.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="paso3" style="padding-top:6px;">
+  <div class="step-block">
+    <div class="step-head"><div class="snum">3</div><div><div class="stitle">Generación IA</div><div class="ssub">Revisión y edición del contenido generado</div></div></div>
+    <div class="sbody">
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px;">Al pasar al Paso 3, la app llama a Claude AI (o plantillas si no hay key). Spinner mientras genera. Una vez listo, el contenido aparece por pestañas de plataforma.</p>
+      <div class="card-title" style="margin-bottom:10px;">Contenido generado por plataforma</div>
+      <div class="out"><div class="out-label">TikTok / Facebook</div><div class="out-desc"><strong>GUIÓN:</strong> para Narrado → [HOOK] [PROBLEMA] [SOLUCIÓN] [CTA]. Para Silencioso → [CARD 1][CARD 2]... (máx 10 palabras por card).</div></div>
+      <div class="out"><div class="out-label">Instagram</div><div class="out-desc"><strong>GUIÓN DE CARRUSEL:</strong> 5 slides — portada, problema, solución, resultado, CTA.</div></div>
+      <div class="out"><div class="out-label">Todas las plataformas visuales</div><div class="out-desc"><strong>CAPTION</strong> con emojis y CTA · <strong>HASHTAGS</strong> optimizados · <strong>PROMPT DE IMAGEN (Higgsfield)</strong> en inglés con colores de marca.</div></div>
+      <div class="out"><div class="out-label">Blog</div><div class="out-desc"><strong>TÍTULO SEO</strong> (50-60 chars) · <strong>INTRODUCCIÓN</strong> · <strong>CUERPO</strong> (+600 palabras con ## subtítulos) · <strong>META DESCRIPCIÓN</strong> (150-155 chars).</div></div>
+      <div class="div" style="margin:12px 0;"></div>
+      <div class="card-title" style="margin-bottom:10px;">Acciones en el Paso 3</div>
+      <div class="arow"><div class="abtn">📋 Copiar</div><div class="adesc">Copia el bloque al portapapeles. Cada sección tiene su propio botón.</div></div>
+      <div class="arow"><div class="abtn">✎ Editar</div><div class="adesc">Cada bloque es editable directamente con clic. Los cambios se guardan al avanzar al Paso 4.</div></div>
+      <div class="arow"><div class="abtn">↻ Regenerar</div><div class="adesc">Llama a la API de nuevo para generar una versión alternativa.</div></div>
+      <div class="arow"><div class="abtn">← Volver</div><div class="adesc">Regresa al Paso 2 para modificar el brief antes de regenerar.</div></div>
+      <div class="tip tp-o" style="margin-top:12px;"><div class="tip-icon">⚡</div><div><div class="tip-title">Formato Silencioso vs Narrado</div><div class="tip-text"><strong>Silencioso:</strong> 4–6 tarjetas de texto, máx 10 palabras cada una. <strong>Narrado:</strong> script de ~130 palabras (45-70 segundos) para grabar con ElevenLabs.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="paso4" style="padding-top:6px;">
+  <div class="step-block">
+    <div class="step-head"><div class="snum">4</div><div><div class="stitle">Programar &amp; Guardar</div><div class="ssub">Estado, fecha, archivo y notas</div></div></div>
+    <div class="sbody">
+      <table style="margin-bottom:14px;">
+        <tr><th>Campo</th><th>Descripción</th></tr>
+        <tr><td><strong>Estado</strong></td><td><span class="b bx">Borrador</span> en progreso. &nbsp;<span class="b bo">Listo</span> guion aprobado. &nbsp;<span class="b bc">Programado</span> con fecha fija. &nbsp;<span class="b bg">Publicado</span> ya en redes.</td></tr>
+        <tr><td><strong>Fecha / Hora</strong></td><td>Visible con estado Listo o Programado. Las piezas del calendario traen su fecha. Hora por defecto: 09:00.</td></tr>
+        <tr><td><strong>Archivo de asset</strong></td><td>Nombre del video o imagen producida. Ej: <code>video-4-tips-FINAL.mp4</code>. Aparece como referencia en el banco.</td></tr>
+        <tr><td><strong>Notas internas</strong></td><td>Campo libre para referencias visuales, ediciones pendientes, instrucciones de producción.</td></tr>
+      </table>
+      <p style="font-size:12.5px;color:var(--t2);">Haz clic en <strong>💾 Guardar en banco</strong> y la pieza queda registrada en el Banco y en el Calendario.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 5. BANCO -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="banco">
+  <div class="sec-header">
+    <div class="sec-icon ic-c">▤</div>
+    <div><div class="sec-num">Sección 05</div><div class="sec-title">Banco de Contenido</div><div class="sec-sub">Todas las piezas — filtrar, buscar, gestionar</div></div>
+  </div>
+  <p class="lead">El Banco lista todas las piezas en orden cronológico. Es el repositorio central.</p>
+  <div class="g2" style="margin-bottom:14px;">
+    <div class="card">
+      <div class="card-title">Filtros disponibles</div>
+      <div class="arow"><div class="abtn">Todos</div><div class="adesc">Sin filtro activo.</div></div>
+      <div class="arow"><div class="abtn">Borrador</div><div class="adesc">Solo piezas en <em>draft</em>.</div></div>
+      <div class="arow"><div class="abtn">Listo</div><div class="adesc">Guion aprobado, pendiente de subir.</div></div>
+      <div class="arow"><div class="abtn">Programado</div><div class="adesc">Con fecha y hora fijadas.</div></div>
+      <div class="arow"><div class="abtn">Publicado</div><div class="adesc">Ya en redes.</div></div>
+      <div class="arow"><div class="abtn">TikTok / IG / Blog / LinkedIn</div><div class="adesc">Filtra por plataforma específica.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Acciones por pieza</div>
+      <div class="arow"><div class="abtn">👁 Ver</div><div class="adesc">Modal de detalle con toda la información y el contenido generado.</div></div>
+      <div class="arow"><div class="abtn">✎ Editar</div><div class="adesc">Entra al wizard — al Paso 2 o Paso 3 si ya tiene contenido generado.</div></div>
+      <div class="arow"><div class="abtn">✓ Publicado</div><div class="adesc">Marca la pieza como publicada con un clic. Actualiza el estado y la fecha al día de hoy.</div></div>
+      <div class="arow"><div class="abtn">✕ Eliminar</div><div class="adesc">Borra permanentemente. No se puede deshacer.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Botones de cabecera</div>
+    <div class="arow"><div class="abtn">📥 Importar calendario</div><div class="adesc">Agrega las piezas del seed que aún no existen. No duplica.</div></div>
+    <div class="arow"><div class="abtn">🔄 Reimportar</div><div class="adesc">Borra todas las piezas seed (días 1-30) y las vuelve a cargar. <strong>Mantiene piezas creadas manualmente.</strong></div></div>
+    <div class="arow"><div class="abtn">✦ Nueva pieza</div><div class="adesc">Abre el wizard desde el Paso 1 para una pieza completamente nueva.</div></div>
+  </div>
+  <div class="tip tp-o"><div class="tip-icon">⚠️</div><div><div class="tip-title">Indicador ●HOY</div><div class="tip-text">Las piezas con fecha de hoy muestran <span style="color:var(--red);font-weight:700;">●HOY</span> al inicio del título para identificarlas de un vistazo.</div></div></div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 6. CALENDARIO -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="calendario">
+  <div class="sec-header">
+    <div class="sec-icon ic-o">◫</div>
+    <div><div class="sec-num">Sección 06</div><div class="sec-title">Calendario</div><div class="sec-sub">Vista mensual de publicaciones planificadas</div></div>
+  </div>
+  <p class="lead">Cuadrícula mensual con todas las piezas organizadas por fecha. Permite navegar entre meses y ver el estado de cada publicación de un vistazo.</p>
+  <div class="g2" style="margin-bottom:14px;">
+    <div class="card">
+      <div class="card-title">Navegación</div>
+      <div class="arow"><div class="abtn">← / →</div><div class="adesc">Mes anterior / mes siguiente.</div></div>
+      <div class="arow"><div class="abtn">Hoy</div><div class="adesc">Regresa al mes actual.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Colores de estado</div>
+      <div class="arow"><span class="b bg">published</span><div class="adesc">Verde — ya publicada.</div></div>
+      <div class="arow"><span class="b bc">scheduled</span><div class="adesc">Cyan — programada con fecha.</div></div>
+      <div class="arow"><span class="b bo">ready</span><div class="adesc">Naranja — lista para publicar.</div></div>
+      <div class="arow"><span class="b bx">draft</span><div class="adesc">Gris — en borrador.</div></div>
+    </div>
+  </div>
+  <div class="tip tp-c"><div class="tip-icon">ℹ️</div><div><div class="tip-title">Clic en una pieza</div><div class="tip-text">Haz clic sobre cualquier pill en el calendario para abrir su modal de detalle.</div></div></div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 7. GUIONES POR LOTE -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="guiones">
+  <div class="sec-header">
+    <div class="sec-icon ic-p">✍</div>
+    <div><div class="sec-num">Sección 07</div><div class="sec-title">Guiones por lote</div><div class="sec-sub">Genera el contenido de varias piezas de una vez</div></div>
+  </div>
+  <p class="lead">La función más potente. Selecciona múltiples piezas del calendario y genera sus guiones en secuencia automática, con pausa de 800ms entre llamadas para no saturar la API.</p>
+
+  <div class="card al-v" style="margin-bottom:14px;">
+    <div class="card-title">Modos de período</div>
+    <div class="arow"><div class="abtn">Esta semana</div><div class="adesc">Piezas de los próximos 7 días sin publicar. Modo por defecto — ideal para la sesión semanal.</div></div>
+    <div class="arow"><div class="abtn">Próximos 14 días</div><div class="adesc">Amplía el rango para producir con más antelación.</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-title">Flujo de generación por lote</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Seleccionar piezas</div><div class="fdesc">Clic en <strong>☐ Seleccionar sin guion</strong> para marcar automáticamente las que no tienen contenido. O marca/desmarca manualmente con los checkboxes.</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">Iniciar generación</div><div class="fdesc">Clic en <strong>🤖 Generar seleccionados</strong>. El botón se deshabilita y aparece el log de progreso.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">Monitorear progreso</div><div class="fdesc">El log muestra en tiempo real qué pieza se procesa. Violeta claro = generando, verde = listo, rojo = error.</div></div></div>
+    <div class="flow"><div class="fnum">4</div><div><div class="ftitle">Revisar guiones</div><div class="fdesc">Clic en <strong>👁 Ver guion</strong> en cada fila para abrir la pieza y revisar el contenido generado.</div></div></div>
+  </div>
+
+  <div class="tip tp-v"><div class="tip-icon">💡</div><div><div class="tip-title">Recomendación semanal</div><div class="tip-text">Cada lunes, abre Guiones por lote, selecciona todas las sin guion de la semana y genera en lote. Revisa y ajusta cada guion antes de producir el video. Así siempre tienes la semana preparada con 3-4 días de anticipación.</div></div></div>
+  <div class="tip tp-o"><div class="tip-icon">⚠️</div><div><div class="tip-title">Requiere API key de Claude para mejor calidad</div><div class="tip-text">Sin key se usan plantillas inteligentes. Para copywriting de alto nivel, configura la key en <strong>⚙ Configuración</strong>.</div></div></div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 8. ESTUDIO DE VIDEO -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="video">
+  <div class="sec-header">
+    <div class="sec-icon ic-p">🎬</div>
+    <div><div class="sec-num">Sección 08</div><div class="sec-title">Estudio de video</div><div class="sec-sub">Convierte el guion en un MP4 vertical, dentro del navegador</div></div>
+  </div>
+  <p class="lead">Toma el guion ya generado y arma un video vertical 9:16 con la paleta de ORASIC. Todo ocurre <strong>en tu navegador</strong>: no sube nada a ningún servidor, no usa servicios de pago y no requiere instalar nada.</p>
+
+  <div class="tip tp-c"><div class="tip-icon">💡</div><div><div class="tip-title">Qué tipo de video genera</div><div class="tip-text">Son <strong>gráficos de marca en movimiento</strong> (tarjetas de texto animadas), no video generativo con IA. Es el mismo formato que ya usabas con el script de Python, pero con un botón y sin salir de la app.</div></div></div>
+
+  <div class="card al-p" style="margin-bottom:14px;">
+    <div class="card-title">Cómo generarlo</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Abre una pieza con guion</div><div class="fdesc">Desde el <strong>Banco de Contenido</strong> o el Paso 3 del wizard. El botón vive en el panel de TikTok, Instagram o Facebook.</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">Clic en 🎬 Generar video</div><div class="fdesc">Se abre el estudio con la vista previa y la lista de <strong>tarjetas detectadas</strong> — así ves de antemano cómo quedará dividido tu guion.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">Activa la narración (opcional)</div><div class="fdesc">Casilla <strong>🎙 Narrar con ElevenLabs</strong>. Si tienes varias voces guardadas, aparece un selector para elegir cuál usar en este video.</div></div></div>
+    <div class="flow"><div class="fnum">4</div><div><div class="ftitle">▶ Generar video</div><div class="fdesc">La grabación es <strong>en tiempo real</strong>: un video de 25s tarda ~25s. Deja la ventana abierta mientras se genera.</div></div></div>
+    <div class="flow"><div class="fnum">5</div><div><div class="ftitle">⬇ Descargar</div><div class="fdesc">Obtienes un <code>.mp4</code> (códec H.264) listo para subir a TikTok o Instagram.</div></div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-title">Cómo se arman las tarjetas</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:10px;">El guion se parte automáticamente. No tienes que formatear nada a mano:</p>
+    <table>
+      <tr><th>En el guion</th><th>Qué hace</th></tr>
+      <tr><td><code>[CARD 1]</code> <code>[HOOK]</code> <code>[CTA]</code></td><td>Cada marcador inicia una <strong>tarjeta nueva</strong>. El marcador nunca aparece en el video.</td></tr>
+      <tr><td><code>Slide 3 (Portada):</code></td><td>Mismo efecto: corta e inicia tarjeta.</td></tr>
+      <tr><td>Salto de línea</td><td>También corta, para que no se peguen dos frases distintas.</td></tr>
+      <tr><td><code>→ Visual: ...</code></td><td>Se <strong>elimina</strong>: es una indicación de producción, no texto para pantalla.</td></tr>
+      <tr><td>Frases largas</td><td>Se parten solas en tarjetas de máx. ~14 palabras, para que se lean bien en móvil.</td></tr>
+    </table>
+  </div>
+
+  <div class="card al-v">
+    <div class="card-title">Especificaciones del video</div>
+    <table>
+      <tr><th>Aspecto</th><th>Valor</th></tr>
+      <tr><td>Formato</td><td>MP4 · H.264 · vertical 1080×1920 (9:16)</td></tr>
+      <tr><td>Duración</td><td>~2.8 segundos por tarjeta</td></tr>
+      <tr><td>Diseño</td><td>Fondo <code>#080A0F</code>, glows violeta y cyan, marca arriba, puntos de progreso abajo</td></tr>
+      <tr><td>Transiciones</td><td>Fundido de entrada y salida en cada tarjeta</td></tr>
+      <tr><td>Audio</td><td>Narración incorporada si activaste ElevenLabs; si no, video silencioso</td></tr>
+    </table>
+  </div>
+
+  <div class="tip tp-o"><div class="tip-icon">⚠️</div><div><div class="tip-title">Apunta a 20-30 segundos</div><div class="tip-text">La retención cae fuerte después de los 30s y es <em>el</em> factor que decide el alcance en TikTok. Un guion en formato <strong>Silencioso</strong> (frases cortas) da videos más punchy que uno Narrado largo.</div></div></div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 9. VOZ EN OFF -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="voz">
+  <div class="sec-header">
+    <div class="sec-icon ic-o">🎙</div>
+    <div><div class="sec-num">Sección 09</div><div class="sec-title">Voz en off</div><div class="sec-sub">Narración automática con ElevenLabs</div></div>
+  </div>
+  <p class="lead">La app puede narrar el guion y dejar el audio incorporado en el MP4, sin editores externos. La duración del video se ajusta sola a lo que dura la locución.</p>
+
+  <div class="card al-o" style="margin-bottom:14px;">
+    <div class="card-title">Límite importante del plan gratuito</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:10px;">ElevenLabs <strong>bloquea las voces de su biblioteca comunitaria cuando se usan por API</strong> en el plan gratuito. Devuelve el error:</p>
+    <div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:8px;padding:10px;margin-bottom:10px;"><code style="color:var(--red);font-size:11px;">HTTP 402 — Free users cannot use library voices via the API</code></div>
+    <p style="font-size:12px;color:var(--t2);">Esto afecta a Giancarlos, Jorge y Diego Cárdenas: <strong>sí funcionan en la web de ElevenLabs</strong>, pero no desde la app. Desbloquearlas cuesta ~$5/mes (plan Starter), descartado por la regla de gratuidad.</p>
+  </div>
+
+  <div class="card al-g" style="margin-bottom:14px;">
+    <div class="card-title">Voz en uso: George</div>
+    <div class="vitem"><div class="vdot" style="background:var(--green);"></div><span style="font-size:12.5px;font-weight:500;">George — voz <strong>predeterminada</strong> de ElevenLabs, categoría Narración</span></div>
+    <p style="font-size:12px;color:var(--t2);margin-top:10px;">Las voces predeterminadas sí están incluidas en el plan gratuito por API. Todas son de origen inglés, pero el modelo <code>eleven_multilingual_v2</code> las hace hablar español. George fue la elegida por sonar natural en español.</p>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-title">Configurar la voz (una sola vez)</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Crea tu API key</div><div class="fdesc">En ElevenLabs → <strong>Desarrolladores → Claves de API</strong>. Si la restringes, activa al menos el permiso <strong>"De texto a voz"</strong>.</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">Pégala en ⚙ Configuración</div><div class="fdesc">Campo <em>API Key de ElevenLabs</em>. Se guarda sola al escribirla.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">Agrega la voz por su ID</div><div class="fdesc">En ElevenLabs → <strong>Voces → Voces predeterminadas</strong> → menú <strong>⋮</strong> → <em>Copiar Voice ID</em>. En la app: escribe el nombre, pega el ID y clic en <strong>➕ Agregar</strong>.</div></div></div>
+    <div class="flow"><div class="fnum">4</div><div><div class="ftitle">Pruébala y marca la principal</div><div class="fdesc">Botón <strong>🎧</strong> reproduce una frase de muestra. El radio ⦿ define la voz por defecto.</div></div></div>
+  </div>
+
+  <div class="card al-v" style="margin-bottom:14px;">
+    <div class="card-title">Varias voces</div>
+    <p style="font-size:12px;color:var(--t2);">Puedes guardar tantas como quieras y rotarlas según la pieza. La marcada con ⦿ se usa por defecto, y dentro del estudio de video aparece un selector para cambiarla en ese video puntual. El botón <strong>✕</strong> elimina una voz de la lista.</p>
+  </div>
+
+  <div class="card al-c">
+    <div class="card-title">Pronunciación — el ajuste que evita el acento gringo</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:10px;">Al ser una voz de origen inglés, lee mal las palabras de marca y los números. El campo <strong>Pronunciación de la voz</strong> lo corrige. Formato: una regla por línea, <code>palabra = como suena</code>.</p>
+    <table>
+      <tr><th>Regla</th><th>Corrige que...</th></tr>
+      <tr><td><code>ORASIC Lab = Orásic Lab</code></td><td>...leyera la marca con acento inglés</td></tr>
+      <tr><td><code>WhatsApp = Guatsáp</code></td><td>...pronunciara "uóts-ap" en tus CTAs</td></tr>
+      <tr><td><code>software = sóftwer</code></td><td>...cambiara de idioma a mitad de frase</td></tr>
+    </table>
+    <div class="tip tp-v" style="margin-top:12px;margin-bottom:0;"><div class="tip-icon">💡</div><div><div class="tip-title">Solo afecta al audio</div><div class="tip-text">Las tarjetas del video siguen mostrando la ortografía correcta ("ORASIC Lab", "WhatsApp"). La corrección es exclusiva de lo que pronuncia la voz.</div></div></div>
+  </div>
+
+  <div class="card al-g" style="margin-top:14px;">
+    <div class="card-title">Teléfonos: automático</div>
+    <p style="font-size:12px;color:var(--t2);">Los números largos se convierten solos a palabras en español, porque los dígitos hacían que la voz saltara al inglés. No necesitas ninguna regla:</p>
+    <div style="background:var(--bg2);border-radius:8px;padding:10px;margin-top:8px;font-size:12px;">
+      <div style="color:var(--t3);">En pantalla:</div><code>+51 999 039 947</code>
+      <div style="color:var(--t3);margin-top:6px;">La voz dice:</div><span style="color:var(--cyan);">"más cincuenta y uno, nueve nueve nueve, cero tres nueve, nueve cuatro siete"</span>
+    </div>
+  </div>
+
+  <div class="tip tp-o"><div class="tip-icon">⚠️</div><div><div class="tip-title">Cuota gratuita</div><div class="tip-text">10.000 caracteres al mes (~15 videos). Cada prueba con 🎧 gasta ~60 caracteres. El estudio te muestra cuántos caracteres consumirá antes de generar.</div></div></div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 10. PUBLICAR -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="publicar">
+  <div class="sec-header">
+    <div class="sec-icon ic-c">↗</div>
+    <div><div class="sec-num">Sección 10</div><div class="sec-title">Publicar</div><div class="sec-sub">Del guion a la red, en dos clics y un pegado</div></div>
+  </div>
+
+  <div class="card al-o" style="margin-bottom:14px;">
+    <div class="card-title">La publicación NO es automática</div>
+    <p style="font-size:12px;color:var(--t2);">Publicar con un botón exigiría un servidor propio y pasar la auditoría de TikTok y la aprobación de app de Meta — imposible dentro de la regla de costo cero. Por eso el flujo es <strong>semi-manual</strong>: la app prepara todo y tú pegas y publicas. Toma unos 2 minutos por pieza.</p>
+  </div>
+
+  <div class="card al-v" style="margin-bottom:14px;">
+    <div class="card-title">Los tres botones de cada panel</div>
+    <div class="arow"><div class="abtn">✨ Copiar limpio</div><div class="adesc">Copia el guion <strong>sin los marcadores</strong> <code>[HOOK]</code>, <code>[CTA]</code>, <code>[CARD n]</code>, las indicaciones de segundos ni las líneas <code>Visual:</code>. Úsalo cuando quieras el texto para leer o para tarjetas.</div></div>
+    <div class="arow"><div class="abtn">📋 Copiar todo para publicar</div><div class="adesc">Junta en un solo pegado lo que va en la caja de descripción de la red: <strong>caption + hashtags</strong> (o post + hashtags en LinkedIn, y título + intro + cuerpo en Blog).</div></div>
+    <div class="arow"><div class="abtn">↗ Ir a TikTok / Instagram</div><div class="adesc">Abre la página de publicación de esa red en una pestaña nueva, con el contenido ya copiado.</div></div>
+  </div>
+
+  <div class="card al-c" style="margin-bottom:14px;">
+    <div class="card-title">Paso a paso</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Revisa el MP4</div><div class="fdesc">Ábrelo y escúchalo completo antes de subirlo. Verifica que la marca y el teléfono suenen bien.</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">📋 Copiar todo para publicar</div><div class="fdesc">Caption y hashtags quedan en el portapapeles.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">↗ Ir a TikTok</div><div class="fdesc">Arrastra el MP4 → pega la descripción con <strong>Ctrl+V</strong> → Publicar.</div></div></div>
+    <div class="flow"><div class="fnum">4</div><div><div class="ftitle">Repite en Instagram</div><div class="fdesc">El mismo archivo sirve para Reels: <strong>+ Crear → Reel</strong>, subes el MP4 y pegas el mismo caption.</div></div></div>
+    <div class="flow"><div class="fnum">5</div><div><div class="ftitle">Se marca sola al ir a la red</div><div class="fdesc">Desde hoy, el botón <strong>↗ Ir a TikTok / Instagram</strong> marca la pieza como <span class="b bg">Publicado</span> automáticamente — no hay que hacerlo aparte. Aparece una barra de <strong>Deshacer</strong> por 8 segundos por si solo entraste a mirar.</div></div></div>
+  </div>
+
+  <div class="tip tp-v"><div class="tip-icon">💡</div><div><div class="tip-title">Música de fondo en TikTok</div><div class="tip-text">Agrega un sonido <strong>instrumental</strong> (los cantados tapan la locución) y bájalo al <strong>10-15%</strong>. TikTok favorece los videos con audio de su librería y tu narración se sigue escuchando.</div></div></div>
+  <div class="tip tp-c"><div class="tip-icon">⏰</div><div><div class="tip-title">Mejor horario</div><div class="tip-text">12-13h o 19-21h hora Perú: cuando los dueños de pyme revisan el celular.</div></div></div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 11. RENDIMIENTO -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="rendimiento">
+  <div class="sec-header">
+    <div class="sec-icon ic-p">📊</div>
+    <div><div class="sec-num">Sección 11</div><div class="sec-title">Rendimiento</div><div class="sec-sub">Evalúa lo publicado y detecta qué corregir en cada pieza</div></div>
+  </div>
+  <p class="lead">Cargas los números de cada publicación (TikTok e Instagram por separado) y la app diagnostica <strong>dónde se rompe el embudo</strong> — no solo si el video "funcionó o no". TikTok e Instagram no dan estas estadísticas gratis por API sin backend propio, así que se cargan a mano: toma unos 2 minutos por pieza.</p>
+
+  <div class="card al-p" style="margin-bottom:14px;">
+    <div class="card-title">Cómo cargar los números</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Abre la pieza publicada</div><div class="fdesc">Clic en <strong>＋ Cargar números</strong> (o <strong>✎ Editar</strong> si ya tenía datos).</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">Elige la red</div><div class="fdesc">Pestañas <strong>TikTok</strong> e <strong>Instagram</strong> — se miden por separado, nunca se suman. Son audiencias distintas y mezclarlas esconde en cuál te está funcionando el video.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">Llena lo que tengas</div><div class="fdesc">Visualizaciones, tiempo promedio de visualización, duración del video, me gusta, comentarios, compartidos, guardados, visitas al perfil (solo Instagram) y mensajes recibidos por WhatsApp. Puedes dejar campos en blanco.</div></div></div>
+    <div class="flow"><div class="fnum">4</div><div><div class="ftitle">Guardar y diagnosticar</div><div class="fdesc">La app calcula las tasas y muestra el diagnóstico al instante.</div></div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-title">Diagnóstico de embudo</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:10px;">Devuelve la <strong>primera</strong> etapa que falla — arreglar una etapa posterior no sirve si la anterior sigue rota.</p>
+    <table>
+      <tr><th>Etapa</th><th>Cuándo aparece</th><th>Qué corregir</th></tr>
+      <tr><td><span class="b bo">Gancho</span></td><td>Retención baja — la gente se va en los primeros segundos</td><td>Reescribe los 3 primeros segundos; acorta el video</td></tr>
+      <tr><td><span class="b bo">Interés</span></td><td>Retención ok, pero pocas reacciones (likes/comentarios)</td><td>El tema no le duele a tu público — cambia el ángulo</td></tr>
+      <tr><td><span class="b bo">Utilidad</span></td><td>Gusta, pero casi nadie comparte</td><td>Agrega un dato o comparación que dé ganas de reenviar</td></tr>
+      <tr><td><span class="b bo">Curiosidad</span></td><td>Buen engagement, pocas visitas al perfil</td><td>Falta autoridad — muestra un caso real</td></tr>
+      <tr><td><span class="b bo">Conversión</span></td><td>Entran al perfil, cero mensajes</td><td>Revisa la bio y el CTA, no el video</td></tr>
+      <tr><td><span class="b bg">Sano / Convierte</span></td><td>Sin cuello de botella claro</td><td>Sostén el formato, sube el volumen</td></tr>
+    </table>
+  </div>
+
+  <div class="card al-c" style="margin-bottom:14px;">
+    <div class="card-title">¿Dónde te está funcionando? / ¿La estrategia va bien?</div>
+    <p style="font-size:12px;color:var(--t2);">Con <strong>2+ redes medidas</strong> aparece la comparación TikTok vs. Instagram (vistas, engagement, mensajes) para saber dónde concentrar el esfuerzo. Con <strong>3+ piezas medidas</strong> se activa el panel de estrategia: agrupa por pilar, rubro y formato, y compara contra <strong>tu propia mediana</strong> — no contra benchmarks genéricos de internet.</p>
+  </div>
+
+  <div class="card al-o">
+    <div class="card-title">Marcar piezas de "arranque"</div>
+    <p style="font-size:12px;color:var(--t2);">Al abrir una pieza para cargar datos hay una casilla <strong>"No contar para el promedio"</strong>. Márcala en tus primeras publicaciones: TikTok reparte un lote de prueba de 400-500 vistas a cuentas nuevas que no refleja la calidad real — si lo dejas dentro del promedio, distorsiona la comparación de las piezas siguientes.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 12. LINKEDIN -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="linkedin">
+  <div class="sec-header">
+    <div class="sec-icon ic-c">📰</div>
+    <div><div class="sec-num">Sección 12</div><div class="sec-title">LinkedIn</div><div class="sec-sub">Artículos de actualidad y banco de fotos</div></div>
+  </div>
+  <p class="lead">A diferencia del resto de la app, estos artículos <strong>no se generan solos</strong> — requieren investigación real de un tema vigente, así que se preparan en el chat con Claude y esta sección solo los guarda, organiza y prepara para publicar.</p>
+
+  <div class="tip tp-o"><div class="tip-icon">⚠️</div><div><div class="tip-title">Por qué no se auto-generan</div><div class="tip-text">Inventar "noticias" sin una fuente real sería desinformación, y copiar el texto de otro medio tal cual viola derechos de autor. Por eso el flujo pasa siempre por una investigación real (búsqueda web) antes de escribir.</div></div></div>
+
+  <div class="card al-c" style="margin-bottom:14px;">
+    <div class="card-title">Flujo de trabajo</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Pide el artículo en el chat</div><div class="fdesc">Ej. <em>"Investiga un tema vigente de IA/pymes y escribe un artículo para LinkedIn"</em>. Claude busca datos reales y cita las fuentes.</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">✎ Nuevo artículo</div><div class="fdesc">Pega el título, el cuerpo y los hashtags que te dio en el chat.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">Agrega una foto (opcional)</div><div class="fdesc">Desde la pestaña <strong>🖼 Banco de fotos</strong>, pega el link (Unsplash o Pexels, gratis) en el campo de foto del artículo.</div></div></div>
+    <div class="flow"><div class="fnum">4</div><div><div class="ftitle">Publicar</div><div class="fdesc"><strong>📋 Copiar todo</strong> → <strong>↗ Ir a LinkedIn</strong> → pega y publica → <strong>✓ Marcar publicado</strong>.</div></div></div>
+  </div>
+
+  <div class="card al-v">
+    <div class="card-title">Banco de fotos</div>
+    <p style="font-size:12px;color:var(--t2);">Solo guarda <strong>links</strong>, no archivos — así no se llena el navegador. Busca en <a href="https://unsplash.com" target="_blank" style="color:var(--cyan);">Unsplash</a> o <a href="https://www.pexels.com" target="_blank" style="color:var(--cyan);">Pexels</a> (gratis, sin atribución obligatoria), copia el link de la imagen y pégalo con <strong>🖼 Agregar foto</strong>. Cada foto tiene botones para copiar su link o eliminarla.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 13. ESTRATEGIA -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="estrategia">
+  <div class="sec-header">
+    <div class="sec-icon ic-g">◎</div>
+    <div><div class="sec-num">Sección 13</div><div class="sec-title">Estrategia de Marca</div><div class="sec-sub">Pilares editoriales, reglas y paleta</div></div>
+  </div>
+  <p class="lead">Pantalla de referencia (solo lectura) con los pilares estratégicos y las reglas que guían la producción.</p>
+
+  <div class="g2" style="margin-bottom:14px;">
+    <div class="card al-v"><div style="font-size:20px;margin-bottom:8px;">⚡</div><div style="font-size:13px;font-weight:700;color:var(--violet);margin-bottom:4px;">Velocidad</div><div style="font-size:11.5px;color:var(--t2);">De idea a app en semanas. La IA comprime tiempos.<br><em style="color:var(--t3);">"Antes tardabas meses. Ahora no."</em></div></div>
+    <div class="card al-c"><div style="font-size:20px;margin-bottom:8px;">🎯</div><div style="font-size:13px;font-weight:700;color:var(--cyan);margin-bottom:4px;">A medida real</div><div style="font-size:11.5px;color:var(--t2);">No templates. Cada app refleja cómo trabaja ese negocio.<br><em style="color:var(--t3);">"El software se adapta a ti, no al revés."</em></div></div>
+    <div class="card al-p"><div style="font-size:20px;margin-bottom:8px;">🤝</div><div style="font-size:13px;font-weight:700;color:var(--pink);margin-bottom:4px;">Continuidad</div><div style="font-size:11.5px;color:var(--t2);">No entregamos código y desaparecemos.<br><em style="color:var(--t3);">"Las otras agencias se van. Nosotros nos quedamos."</em></div></div>
+    <div class="card al-o"><div style="font-size:20px;margin-bottom:8px;">🏆</div><div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:4px;">12 rubros probados</div><div style="font-size:11.5px;color:var(--t2);">Experiencia real en salud, belleza, retail, deporte, minería y más.<br><em style="color:var(--t3);">"Ya lo hemos construido antes en tu industria."</em></div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-title">Reglas editoriales inviolables</div>
+    <table>
+      <tr><th>Regla</th><th>Detalle</th></tr>
+      <tr><td><strong>Rotar rubros</strong></td><td>Un post de spa, uno de CRM, uno de clínica. No encasillar la marca en un solo caso.</td></tr>
+      <tr><td><strong>Antes/Después real</strong></td><td>Antes: WhatsApp caótico. Después: app con reservas y cobro automático.</td></tr>
+      <tr><td><strong>Hook en 3 segundos</strong></td><td>TikTok e Instagram: el gancho debe estar en el primer frame o primera línea.</td></tr>
+      <tr><td><strong>CTA siempre</strong></td><td>+51 999 039 947 · orasic-lab.vercel.app en cada pieza. Sin excepción.</td></tr>
+      <tr><td><strong>Sin testimonios inventados</strong></td><td>Solo casos reales. Pendiente conseguir 3-4 con nombre y rubro.</td></tr>
+    </table>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-title">Paleta de marca</div>
+    <div class="swatch-row">
+      <div class="sw"><div class="sw-dot" style="background:#080A0F;border-color:#444;"></div><div class="sw-name">Fondo</div><div class="sw-hex">#080A0F</div></div>
+      <div class="sw"><div class="sw-dot" style="background:#A78BFA;"></div><div class="sw-name">Violeta</div><div class="sw-hex">#A78BFA</div></div>
+      <div class="sw"><div class="sw-dot" style="background:#22D3EE;"></div><div class="sw-name">Cyan</div><div class="sw-hex">#22D3EE</div></div>
+      <div class="sw"><div class="sw-dot" style="background:#F472B6;"></div><div class="sw-name">Rosa</div><div class="sw-hex">#F472B6</div></div>
+      <div class="sw"><div class="sw-dot" style="background:#FB923C;"></div><div class="sw-name">Naranja</div><div class="sw-hex">#FB923C</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Voces aprobadas (ElevenLabs)</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:10px;">La voz depende de <strong>cómo</strong> se produzca la locución:</p>
+
+    <div style="font-size:11px;font-weight:700;color:var(--violet);letter-spacing:.06em;margin-bottom:6px;">PRODUCCIÓN MANUAL — en la web de ElevenLabs</div>
+    <div class="vitem"><div class="vdot"></div><span style="font-size:12.5px;font-weight:500;">Giancarlos - Latin American Narrator</span></div>
+    <div class="vitem"><div class="vdot"></div><span style="font-size:12.5px;font-weight:500;">Jorge - Warm, Close and Friendly</span></div>
+    <div class="vitem"><div class="vdot"></div><span style="font-size:12.5px;font-weight:500;">Diego Cárdenas - Soothing and Meditative</span></div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.06em;margin:14px 0 6px;">AUTOMÁTICA — desde Content Studio (API)</div>
+    <div class="vitem"><div class="vdot" style="background:var(--green);"></div><span style="font-size:12.5px;font-weight:500;">George — voz predeterminada, categoría Narración</span></div>
+
+    <div class="tip tp-o" style="margin-top:12px;margin-bottom:0;"><div class="tip-icon">⚠️</div><div><div class="tip-text">Las tres primeras son <strong>voces de biblioteca</strong> y el plan gratuito las bloquea por API (error 402). Por eso el estudio de video usa George. Ver <a href="#voz" style="color:var(--cyan);">Sección 09</a>. Cualquier otra voz debe evaluarse antes de usarse.</div></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 9. CONFIGURACIÓN -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="config">
+  <div class="sec-header">
+    <div class="sec-icon ic-c">⚙</div>
+    <div><div class="sec-num">Sección 14</div><div class="sec-title">Configuración</div><div class="sec-sub">Marca, APIs, voces y gestión del calendario</div></div>
+  </div>
+
+  <div class="card al-v" style="margin-bottom:12px;">
+    <div class="card-title">Información de marca</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:10px;">Estos datos se inyectan en cada prompt enviado a Claude. Mantenerlos actualizados garantiza coherencia de marca.</p>
+    <table>
+      <tr><th>Campo</th><th>Valor actual</th></tr>
+      <tr><td>Nombre empresa</td><td><code>ORASIC Lab</code></td></tr>
+      <tr><td>Público por defecto</td><td>Dueños de pyme en Perú y Colombia (salud, belleza, retail, deporte)</td></tr>
+      <tr><td>WhatsApp</td><td><code>+51 999 039 947</code></td></tr>
+      <tr><td>URL del sitio</td><td><code>orasic-lab.vercel.app</code></td></tr>
+    </table>
+  </div>
+
+  <div class="card al-g" style="margin-bottom:12px;">
+    <div class="card-title">APIs de generación</div>
+    <div class="arow"><div style="flex-shrink:0;"><div style="font-size:11px;font-weight:700;color:var(--violet);">Claude AI</div><code style="font-size:10px;">sk-ant-api03-...</code></div><div class="adesc">Motor de generación de texto. Con key → Claude claude-sonnet-4-6. Sin key → plantillas inteligentes. Badge <span class="b bg" style="font-size:10px;">✓ Claude conectado</span> + botón de prueba.</div></div>
+    <div class="arow"><div style="flex-shrink:0;"><div style="font-size:11px;font-weight:700;color:var(--orange);">ElevenLabs</div><code style="font-size:10px;">sk_...</code></div><div class="adesc">Voz en off del estudio de video. Se guarda sola al escribirla. Plan gratuito: 10.000 caracteres/mes. Ver <a href="#voz" style="color:var(--cyan);">Sección 09</a>.</div></div>
+    <div class="arow"><div style="flex-shrink:0;"><div style="font-size:11px;font-weight:700;color:var(--cyan);">Higgsfield AI</div><code style="font-size:10px;">hf-...</code></div><div class="adesc">Reservado. La cuenta conectada está en plan gratuito sin créditos, así que la generación de video con IA no está disponible.</div></div>
+  </div>
+
+  <div class="card al-o" style="margin-bottom:12px;">
+    <div class="card-title">Voces para la narración</div>
+    <div class="arow"><div class="abtn">➕ Agregar</div><div class="adesc">Guarda una voz con <strong>nombre + Voice ID</strong>. Puedes tener varias y rotarlas por pieza.</div></div>
+    <div class="arow"><div class="abtn">⦿ radio</div><div class="adesc">Marca la <strong>voz por defecto</strong>, la que se preselecciona en el estudio de video.</div></div>
+    <div class="arow"><div class="abtn">🎧</div><div class="adesc">Reproduce una frase de prueba con esa voz (~60 caracteres de cuota).</div></div>
+    <div class="arow"><div class="abtn">✕</div><div class="adesc">Elimina la voz de la lista.</div></div>
+    <div class="arow"><div class="abtn">🔄 Cargar voces de mi cuenta</div><div class="adesc">Trae las voces de ElevenLabs automáticamente. <strong>Solo funciona si la clave NO está restringida</strong>; si lo está, agrégalas a mano por Voice ID.</div></div>
+  </div>
+
+  <div class="card al-v" style="margin-bottom:12px;">
+    <div class="card-title">Pronunciación de la voz</div>
+    <div class="adesc" style="margin-left:0;">Reglas <code>palabra = como suena</code>, una por línea, que corrigen cómo <strong>pronuncia</strong> la voz sin alterar el texto en pantalla. Los teléfonos se convierten solos. Detalle en <a href="#voz" style="color:var(--cyan);">Sección 09</a>.</div>
+  </div>
+
+  <div class="card al-c" style="margin-bottom:12px;">
+    <div class="card-title">Gestión del calendario</div>
+    <div class="arow"><div class="abtn">📥 Importar piezas faltantes</div><div class="adesc">Agrega las piezas del seed que no existen. No borra ni duplica.</div></div>
+    <div class="arow"><div class="abtn">🔄 Reimportar calendario</div><div class="adesc">Borra todas las piezas seed y las vuelve a cargar. No elimina piezas creadas manualmente.</div></div>
+    <div class="arow"><div class="abtn">📅 Ver calendario</div><div class="adesc">Navega a la vista del mes actual.</div></div>
+  </div>
+
+  <div class="card" style="border-color:rgba(248,113,113,.3);">
+    <div class="card-title" style="color:var(--red);">Zona de peligro</div>
+    <div class="arow"><div class="abtn" style="color:var(--red);border-color:rgba(248,113,113,.4);">Borrar todo</div><div class="adesc">Elimina <strong>todo el contenido del banco</strong>. No se puede deshacer. Solo para reiniciar desde cero.</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 10. FLUJO DE TRABAJO -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="flujo">
+  <div class="sec-header">
+    <div class="sec-icon ic-v">⟳</div>
+    <div><div class="sec-num">Sección 15</div><div class="sec-title">Flujo de trabajo</div><div class="sec-sub">La rutina para mantener el calendario activo</div></div>
+  </div>
+
+  <div class="card al-g" style="margin-bottom:12px;">
+    <div class="card-title">El ciclo completo de una pieza (~6 minutos)</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Guion</div><div class="fdesc">Ya generado desde el wizard o en lote.</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">🎬 Generar video</div><div class="fdesc">Con la narración de George activada. Tarda lo que dura el video.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">⬇ Descargar el MP4</div><div class="fdesc">Escúchalo completo antes de subirlo.</div></div></div>
+    <div class="flow"><div class="fnum">4</div><div><div class="ftitle">📋 Copiar todo → ↗ Ir a TikTok</div><div class="fdesc">Subes el video, pegas con Ctrl+V, publicas. Repites en Instagram Reels.</div></div></div>
+    <div class="flow"><div class="fnum">5</div><div><div class="ftitle">✓ Marcar como publicado</div><div class="fdesc">En el Banco, para que el Dashboard quede al día.</div></div></div>
+  </div>
+
+  <div class="card al-v" style="margin-bottom:12px;">
+    <div class="card-title">Cada mañana (~5 minutos)</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Revisar el Dashboard</div><div class="fdesc">¿Hay alerta roja HOY? Si sí, abre esa pieza y corre el ciclo completo de arriba.</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">Marcar como publicada</div><div class="fdesc">En el Banco, clic en ✓ de la pieza publicada → estado <span class="b bg">published</span>.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">Ver qué viene mañana</div><div class="fdesc">En "Próximas publicaciones" del Dashboard: si la pieza de mañana no tiene guion, genera ahora.</div></div></div>
+  </div>
+
+  <div class="card al-c" style="margin-bottom:12px;">
+    <div class="card-title">Cada lunes (~20 minutos)</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Abrir Guiones por lote</div><div class="fdesc">Modo: "Esta semana".</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">Seleccionar sin guion</div><div class="fdesc">Clic en ☐ Seleccionar sin guion. Verifica las marcadas.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">Generar en lote</div><div class="fdesc">Clic en 🤖 Generar seleccionados. Esperar el ✅ en el log.</div></div></div>
+    <div class="flow"><div class="fnum">4</div><div><div class="ftitle">Revisar y ajustar</div><div class="fdesc">Usar ✎ editar en cada pieza para revisar el guion, ajustar frases y confirmar el asset cuando esté producido.</div></div></div>
+  </div>
+
+  <div class="card al-o">
+    <div class="card-title">Cuando produces un video</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Abrir la pieza</div><div class="fdesc">Buscar en el Banco por número de día o tema. Clic en ✎ Editar.</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">Registrar el archivo</div><div class="fdesc">En <em>Archivo de asset</em> escribir el nombre del archivo final que descargaste del estudio. Ej: <code>orasic-video-1785543421830.mp4</code>.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">Actualizar estado</div><div class="fdesc">Si ya sabes fecha exacta → <em>Programado</em>. Si lo subes manualmente el día que toca → <em>Listo para publicar</em>.</div></div></div>
+    <div class="flow"><div class="fnum">4</div><div><div class="ftitle">Guardar</div><div class="fdesc">Clic en 💾 Guardar en banco. La pieza queda actualizada en el Calendario.</div></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 11. GLOSARIO -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="glosario">
+  <div class="sec-header">
+    <div class="sec-icon ic-c">≡</div>
+    <div><div class="sec-num">Sección 16</div><div class="sec-title">Glosario</div><div class="sec-sub">Términos clave de la app</div></div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><th>Término</th><th>Significado</th></tr>
+      <tr><td><strong>Pieza</strong></td><td>Una unidad de contenido — video de TikTok, carrusel de Instagram, artículo de blog, etc. Cada pieza tiene datos, guion y estado propios.</td></tr>
+      <tr><td><strong>Banco</strong></td><td>Repositorio completo de todas las piezas guardadas en la app.</td></tr>
+      <tr><td><strong>Seed / Calendario seed</strong></td><td>Las 30 piezas pre-planificadas (28 Jul – 26 Ago 2026). Se identifican por tener número de día (<code>seedDay</code>).</td></tr>
+      <tr><td><strong>Pilar editorial</strong></td><td>Categoría temática: Mito vs Realidad, Antes/Después, Números, Tips, Rubro del día, Detrás de cámara, Objeciones. Define la estructura del guion.</td></tr>
+      <tr><td><strong>Formato</strong></td><td><strong>Narrado:</strong> video con locución en off (ElevenLabs). <strong>Silencioso:</strong> video con tarjetas de texto, sin voz.</td></tr>
+      <tr><td><strong>Brief</strong></td><td>El conjunto de datos del Paso 2: tema, rubro, mensaje clave, tono, CTA y hashtags. Es el input que recibe la IA.</td></tr>
+      <tr><td><strong>Script / Guion</strong></td><td>Texto generado para el video — tarjetas (Silencioso) o texto para grabar con voz (Narrado).</td></tr>
+      <tr><td><strong>Caption</strong></td><td>Descripción del post en la plataforma (lo que aparece debajo del video en TikTok/Instagram).</td></tr>
+      <tr><td><strong>Prompt de imagen</strong></td><td>Descripción en inglés para generar el video/imagen con Higgsfield AI. Con colores de marca.</td></tr>
+      <tr><td><strong>CTA</strong></td><td>Call to Action — llamada a la acción al final del guion. Siempre incluye WhatsApp +51 999 039 947.</td></tr>
+      <tr><td><strong>Asset</strong></td><td>El archivo producido (video/imagen). Se registra por nombre en el Paso 4.</td></tr>
+      <tr><td><strong>Tarjeta</strong></td><td>Cada pantalla de texto del video. El estudio parte el guion en tarjetas automáticamente (~2.8s cada una).</td></tr>
+      <tr><td><strong>Marcador</strong></td><td>Las etiquetas entre corchetes del guion — <code>[HOOK]</code>, <code>[CTA]</code>, <code>[CARD 2]</code>. Son indicaciones de producción: <strong>nunca se publican ni aparecen en el video</strong>.</td></tr>
+      <tr><td><strong>Voice ID</strong></td><td>Identificador de una voz de ElevenLabs (ej. <code>dF1Qg3iMRirscWEMtEKb</code>). Se copia desde su panel de Voces.</td></tr>
+      <tr><td><strong>Voz de biblioteca</strong></td><td>Voz de la comunidad de ElevenLabs. <strong>Bloqueada por API en el plan gratuito</strong> (error 402). Distinta de las voces <em>predeterminadas</em>, que sí funcionan.</td></tr>
+      <tr><td><strong>localStorage</strong></td><td>Base de datos local del navegador donde vive todo el banco. Clave: <code>orasic_studio_v2</code>. <strong>Ojo:</strong> <code>file://</code> y <code>localhost</code> usan almacenamientos distintos.</td></tr>
+    </table>
+  </div>
+
+  <div style="margin-top:28px;padding:22px;background:var(--bg-card2);border-radius:11px;border:1px solid var(--border);text-align:center;">
+    <div style="font-size:18px;margin-bottom:7px;">✦</div>
+    <div style="font-size:12px;color:var(--t3);">ORASIC Content Studio · Uso interno exclusivo</div>
+    <div style="font-size:11px;color:var(--t3);margin-top:3px;"><code>localhost:5050/content-studio/</code> · <code>orasic_studio_v2</code> · Manual v4 · Agosto 2026</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  // ── Theme ──
+  function toggleTheme() {
+    const r = document.documentElement;
+    const next = r.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    r.setAttribute('data-theme', next);
+    document.getElementById('tbtn').textContent = next === 'dark' ? '☀ Claro' : '🌙 Oscuro';
+    localStorage.setItem('cs_manual_theme', next);
+  }
+  (function(){
+    const saved = localStorage.getItem('cs_manual_theme');
+    const os = window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+    const t = saved || os;
+    document.documentElement.setAttribute('data-theme', t);
+    const btn = document.getElementById('tbtn');
+    if(btn) btn.textContent = t === 'dark' ? '☀ Claro' : '🌙 Oscuro';
+  })();
+
+  // ── Active nav on scroll ──
+  const secs = document.querySelectorAll('section[id]');
+  const navAs = document.querySelectorAll('.nav-a[href]');
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        const id = e.target.id;
+        navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin:'-8% 0px -82% 0px' }).observe ? secs.forEach(s => {
+    new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if(e.isIntersecting) {
+          navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+        }
+      });
+    }, { rootMargin:'-8% 0px -82% 0px' }).observe(s);
+  }) : null;
+
+  // Smooth scroll
+  navAs.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const t = document.querySelector(a.getAttribute('href'));
+      if(t) t.scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+  });
+</script>
+</body>
+</html>

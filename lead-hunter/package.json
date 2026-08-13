@@ -1,0 +1,13 @@
+{
+  "name": "orasic-lead-hunter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Buscador de leads de LinkedIn con analisis IA y mensajes personalizados para ORASIC Lab",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "lead-hunter",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["lead-hunter/server.js"],
+      "port": 5070
+    },
+    {
+      "name": "apps-estaticas",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5051"],
+      "port": 5051
+    },
+    {
+      "name": "gimnasios",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "gimnasios-app", "run", "dev"],
+      "port": 5173
+    }
+  ]
+}

@@ -1,0 +1,1249 @@
+<!doctype html>
+<title>Calendario ORASIC Lab · Jul–Ago 2026</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    --bg: #05060a;
+    --bg-card: #0d0f18;
+    --bg-card2: #111420;
+    --border: #1a1e2e;
+    --border2: #252a3d;
+    --text: #f0f2f8;
+    --sub: #94a3b8;
+    --dim: #475569;
+    --violet: #a78bfa;
+    --violet-dim: rgba(167,139,250,0.12);
+    --cyan: #22d3ee;
+    --cyan-dim: rgba(34,211,238,0.1);
+    --pink: #f472b6;
+    --pink-dim: rgba(244,114,182,0.1);
+    --orange: #fb923c;
+    --orange-dim: rgba(251,146,60,0.12);
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.1);
+    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    --sans: -apple-system, 'Segoe UI', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    margin: 0;
+    padding: 0 0 80px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── NAV ─── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(5,6,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-nodes {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .node { width: 8px; height: 8px; border-radius: 50%; }
+  .topbar-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+  .topbar-name span { color: var(--violet); }
+  .topbar-sub { font-size: 11px; color: var(--dim); margin-top: 1px; }
+  .jump-links {
+    display: flex;
+    gap: 4px;
+  }
+  .jump-link {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--dim);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: color 0.12s, background 0.12s;
+  }
+  .jump-link:hover { color: var(--cyan); background: var(--cyan-dim); }
+
+  /* ─── WRAP ─── */
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+  /* ─── HEADER ─── */
+  .page-header {
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 10px;
+  }
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+    line-height: 1.15;
+    margin: 0 0 10px;
+    color: var(--text);
+  }
+  .page-header p {
+    color: var(--sub);
+    font-size: 15px;
+    max-width: 540px;
+  }
+
+  /* ─── LEGEND ─── */
+  .legend {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--sub);
+  }
+  .pip {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ─── STATS ROW ─── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 44px;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .stat-n {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-l {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--dim);
+  }
+
+  /* ─── MONTH HEADER ─── */
+  .month-block { margin-bottom: 12px; }
+  .month-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--violet);
+    padding: 6px 0 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .month-count { color: var(--dim); font-size: 11px; font-weight: 600; }
+
+  /* ─── DAY CARD ─── */
+  .day-card {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-card);
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.12s;
+  }
+  .day-card:hover { border-color: var(--border2); }
+
+  /* Status left stripe */
+  .day-card.is-published { border-left: 3px solid var(--green); }
+  .day-card.is-listo     { border-left: 3px solid var(--cyan); }
+  .day-card.is-producir  { border-left: 3px solid var(--orange); }
+  .day-card.is-generar   { border-left: 3px solid var(--pink); }
+
+  /* Date column */
+  .date-col {
+    border-right: 1px solid var(--border);
+    padding: 14px 8px 14px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .dc-num { font-size: 24px; font-weight: 800; line-height: 1; color: var(--text); }
+  .dc-mon { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--sub); margin-top: 1px; }
+  .dc-dow { font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dim); margin-top: 6px; }
+  .dc-day {
+    margin-top: 8px;
+    font-size: 10px;
+    color: var(--dim);
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Content column */
+  .content-col { padding: 13px 16px 13px; }
+
+  .row1 {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+  }
+
+  /* Pills */
+  .pill {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .pill-video  { background: var(--violet-dim); color: var(--violet); }
+  .pill-imagen { background: var(--cyan-dim); color: var(--cyan); }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .badge-published { background: var(--green-dim);  color: var(--green); }
+  .badge-listo     { background: var(--cyan-dim);   color: var(--cyan); }
+  .badge-producir  { background: var(--orange-dim); color: var(--orange); }
+  .badge-generar   { background: var(--pink-dim);   color: var(--pink); }
+
+  .platforms { display: flex; gap: 4px; }
+  .ptag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.05);
+    color: var(--dim);
+  }
+
+  /* Title / asset */
+  .card-title { font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .card-asset { font-size: 11.5px; font-family: var(--mono); color: var(--dim); margin-bottom: 4px; }
+
+  /* Caption toggle */
+  details { margin-top: 6px; }
+  details summary {
+    cursor: pointer;
+    list-style: none;
+    font-size: 11px;
+    color: var(--dim);
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.1s;
+  }
+  details summary:hover { color: var(--sub); }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::before { content: '▶ Caption listo'; }
+  details[open] summary::before { content: '▼ Ocultar'; }
+
+  .caption-box {
+    margin-top: 8px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--sub);
+    white-space: pre-wrap;
+    line-height: 1.7;
+    font-family: var(--sans);
+  }
+
+  /* Guion box for videos */
+  .guion-toggle { margin-top: 4px; }
+  .guion-toggle summary { font-size: 11px; color: var(--violet); opacity: 0.8; cursor: pointer; user-select: none; list-style: none; }
+  .guion-toggle summary:hover { opacity: 1; }
+  .guion-toggle summary::-webkit-details-marker { display: none; }
+  .guion-toggle summary::before { content: '📄 Ver guion (leer para ElevenLabs)'; }
+  .guion-toggle[open] summary::before { content: '▼ Ocultar guion'; }
+
+  .guion-box {
+    margin-top: 8px;
+    padding: 12px 14px;
+    background: rgba(167,139,250,0.05);
+    border: 1px solid rgba(167,139,250,0.18);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--sub);
+    white-space: pre-wrap;
+    line-height: 1.7;
+  }
+  .guion-head {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--violet);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  /* ─── FOOTER ─── */
+  .page-footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 16px;
+  }
+  .footer-block h4 {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--sub);
+    margin-bottom: 8px;
+  }
+  .footer-block p, .footer-block li { color: var(--dim); line-height: 1.7; font-size: 12px; }
+  .footer-block ul { padding-left: 14px; }
+
+  @media (max-width: 640px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    .day-card { grid-template-columns: 60px 1fr; }
+    .dc-num { font-size: 20px; }
+    .topbar { padding: 10px 16px; }
+    .jump-links { display: none; }
+    .wrap { padding: 0 16px; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .page-header h1 { font-size: 24px; }
+  }
+</style>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="logo-nodes">
+      <div class="node" style="background:#a78bfa"></div>
+      <div class="node" style="background:#22d3ee"></div>
+      <div class="node" style="background:#f472b6"></div>
+      <div class="node" style="background:#fb923c"></div>
+    </div>
+    <div>
+      <div class="topbar-name">ORASIC <span>Lab</span></div>
+      <div class="topbar-sub">Calendario de contenido</div>
+    </div>
+  </div>
+  <nav class="jump-links">
+    <a href="#julio" class="jump-link">Julio</a>
+    <a href="#agosto" class="jump-link">Agosto</a>
+    <a href="#footer-notes" class="jump-link">Notas</a>
+  </nav>
+</div>
+
+<div class="wrap">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="eyebrow">Instagram &amp; TikTok · 2026</div>
+    <h1>Calendario Jul 30 → Ago 31</h1>
+    <p>22 publicaciones. Cada una con caption listo para pegar y el archivo exacto a usar. Videos marcados con guion ya escrito — solo producir y publicar.</p>
+    <div class="legend">
+      <div class="legend-item"><div class="pip" style="background:#4ade80"></div>Publicado ✓</div>
+      <div class="legend-item"><div class="pip" style="background:#22d3ee"></div>Listo — solo publicar</div>
+      <div class="legend-item"><div class="pip" style="background:#fb923c"></div>Producir video (guion listo)</div>
+      <div class="legend-item"><div class="pip" style="background:#f472b6"></div>Generar imagen (script PIL)</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-n" style="color:var(--green)">3</div>
+      <div class="stat-l">Publicados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-n" style="color:var(--cyan)">6</div>
+      <div class="stat-l">Listos ya</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-n" style="color:var(--orange)">8</div>
+      <div class="stat-l">Videos · guion listo</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-n" style="color:var(--pink)">9</div>
+      <div class="stat-l">Imágenes · generar</div>
+    </div>
+  </div>
+
+  <!-- ══════════════ JULIO ══════════════ -->
+  <div id="julio" class="month-block">
+    <div class="month-label">
+      <span>Julio 2026</span>
+      <span class="month-count">2 publicaciones pendientes · días 3–4</span>
+    </div>
+
+    <!-- Jul 30 -->
+    <div class="day-card is-listo">
+      <div class="date-col">
+        <div class="dc-num">30</div>
+        <div class="dc-mon">Jul</div>
+        <div class="dc-dow">Mié</div>
+        <div class="dc-day">Día 3</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-video">📹 Video</span>
+          <span class="badge badge-listo">Listo</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Números que no mienten</div>
+        <div class="card-asset">lote-1-tiktok/video-3-numeros-FINAL2.mp4</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">+100 apps. 12 rubros. 2 países.
+
+No empezamos hoy. Y cada número tiene un negocio real detrás.
+
+¿El tuyo puede ser el siguiente? 👇
++51 999 039 947
+
+#ORASICLab #AppsAMedida #DesarrolloApps #NegociosPeru #NegociosColombia</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Jul 31 -->
+    <div class="day-card is-listo">
+      <div class="date-col">
+        <div class="dc-num">31</div>
+        <div class="dc-mon">Jul</div>
+        <div class="dc-dow">Jue</div>
+        <div class="dc-day">Día 4</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-listo">Listo</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Tip: Tu agenda en WhatsApp</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia4-tip.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Si tu agenda vive en WhatsApp, ya estás perdiendo citas.
+
+No porque tus clientes no quieran reservar — sino porque confirmar, recordar y hacer seguimiento en 100 chats al mismo tiempo es imposible sostener.
+
+La solución no es más disciplina. Es automatizarlo.
+
+¿En qué rubro trabajas? Te cuento cómo se vería para tu negocio 👇
++51 999 039 947
+
+#ORASICLab #AutomatizaciónNegocio #GestiónDeClientes #PymesPeru</div>
+        </details>
+      </div>
+    </div>
+
+  </div><!-- /julio -->
+
+
+  <!-- ══════════════ AGOSTO ══════════════ -->
+  <div id="agosto" class="month-block">
+    <div class="month-label">
+      <span>Agosto 2026</span>
+      <span class="month-count">20 publicaciones · días 5–25</span>
+    </div>
+
+    <!-- Aug 2 -->
+    <div class="day-card is-listo">
+      <div class="date-col">
+        <div class="dc-num">2</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Sáb</div>
+        <div class="dc-day">Día 5</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-listo">Listo</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Antes / Después B2B</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia5-antesdespues-b2b.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Equipo de ventas B2B — antes y después:
+
+ANTES: Excel, WhatsApp, llamadas sin registro, leads perdidos entre chats.
+
+DESPUÉS: Pipeline centralizado, scoring automático, cada oportunidad rastreada hasta el cierre.
+
+¿Cuántas ventas pierdes hoy por falta de seguimiento? 👇
++51 999 039 947
+
+#ORASICLab #VentasB2B #CRM #SalesOps #TransformacionDigital</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 4 -->
+    <div class="day-card is-listo">
+      <div class="date-col">
+        <div class="dc-num">4</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Lun</div>
+        <div class="dc-day">Día 6</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-listo">Listo</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Rubro Belleza — reservas automatizadas</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia6-rubro-belleza.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Para un estudio de pestañas, uñas y cejas, este era el día a día:
+
+❌ Reservas mezcladas en Instagram y WhatsApp
+❌ Dobles citas sin querer
+❌ Recordatorios mandados a mano, uno por uno
+
+Una app a medida lo resolvió todo. Ahora las clientas reservan solas, a cualquier hora.
+
+¿Tu estudio sigue igual? Cuéntanos 👇
++51 999 039 947
+
+#ORASICLab #EstudioBelleza #Pestañas #AppReservas #SalonApp</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 5 — VIDEO D7 -->
+    <div class="day-card is-producir">
+      <div class="date-col">
+        <div class="dc-num">5</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Mar</div>
+        <div class="dc-day">Día 7</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-video">📹 Video</span>
+          <span class="badge badge-producir">Producir</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Detrás de cámara: "Así se ve el Día 1"</div>
+        <div class="card-asset">VIDEO_DIA7.mp4 — usar voz: Giancarlos / Jorge / Diego Cárdenas</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">El día 1 de un proyecto no es una reunión de dos horas.
+
+Es una pantalla que ya funciona — y puedes probar esa misma tarde.
+
+¿Cómo? Escríbenos y te lo mostramos 👇
++51 999 039 947
+
+#ORASICLab #AppsAMedida #DesarrolloRápido #MVPenDías #NegociosPeru</div>
+        </details>
+        <details class="guion-toggle">
+          <summary></summary>
+          <div class="guion-box"><span class="guion-head">Guion — leer tal cual para ElevenLabs</span>El día 1 de un proyecto no es una reunión de dos horas. Es esto: nos escribes por WhatsApp qué quieres que resuelva tu negocio, y en menos de dos días tienes una pantalla real para probar. No una propuesta en PDF. No un mockup en Figma. Una pantalla que ya funciona.</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 7 -->
+    <div class="day-card is-listo">
+      <div class="date-col">
+        <div class="dc-num">7</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Jue</div>
+        <div class="dc-day">Día 8</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-listo">Listo</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Prueba Social — los números</div>
+        <div class="card-asset">contenido/post-2-prueba.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Los números no mienten:
+
++100 aplicaciones construidas
+12 rubros distintos
+2 países: Perú 🇵🇪 y Colombia 🇨🇴
+
+Y ninguna fue una plantilla genérica. Cada una empezó con una conversación sobre cómo funciona un negocio real.
+
+¿Quieres saber cómo se vería la tuya? 👇
++51 999 039 947
+
+#ORASICLab #Portafolio #AppsAMedida #100Apps #DesarrolloConIA</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 9 -->
+    <div class="day-card is-listo">
+      <div class="date-col">
+        <div class="dc-num">9</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Sáb</div>
+        <div class="dc-day">Día 9</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-listo">Listo</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Mito vs Realidad — precio y tiempo</div>
+        <div class="card-asset">contenido/post-3-mito.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">MITO: "Una app a medida cuesta miles de dólares y toma meses."
+
+REALIDAD: Con IA en el desarrollo, la primera versión funcional está lista en días — y el costo baja igual de rápido.
+
+¿Sigues esperando por eso? 👇
++51 999 039 947
+
+#ORASICLab #MitoVsRealidad #AppsAMedida #DesarrolloConIA #PymesPeru</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 11 — VIDEO D10 -->
+    <div class="day-card is-producir">
+      <div class="date-col">
+        <div class="dc-num">11</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Lun</div>
+        <div class="dc-day">Día 10</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-video">📹 Video</span>
+          <span class="badge badge-producir">Producir</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Objeciones: "¿Mi negocio es muy pequeño?"</div>
+        <div class="card-asset">VIDEO_DIA10.mp4 — usar voz: Giancarlos / Jorge / Diego Cárdenas</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">No te preguntamos cuántos empleados tienes.
+
+Te preguntamos cuántos mensajes de WhatsApp se te escapan a la semana.
+
+Esa es la señal que nos importa, no el tamaño 👇
++51 999 039 947
+
+#ORASICLab #PymesDigitales #AutomatizaciónWhatsApp #NegociosPeru</div>
+        </details>
+        <details class="guion-toggle">
+          <summary></summary>
+          <div class="guion-box"><span class="guion-head">Guion — leer tal cual para ElevenLabs</span>No te preguntamos cuántos empleados tienes. Te preguntamos cuántos mensajes de WhatsApp se te escapan a la semana. Esa es la señal que nos importa, no el tamaño. La mayoría de nuestros clientes son negocios de una o dos personas, no corporativos.</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 12 — GENERAR -->
+    <div class="day-card is-generar">
+      <div class="date-col">
+        <div class="dc-num">12</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Mar</div>
+        <div class="dc-day">Día 11</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-generar">Generar</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Rubro Salud — seguimiento fotográfico de pacientes</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia11-rubro-salud.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Clínica podológica. 1 profesional. Pacientes que volvían o no — sin saber por qué.
+
+Construimos un sistema de seguimiento fotográfico que muestra la evolución de cada pie, tratamiento a tratamiento.
+
+Ahora el paciente ve su progreso. Y vuelve.
+
+¿Tu consulta lleva el mismo control? 👇
++51 999 039 947
+
+#ORASICLab #Podología #ClinicaDigital #SaludPeru #AppClinica</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 13 — VIDEO D13 -->
+    <div class="day-card is-producir">
+      <div class="date-col">
+        <div class="dc-num">13</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Mié</div>
+        <div class="dc-day">Día 12</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-video">📹 Video</span>
+          <span class="badge badge-producir">Producir</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Tips: "Automatizar sin perder el trato humano"</div>
+        <div class="card-asset">VIDEO_DIA13.mp4 — usar voz: Giancarlos / Jorge / Diego Cárdenas</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Automatizar no significa volverlo frío.
+
+Significa que el recordatorio de la cita de mañana llega solo — y tú apareces cuando de verdad importa.
+
+¿Le damos una vuelta a cómo funciona tu negocio? 👇
++51 999 039 947
+
+#ORASICLab #AutomatizaciónInteligente #AtenciónAlCliente #PymesPeru</div>
+        </details>
+        <details class="guion-toggle">
+          <summary></summary>
+          <div class="guion-box"><span class="guion-head">Guion — leer tal cual para ElevenLabs</span>La automatización no debería reemplazar tu mensaje, debería mandarlo por ti a la hora correcta. En vez de que tú te acuerdes de confirmar la cita de mañana, la app se lo recuerda al cliente sola. Tú solo apareces cuando hay que resolver algo de verdad.</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 14 — GENERAR -->
+    <div class="day-card is-generar">
+      <div class="date-col">
+        <div class="dc-num">14</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Jue</div>
+        <div class="dc-day">Día 13</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-generar">Generar</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">CRM no es para grandes empresas</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia13-crm-relaciones.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">CRM no significa "sistema complicado de vendedores corporativos".
+
+Significa saber en todo momento en qué punto está cada cliente tuyo — y qué sigue.
+
+Lo hemos construido para equipos B2B, coaches y consultoras. Para quien vive de sus relaciones comerciales.
+
+¿Cuántos seguimientos tienes pendientes hoy? 👇
++51 999 039 947
+
+#ORASICLab #CRM #VentasInteligentes #B2BPeru #RelacionesComerciales</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 16 — GENERAR -->
+    <div class="day-card is-generar">
+      <div class="date-col">
+        <div class="dc-num">16</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Sáb</div>
+        <div class="dc-day">Día 14</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-generar">Generar</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Pregunta directa — cuántos mensajes se te escapan</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia14-pregunta-wsp.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">¿Cuántos mensajes de WhatsApp se te escaparon esta semana?
+
+Seamos honestos: ningún negocio puede atender 50 chats al mismo tiempo con la misma calidad.
+
+Pero una app sí puede.
+
+Cuéntanos cuánto te está costando esto 👇
++51 999 039 947
+
+#ORASICLab #WhatsAppBusiness #AutomatizaciónPymes #NegociosPeru</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 18 — VIDEO D17 -->
+    <div class="day-card is-producir">
+      <div class="date-col">
+        <div class="dc-num">18</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Lun</div>
+        <div class="dc-day">Día 15</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-video">📹 Video</span>
+          <span class="badge badge-producir">Producir</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Detrás de cámara: "Cómo decidimos qué construir primero"</div>
+        <div class="card-asset">VIDEO_DIA17.mp4 — usar voz: Giancarlos / Jorge / Diego Cárdenas</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">No empezamos por lo bonito.
+
+Empezamos por lo que te está costando dinero hoy.
+
+¿Qué es lo que más te complica en este momento? Cuéntanos 👇
++51 999 039 947
+
+#ORASICLab #DesarrolloAgil #AppsAMedida #MVP #NegociosPeru</div>
+        </details>
+        <details class="guion-toggle">
+          <summary></summary>
+          <div class="guion-box"><span class="guion-head">Guion — leer tal cual para ElevenLabs</span>No empezamos por lo bonito. Empezamos por lo que te está costando dinero hoy. Si el problema es que pierdes citas, primero construimos el sistema de reservas. El diseño que enamora viene después, cuando lo urgente ya está resuelto.</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 19 — GENERAR -->
+    <div class="day-card is-generar">
+      <div class="date-col">
+        <div class="dc-num">19</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Mar</div>
+        <div class="dc-day">Día 16</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-generar">Generar</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Proceso — de WhatsApp a pantalla en 48h</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia16-proceso.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Así funciona un proyecto con ORASIC Lab:
+
+DÍA 1 → Nos cuentas por WhatsApp qué necesitas resolver.
+DÍA 2–3 → Tienes una primera pantalla real para probar.
+DÍA X → Tu app en producción, sin promesas vacías.
+
+Sin reuniones de dos horas. Sin PDFs con propuestas.
+
+¿Empezamos? 👇
++51 999 039 947
+
+#ORASICLab #ProcesoDeDesarrollo #AppsRápidas #DesarrolloConIA</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 20 — VIDEO D19 -->
+    <div class="day-card is-producir">
+      <div class="date-col">
+        <div class="dc-num">20</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Mié</div>
+        <div class="dc-day">Día 17</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-video">📹 Video</span>
+          <span class="badge badge-producir">Producir</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Objeciones: "¿Y si no sé nada de tecnología?"</div>
+        <div class="card-asset">VIDEO_DIA19.mp4 — usar voz: Giancarlos / Jorge / Diego Cárdenas</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">No tienes que saber nada de programación.
+
+Solo tienes que saber cómo trabaja tu negocio hoy — y qué se te complica más.
+
+El resto lo hacemos nosotros 👇
++51 999 039 947
+
+#ORASICLab #SinConocimientoTécnico #AppsParaTodos #PymesPeru</div>
+        </details>
+        <details class="guion-toggle">
+          <summary></summary>
+          <div class="guion-box"><span class="guion-head">Guion — leer tal cual para ElevenLabs</span>No te vamos a pedir que entiendas de programación. Te vamos a pedir tres cosas: cómo trabajas hoy, qué se te complica más, y tu WhatsApp. El resto lo resolvemos nosotros, y te lo explicamos sin tecnicismos en cada paso.</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 21 — GENERAR -->
+    <div class="day-card is-generar">
+      <div class="date-col">
+        <div class="dc-num">21</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Jue</div>
+        <div class="dc-day">Día 18</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-generar">Generar</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Rubro Educación — captación con IA</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia18-rubro-educacion.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Un instituto técnico. 150 candidatos potenciales cada mes. Un proceso de admisión 100% manual.
+
+Construimos un sistema de captación con IA: radar de leads, calificación automática, seguimiento por sede.
+
+Resultado: más alumnos convertidos, menos tiempo de admisión.
+
+¿Tu institución sigue haciéndolo a mano? 👇
++51 999 039 947
+
+#ORASICLab #EducaciónDigital #CaptaciónAlumnos #EdTech #InstitutoPeru</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 23 — GENERAR -->
+    <div class="day-card is-generar">
+      <div class="date-col">
+        <div class="dc-num">23</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Sáb</div>
+        <div class="dc-day">Día 19</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-generar">Generar</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Mito 2 — solo para grandes empresas</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia19-mito-tamano.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">MITO: "Las apps a medida son solo para grandes empresas."
+
+REALIDAD: El 80% de nuestros clientes son negocios de 1 a 5 personas.
+
+Salones de belleza. Clínicas. Coaches. Equipos comerciales.
+
+Lo que cambia no es el tamaño — es si el negocio quiere dejar el Excel y el WhatsApp atrás.
+
+¿Tú quieres? 👇
++51 999 039 947
+
+#ORASICLab #MitoVsRealidad #AppsPymes #TransformacionDigital</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 25 — VIDEO D24 -->
+    <div class="day-card is-producir">
+      <div class="date-col">
+        <div class="dc-num">25</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Lun</div>
+        <div class="dc-day">Día 20</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-video">📹 Video</span>
+          <span class="badge badge-producir">Producir</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Mito vs Realidad: "Pierdo el trato personal"</div>
+        <div class="card-asset">VIDEO_DIA24.mp4 — usar voz: Giancarlos / Jorge / Diego Cárdenas</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Automatizar no es volverlo frío.
+
+Lo frío es tardar 3 días en responder porque el mensaje se perdió en el chat.
+
+La automatización libera tu tiempo — para usarlo donde de verdad importa 👇
++51 999 039 947
+
+#ORASICLab #AutomatizaciónHumana #AtenciónAlCliente #CalidadDeServicio</div>
+        </details>
+        <details class="guion-toggle">
+          <summary></summary>
+          <div class="guion-box"><span class="guion-head">Guion — leer tal cual para ElevenLabs</span>Mito: automatizar mi negocio es volverlo frío, perder la cercanía con mis clientes. Realidad: lo frío es tardar tres días en responder un mensaje porque se te perdió entre cien chats de WhatsApp. Automatizar no reemplaza tu trato, libera el tiempo para que lo uses donde de verdad importa.</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 26 — GENERAR -->
+    <div class="day-card is-generar">
+      <div class="date-col">
+        <div class="dc-num">26</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Mar</div>
+        <div class="dc-day">Día 21</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-generar">Generar</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Colombia — ya estamos construyendo allá</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia21-colombia.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Ya estamos construyendo en Colombia 🇨🇴
+
+Desde Bogotá hasta Manizales — equipos de ventas B2B, tiendas urbanas y clínicas que decidieron dejar de improvisar.
+
+¿Tienes un negocio en Colombia y quieres una app a medida? 👇
++51 999 039 947
+
+#ORASICLab #Colombia #AppsColombia #NegociosColombia #DesarrolloSoftware</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 27 — VIDEO D28 -->
+    <div class="day-card is-producir">
+      <div class="date-col">
+        <div class="dc-num">27</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Mié</div>
+        <div class="dc-day">Día 22</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-video">📹 Video</span>
+          <span class="badge badge-producir">Producir</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Objeciones: "¿Cuánto se demora en verdad?"</div>
+        <div class="card-asset">VIDEO_DIA28.mp4 — usar voz: Giancarlos / Jorge / Diego Cárdenas</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">No te vamos a dar un número solo porque suena bien.
+
+Te mostramos la primera versión funcionando — y desde ahí decides tú qué tan rápido seguimos.
+
+¿Empezamos? 👇
++51 999 039 947
+
+#ORASICLab #TiempoDeDesarrollo #TransparenciaTotal #AppsAMedida</div>
+        </details>
+        <details class="guion-toggle">
+          <summary></summary>
+          <div class="guion-box"><span class="guion-head">Guion — leer tal cual para ElevenLabs</span>No te vamos a decir un número solo porque suena bien. Te mostramos la primera versión funcionando, y desde ahí decides tú qué tan rápido seguimos. Preferimos una fecha real a una promesa que no vamos a cumplir.</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 28 — GENERAR -->
+    <div class="day-card is-generar">
+      <div class="date-col">
+        <div class="dc-num">28</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Jue</div>
+        <div class="dc-day">Día 23</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-generar">Generar</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Las 3 preguntas más frecuentes</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia23-faq.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Las 3 preguntas que más nos hacen:
+
+"¿Cuánto cuesta?" → Depende del alcance. Te damos un número concreto después de una llamada breve, sin compromiso.
+
+"¿Cuánto se demora?" → La primera versión funcional, en días. No meses.
+
+"¿Y si algo no funciona?" → Seguimos disponibles. No entregamos y desaparecemos.
+
+¿Tienes otra pregunta? 👇
++51 999 039 947
+
+#ORASICLab #FAQ #AppsAMedida #DesarrolloSoftware</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 30 — VIDEO D30 -->
+    <div class="day-card is-producir">
+      <div class="date-col">
+        <div class="dc-num">30</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Sáb</div>
+        <div class="dc-day">Día 24</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-video">📹 Video</span>
+          <span class="badge badge-producir">Producir</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Tips: "Lo que aprendimos construyendo +100 apps"</div>
+        <div class="card-asset">VIDEO_DIA30.mp4 — usar voz: Giancarlos / Jorge / Diego Cárdenas</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Construyendo más de 100 aplicaciones aprendimos algo que no esperábamos:
+
+El problema casi nunca es la tecnología.
+
+Casi todos pierden ventas por lo mismo: responder tarde.
+
+¿Ya sabes cuánto te está costando? 👇
++51 999 039 947
+
+#ORASICLab #Aprendizajes #100Apps #AppsAMedida #ResponderRápido</div>
+        </details>
+        <details class="guion-toggle">
+          <summary></summary>
+          <div class="guion-box"><span class="guion-head">Guion — leer tal cual para ElevenLabs</span>Construyendo más de cien aplicaciones aprendimos algo que no esperábamos: el problema casi nunca es la tecnología. Es que cada negocio cree que su caso es distinto, y en el fondo casi todos pierden ventas por lo mismo — responder tarde.</div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Aug 31 — GENERAR -->
+    <div class="day-card is-generar">
+      <div class="date-col">
+        <div class="dc-num">31</div>
+        <div class="dc-mon">Ago</div>
+        <div class="dc-dow">Dom</div>
+        <div class="dc-day">Día 25</div>
+      </div>
+      <div class="content-col">
+        <div class="row1">
+          <span class="pill pill-imagen">🖼️ Imagen</span>
+          <span class="badge badge-generar">Generar</span>
+          <div class="platforms"><span class="ptag">IG</span><span class="ptag">TK</span></div>
+        </div>
+        <div class="card-title">Cierre de agosto — CTA final</div>
+        <div class="card-asset">lote-2-imagenes-estaticas/dia25-cierre-agosto.png</div>
+        <details>
+          <summary></summary>
+          <div class="caption-box">Agosto terminó.
+
+Entramos en septiembre con +100 apps construidas, 12 rubros y clientes en Perú y Colombia.
+
+Si en algún momento de este mes pensaste "mi negocio necesita esto" — todavía estás a tiempo.
+
+Escríbenos 👇
++51 999 039 947
+
+#ORASICLab #CierreDeAgosto #NuevoComienzo #AppsAMedida #TransformacionDigital</div>
+        </details>
+      </div>
+    </div>
+
+  </div><!-- /agosto -->
+
+  <!-- ─── FOOTER NOTES ─── -->
+  <div id="footer-notes" class="page-footer">
+    <div>Notas de producción</div>
+    <div class="footer-grid" style="margin-top:16px;">
+      <div class="footer-block">
+        <h4>Para generar imágenes nuevas (PIL)</h4>
+        <ul>
+          <li>Correr el script Python en la carpeta <code>contenido/</code></li>
+          <li>Paleta: fondo #080A0F · violeta #A78BFA · cyan #22D3EE · rosa #F472B6 · naranja #FB923C</li>
+          <li>Formato: 1080×1350 px (feed IG 4:5) o 1080×1920 (Reel/TK)</li>
+          <li>Output: <code>lote-2-imagenes-estaticas/</code></li>
+        </ul>
+      </div>
+      <div class="footer-block">
+        <h4>Para producir videos</h4>
+        <ul>
+          <li>Voces aprobadas: Giancarlos · Jorge · Diego Cárdenas (ElevenLabs)</li>
+          <li>Leer guion tal cual — expandir cada tarjeta marcada "Producir"</li>
+          <li>Formato de salida: MP4 · 1080×1920 · 9:16</li>
+          <li>Nombrar: <code>VIDEO_DIA[número]-FINAL2.mp4</code></li>
+        </ul>
+      </div>
+      <div class="footer-block">
+        <h4>Al publicar</h4>
+        <ul>
+          <li>WhatsApp correcto en todos los captions: <strong>+51 999 039 947</strong></li>
+          <li>Subir siempre desde el celular (OneDrive → Rollo)</li>
+          <li>Reels: formato 9:16, ajustar encuadre antes de publicar</li>
+          <li>Feed: formato 4:5, sin filtro</li>
+        </ul>
+      </div>
+      <div class="footer-block">
+        <h4>Frecuencia</h4>
+        <ul>
+          <li>4 publicaciones por semana</li>
+          <li>Días sugeridos: Lun · Mié · Jue · Sáb</li>
+          <li>Rotar rubros — no repetir reservas/WhatsApp seguido</li>
+          <li>Próximo lote: septiembre (planificar al llegar a día 20)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->

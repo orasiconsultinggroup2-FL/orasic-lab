@@ -1,0 +1,110 @@
+1. Estructura recomendada (orden visual)
+Sección	Objetivo	Elementos clave	Ejemplos de referencia
+Hero / Hero‑section	Captar la atención en < 3 s y comunicar la propuesta de valor única.	• Título claro y beneficioso.
+• Subtítulo que explique qué haces y para quién.
+• CTA primario (botón destacado) → “Solicita una demo gratis” o “Obtén tu presupuesto”.
+• Imagen o video corto que muestre una app real o un equipo trabajando.	• Toptal – headline “Hire the top 3% of freelance talent”.
+• BairesDev – video de equipos trabajando + CTA “Get a free quote”.
+• Fingent – ilustración de una app móvil + CTA “Get a free consultation”.
+Problema / Dolor	Hacer que el visitante reconozca su propia frustración.	• 2‑3 viñetas con los pains más comunes de tu audiencia (ej.: “Procesos manuales que consumen horas”, “Falta de visibilidad en ventas”, “Dificultad para escalar un MVP”).
+• Iconos o ilustraciones simples.	• Codementor – “Tired of missing deadlines?” con íconos de reloj y gráfica decreciente.
+Propuesta de valor / Servicios	Mostrar qué haces y por qué eres diferente.	• Tarjetas o columnas con ícono + título + breve descripción (máximo 2 líneas).
+• Enfatiza lo a medida y sin plantillas.
+• Incluye un pequeño diferenciador (ej.: “Entrega en 4‑6 semanas”, “Equipo dedicado de desarrollo + IA”).	• ScienceSoft – bloque “Our Services” con íconos y texto breve.
+• Zco Corporation – tabla comparativa “Custom vs Off‑the‑shelf”.
+Proceso / Cómo trabajamos	Reducir la incertidumbre mostrando el camino.	• 3‑4 pasos visuales (descubrimiento → diseño → desarrollo → entrega & soporte).
+• Usa ilustraciones lineales o números grandes.
+• Añade tiempo estimado por fase (ej. “Discovery: 1‑2 semanas”).	• WillowTree – proceso de 6 fases con cronograma.
+• Intellectsoft – infografía “Our Development Process”.
+Prueba social / Testimonios	Generar confianza mediante evidencia social.	• Testimonios breves con foto, nombre, cargo y empresa.
+• Logos de clientes conocidos (si tienes permiso).
+• Métricas concretas (“+30 % de ventas tras la app”, “Reducción del 40 % en tiempo de procesamiento”).	• Belitsoft – carousel de testimonios con resultados cuantificados.
+• ScienceSoft – sección “Client Stories” con logos y casos de estudio breves.
+FAQ / Objeciones	Resolver dudas que impiden la conversión.	• Preguntas tipo: “¿Cuánto tiempo tarda desarrollar una app a medida?”, “¿Qué tecnologías usan?”, “¿Ofrecen soporte post‑lanzamiento?”.
+• Respuestas breves (1‑2 frases) y enlaces a casos de estudio o a la política de soporte.	• BairesDev – FAQ estilo acordeón con preguntas de precios, tiempos y propiedad intelectual.
+• Iflexion – sección “¿Por qué elegirnos?” con respuestas basadas en datos.
+Footer / Formulario de contacto	Facilitar el próximo paso y proporcionar información de confianza.	• Formulario corto (nombre, email, teléfono, breve descripción del proyecto).
+• Botón CTA secundario (ej.: “Hablar con un experto”).
+• Enlaces a políticas de privacidad, términos y certificaciones (ISO, Microsoft Partner, etc.).
+• Redes sociales y dirección física (si la tienes).	• JetRuby – formulario de 3 campos + botón destacado.
+• ELEKS – footer con logos de socios tecnológicos y datos de contacto.
+CTA secundario / Oferta de valor (opcional, al final de la página)	Captar a los visitantes que aún no están listos para hablar de ventas.	• Recurso descargable (e‑book, checklist, checklist de MVP).
+• Webinar gratuito o demo en vivo.
+• Pequeño formulario (email uniquement).	• MindSea – “Descarga nuestro checklist de validación de ideas”.
+• Fueled – “Reserva una sesión de estrategia gratuita”.
+
+
+2. Buenas prácticas específicas para tu nicho (desarrollo de software a la medida)
+Área	Recomendación concreta	Por qué funciona
+Hero	Usa un título como “Software a la medida que crece con tu negocio” y un subtítulo que mencione tus cuatro líneas de servicio (apps de gestión, landing pages, IA, MVPs). Añade un video de 15 seg mostrando una dashboard personalizada o un chatbot de WhatsApp en acción.	Comunica inmediatamente la especialización y el beneficio tangible (crecimiento).
+Problema	Enfócate en los pains de los tomadores de decisión (CTO, founders, gerentes de operaciones): “Pérdida de tiempo por procesos manuales”, “Falta de visibilidad en tiempo real”, “Dificultad para escalar sin aumentar costos”. Usa datos breves (ej.: “El 68 % de las pymes pierde >5 h/semana en tareas manuales” – fuente: estudio McKinsey 2023).	Los datos aumentan credibilidad y hacen que el visitante se identifique.
+Servicios	Presenta cada servicio como una “solution card” con: ícono, título, 1‑2 líneas de beneficio y un pequeño badge (“Incluye IA”, “Entrega en 4 sem”). Ordena de mayor a menor demanda (apps de gestión → landing pages → IA → MVP).	Facilita el escaneo y ayuda al visitante a encontrar rápidamente lo que necesita.
+Proceso	Muestra un timeline horizontal con 4 fases: Descubrimiento → Diseño → Desarrollo → Lanzamiento & Soporte. Bajo cada fase, indica tiempo estimado y entregable (ej.: “Wireframes aprobados”, “Código en repositorio privado”, “Capacitación al equipo”).	Reduce la percepción de riesgo al mostrar transparencia y planificación.
+Prueba social	Incluye: 
+• 2‑3 testimonios con foto y cargo (ej.: “María López, CTO de SaludPlus – Nuestra app de citas redujo el 30 % de ausencias”).
+• Un carrusel de logos de clientes (puedes empezar con 4‑5 logos de empresas locales o startups con las que hayas trabajado).
+• Un mini caso de estudio (“Cómo aumentamos las ventas online de X en 45 % con una tienda web a medida”).	Los testimonios y logos actúan como señal de confianza; los casos de estudio demuestran resultados medibles.
+FAQ	Preguntas clave: 
+1️⃣ ¿Qué tecnologías usan? (React, Node.js, .NET, Flutter, etc.)
+2️⃣ ¿Cómo manejan la propiedad intelectual del código?
+3️⃣ ¿Qué pasa si necesito cambios después del lanzamiento?
+4️⃣ ¿Ofrecen soporte y mantenimiento?
+5️⃣ ¿Cuál es el proceso de inicio y cuánto tarda en entregar un MVP?	Responder estas objeciones elimina barreras comunes en la decisión de contratar una agencia de desarrollo.
+Formulario	Manténlo a 3 campos: Nombre, Email/WhatsApp, Breve descripción del proyecto (texto área). Botón de CTA: “Recibir mi propuesta gratis”. Añade un pequeño texto de privacidad: “No compartimos tu información con terceros.”	Cuanto menos fricción, mayor tasa de conversión; el campo de WhatsApp alinea con tu oferta de chatbots y comunicación directa.
+SEO y rendimiento	- Usa etiquetas <title> y <meta description> con palabras clave: “desarrollo de software a la medida”, “app de gestión personalizada”, “MVP para startups”.
+- Optimiza imágenes (WebP, < 150 KB).
+- Implementa lazy‑load y asegura un LCP < 2.5 s (medible con Lighthouse).
+- Añade datos estructurados LocalBusiness y SoftwareApplication.	Mejora visibilidad orgánica y reduce la tasa de rebote por lentitud.
+Pruebas A/B	Prueba dos versiones del CTA principal: 
+A: “Solicita una demo gratis” (botón naranja).
+B: “Obtén tu presupuesto sin compromiso” (botón verde). Mide la tasa de clics y la tasa de envío del formulario durante 2‑3 semanas.	Permite decidir qué mensaje resuena más con tu audiencia (empresas vs. startups).
+
+
+3. Mini‑wireframe descriptivo (para que tu equipo de diseño lo reproduzca)
+[Header]   Logo (izquierda)   |   Nav: Servicios | Proceso | Casos | Precio | Contacto   |
+--------------------------------------------------------------------------------
+[Hero]     Fondo: imagen de equipo trabajando en laptops
+           Título:  “Software a la medida que crece con tu negocio”
+           Subtítulo:  Apps de gestión • Landing pages • IA • MVPs para startups
+           [CTA]  Botón grande: “Solicitar demo gratis”   (color contraste)
+--------------------------------------------------------------------------------
+[Problema]   ícono + texto (2‑3 viñetas) sobre:
+             • Pérdida de tiempo en procesos manuales
+             • Falta de visibilidad en ventas y operaciones
+             • Dificultad para escalar sin aumentar costos
+--------------------------------------------------------------------------------
+[Servicios]  4 tarjetas en fila (responsive → 2‑2 en móvil)
+   1️⃣ Apps de Gestión   – Icono de calendario + lista
+   2️⃣ Landing Pages & Web – Icono de pantalla + lápiz
+   3️⃣ Automatización IA   – Icono de cerebro + robot
+   4️⃣ MVPs para Startups – Icono de cohete + reloj
+   Cada tarjeta: título, 1 línea de beneficio, badge “A medida”
+--------------------------------------------------------------------------------
+[Proceso]    Línea horizontal con 4 círculos numerados
+   1️⃣ Descubrimiento – Reunión de requisitos (1‑2 sem)
+   2️⃣ Diseño – Wireframes + UI (1 sem)
+   3️⃣ Desarrollo – Sprints semanales, revisión continua
+   4️⃣ Lanzamiento – Deploy, capacitación, soporte
+   Debajo: “Todo el código es tuyo – 100 % propiedad intelectual”
+--------------------------------------------------------------------------------
+[Testimonios] Carrusel de 3 tarjetas
+   Foto + Nombre + Cargo + Empresa
+   Cita breve + resultado medible (ej.: “+35 % de leads en 2 meses”)
+   Logo de la empresa (opcional)
+--------------------------------------------------------------------------------
+[FAQ]        Acordeón (5‑6 preguntas)
+   ¿Qué tecnologías utilizan? …
+   ¿Quién es dueño del código? …
+   ¿Qué pasa si necesito cambios después? …
+   ¿Cuánto tarda un MVP? …
+   ¿Ofrecen mantenimiento? …
+   ¿Cómo arrancamos el proyecto?
+--------------------------------------------------------------------------------
+[CTA secundario]  (opcional, antes del footer)
+   “Descarga gratis nuestro checklist para validar tu idea de MVP”
+   [Botón] Descargar PDF   (formato: nombre + email)
+--------------------------------------------------------------------------------
+[Footer]    Izquierda: Logo + breve tagline
+   Centro: Enlaces rápidos (Servicios, Portafolio, Blog, Política de privacidad)
+   Derecha: Formulario de contacto (nombre, email/WhatsApp, mensaje) + Botón “Enviar”
+   Footer inferior: Redes sociales, dirección (si tienes oficina), certificaciones
