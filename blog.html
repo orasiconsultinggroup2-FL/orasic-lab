@@ -60,37 +60,37 @@
 
     <!-- LISTADO DE POSTS -->
     <section class="px-6 pb-24">
-        <div class="max-w-3xl mx-auto space-y-6">
-
-            <article class="bg-white/5 border border-white/10 rounded-lg p-8 hover:border-violet-400/40 hover:bg-white/[0.07] transition">
-                <span class="text-xs uppercase tracking-widest text-cyan-400 font-bold">Software a medida</span>
-                <h2 class="text-2xl font-bold text-white mt-2 mb-3">Comprar vs. Construir: por qué el software a medida ya no es un lujo</h2>
-                <p class="text-slate-300 leading-relaxed mb-4 font-medium">
-                    Construir software propio dejó de ser cosa de multinacionales con presupuestos millonarios.
-                </p>
-                <p class="text-slate-400 leading-relaxed mb-4">
-                    Durante años el desarrollo a medida se asoció con ciclos de implementación larguísimos y equipos internos de IT.
-                    Esa imagen quedó atrás: con arquitecturas modulares, desarrollo ágil e IA como acelerador, construir software
-                    propio es accesible para organizaciones medianas e instituciones.
-                </p>
-                <p class="text-slate-400 leading-relaxed mb-4">
-                    El costo real del software genérico rara vez se ve en la factura del mes uno: horas de adaptación,
-                    integraciones con tus sistemas existentes, procesos que la herramienta no cubre y se resuelven con parches
-                    manuales, dependencia de tickets para cada cambio.
-                </p>
-                <p class="text-slate-400 leading-relaxed mb-4">
-                    Conviene construir cuando tu proceso operativo es diferenciador, cuando necesitas integrar IA de forma nativa,
-                    o cuando ya probaste software genérico y se quedó corto. Conviene comprar cuando el problema es estándar
-                    y no hay nada que proteger.
-                </p>
-                <p class="text-slate-400 leading-relaxed">
-                    La pregunta ya no es "¿puedo permitirme software a medida?". Es: "¿puedo permitirme seguir operando
-                    con herramientas que no fueron hechas para mí?"
-                </p>
-            </article>
-
+        <div class="max-w-3xl mx-auto space-y-6" id="blog-posts">
+            <p class="text-slate-400 text-center">Cargando artículos...</p>
         </div>
     </section>
+
+    <script>
+        function escHtml(txt) { return (txt || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+        fetch('./articulos.json')
+            .then(r => r.json())
+            .then(articulos => {
+                const container = document.getElementById('blog-posts');
+                if (!articulos || articulos.length === 0) {
+                    container.innerHTML = '<p class="text-slate-400 text-center">No hay artículos publicados aún.</p>';
+                    return;
+                }
+                container.innerHTML = articulos.map(a => `
+                    <article class="bg-white/5 border border-white/10 rounded-lg p-8 hover:border-violet-400/40 hover:bg-white/[0.07] transition">
+                        ${a.tag ? `<span class="text-xs uppercase tracking-widest text-cyan-400 font-bold">${escHtml(a.tag)}</span>` : ''}
+                        <h2 class="text-2xl font-bold text-white mt-2 mb-3">${escHtml(a.title)}</h2>
+                        ${a.intro ? `<p class="text-slate-300 leading-relaxed mb-4 font-medium">${escHtml(a.intro)}</p>` : ''}
+                        ${a.photoFile ? `<div style="margin:20px 0;padding:20px;background:rgba(255,255,255,0.05);border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-align:center;color:rgba(226,232,240,0.6);font-size:12px;">📷 ${escHtml(a.photoFile)}</div>` : ''}
+                        <p class="text-slate-400 leading-relaxed">${escHtml((a.body || a.body_blog || '').substring(0, 400))}...</p>
+                    </article>
+                `).join('');
+            })
+            .catch(err => {
+                console.error('Error cargando artículos:', err);
+                document.getElementById('blog-posts').innerHTML = '<p class="text-red-400">Error al cargar artículos.</p>';
+            });
+    </script>
 
     <!-- FOOTER SIMPLE -->
     <footer class="bg-[#05060a] text-slate-500 text-xs py-10 px-6 border-t border-white/10 text-center">
