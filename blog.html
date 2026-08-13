@@ -81,7 +81,7 @@
                         ${a.tag ? `<span class="text-xs uppercase tracking-widest text-cyan-400 font-bold">${escHtml(a.tag)}</span>` : ''}
                         <h2 class="text-2xl font-bold text-white mt-2 mb-3">${escHtml(a.title)}</h2>
                         ${a.intro ? `<p class="text-slate-300 leading-relaxed mb-4 font-medium">${escHtml(a.intro)}</p>` : ''}
-                        ${a.photoFile ? `<div style="margin:20px 0;padding:20px;background:rgba(255,255,255,0.05);border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-align:center;color:rgba(226,232,240,0.6);font-size:12px;">📷 ${escHtml(a.photoFile)}</div>` : ''}
+                        ${a.photoFile ? `<img src="fotos-articulos/${escHtml(a.photoFile)}" alt="${escHtml(a.title)}" style="margin:20px 0;width:100%;max-height:400px;object-fit:cover;border-radius:8px;" loading="lazy" onerror="this.style.display='none'" />` : ''}
                         <p class="text-slate-400 leading-relaxed">${escHtml((a.body || a.body_blog || '').substring(0, 400))}...</p>
                     </article>
                 `).join('');
