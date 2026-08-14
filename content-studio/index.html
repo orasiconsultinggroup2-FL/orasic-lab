@@ -362,6 +362,9 @@
 
 <div id="toast"></div>
 
+<!-- Input file oculto para seleccionar fotos -->
+<input type="file" id="fotoFileInput" accept="image/*" style="display:none;" onchange="handleFotoSelected(event)">
+
 <script>
 // ═══════════════════════════════════════════════════════════
 //  STATE
@@ -429,23 +432,27 @@ function saveState() {
   updateBadges();
 }
 
-function openFotosFolder() {
-  // Intenta abrir la carpeta fotos-articulos en el explorador
-  const folderPath = '../fotos-articulos';
+let currentPhotoFieldId = null;
 
-  // Opción 1: Si estamos en un entorno con acceso a sistema de archivos (Electron, etc)
-  if (window.electronAPI && window.electronAPI.openFolder) {
-    window.electronAPI.openFolder(folderPath);
+function openFotosFolder(fieldId) {
+  currentPhotoFieldId = fieldId;
+  const fileInput = document.getElementById('fotoFileInput');
+  if (fileInput) fileInput.click();
+}
+
+function handleFotoSelected(event) {
+  const file = event.target.files[0];
+  if (!file || !currentPhotoFieldId) return;
+
+  const fileName = file.name;
+  const photoField = document.getElementById(currentPhotoFieldId);
+
+  if (photoField) {
+    photoField.value = fileName;
   }
-  // Opción 2: Navegar a una URL que muestra el contenido
-  else if (window.location.protocol === 'file:') {
-    // Si es file://, intenta abrir el explorador del SO
-    alert('📁 Abre tu explorador de archivos y navega a:\n\nOneDrive > Documentos > ORASIC LAB > fotos-articulos\n\nDescarga las fotos ahí y escribe el nombre del archivo arriba.');
-  }
-  // Opción 3: Si está sirviendo por HTTP, abre en nueva pestaña
-  else {
-    window.open(folderPath, '_blank');
-  }
+
+  // Resetear para próxima vez
+  event.target.value = '';
 }
 
 function showBlogPreview(title, intro, body, photoFile) {
@@ -479,21 +486,38 @@ function showBlogPreview(title, intro, body, photoFile) {
 }
 
 function publishBlogArticle() {
-  // Guardar el artículo actual como "published"
   const lastEdited = sessionStorage.getItem('lastEditedBlogId');
   if (!lastEdited) { alert('No hay artículo para publicar'); return; }
 
   const article = state.blogArticles.find(a => a.id === lastEdited);
   if (!article) { alert('No se encontró el artículo'); return; }
 
+  // Marcar como published localmente
   article.status = 'published';
   article.publishedAt = new Date().toISOString();
   saveState();
 
-  if (typeof showToast === 'function') {
-    showToast('🚀 Artículo publicado en Blog', 'success');
-  }
-  render();
+  // Enviar al servidor para actualizar articulos.json
+  fetch('/api/publish-blog', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(article)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success || data.article) {
+      showToast('✅ Artículo publicado en Blog', 'success');
+      setTimeout(() => {
+        window.location.href = 'https://orasic-lab.vercel.app/blog.html';
+      }, 1500);
+    } else {
+      throw new Error(data.error || 'Error desconocido');
+    }
+  })
+  .catch(err => {
+    console.error('Error al publicar:', err);
+    showToast('❌ Error: ' + err.message, 'error');
+  });
 }
 
 function copyForLinkedIn(title, body, hashtags, photoFile) {
@@ -2470,8 +2494,9 @@ function renderArticlesList(){
       <div style="font-size:13px;color:var(--text-2);">Pide en el chat: "investiga un tema vigente y escribe un artículo de LinkedIn" — yo lo redacto con datos reales y tú lo guardas aquí con <b>✎ Nuevo artículo</b>.</div>
     </div>`;
   return `<div class="card" style="padding:0;overflow:hidden;">
-    ${arts.map(a => `
+    ${arts.map((a, idx) => `
       <div class="li-article-row">
+        <div style="width:32px;text-align:center;font-size:13px;font-weight:700;color:var(--violet);flex-shrink:0;">${idx+1}</div>
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
             <span class="b ${a.status==='published'?'bg':'bo'}">${a.status==='published'?'Publicado':'Borrador'}</span>
@@ -2537,7 +2562,7 @@ function openArticleForm(id){
       <div class="form-group"><label class="form-label">Foto (nombre del archivo en fotos-articulos/)</label>
         <div style="display:flex;gap:8px;">
           <input class="form-input" id="la-photo" value="${escAttr(a?.photoFile||'')}" placeholder="ej: panel-control.jpg" style="flex:1;" />
-          <button class="btn btn-secondary btn-sm" type="button" onclick="openFotosFolder()">📁 Abrir</button>
+          <button class="btn btn-secondary btn-sm" type="button" onclick="openFotosFolder('la-photo')">📁 Abrir</button>
         </div>
         <div class="form-hint">Descarga la foto de Unsplash/Pexels, guárdala en la carpeta <b>fotos-articulos/</b>, y escribe el nombre del archivo aquí (ej: panel-control.jpg)</div>
       </div>
@@ -2598,84 +2623,6 @@ function openArticleForm(id){
   };
 }
 
-function openBlogArticleFormNew(id){
-  const a = id ? state.blogArticles.find(x=>x.id===id) : null;
-  const idx = a ? state.blogArticles.indexOf(a) : -1;
-  const isNewStructure = a ? idx >= 2 : true; // #3+ = índice 2+
-
-  const ov = document.createElement('div');
-  ov.className = 'vs-overlay';
-  const bodyContent = isNewStructure ? (a?.body_blog || '') : (a?.body || '');
-
-  ov.innerHTML = `
-    <div class="vs-modal" style="max-width:640px;">
-      <div class="vs-head">
-        <div class="vs-title">📝 ${a?'Editar':'Nuevo'} artículo de blog</div>
-        <button class="btn btn-secondary btn-sm" id="ba-close">✕</button>
-      </div>
-      <div class="form-group"><label class="form-label">Título</label>
-        <input class="form-input" id="ba-title" value="${escAttr(a?.title||'')}" placeholder="Ej. Por qué el software genérico no calza con tu negocio" /></div>
-      ${!isNewStructure ? `<div class="form-group"><label class="form-label">Intro (1-2 líneas, para la tarjeta del listado)</label>
-        <textarea class="form-input" id="ba-intro" rows="2" style="resize:vertical;">${escHtml(a?.intro||'')}</textarea></div>` : ''}
-      <div class="form-group"><label class="form-label">Cuerpo del artículo</label>
-        <textarea class="form-input" id="ba-body" rows="10" style="resize:vertical;">${escHtml(bodyContent)}</textarea></div>
-      ${!isNewStructure ? `<div class="form-group"><label class="form-label">Etiqueta / categoría</label>
-        <input class="form-input" id="ba-tag" value="${escAttr(a?.tag||'')}" placeholder="Ej. Software a medida" /></div>` : ''}
-      ${!isNewStructure ? `<div class="form-group"><label class="form-label">Sugerencia visual (concepto para la imagen)</label>
-        <textarea class="form-input" id="ba-sugerencia" rows="2" style="resize:vertical;">${escHtml(a?.sugerencia_imagen||'')}</textarea></div>` : ''}
-      <div class="form-group"><label class="form-label">Foto (nombre del archivo en fotos-articulos/)</label>
-        <div style="display:flex;gap:8px;">
-          <input class="form-input" id="ba-photo" value="${escAttr(a?.photoFile||'')}" placeholder="ej: panel-control.jpg" style="flex:1;" />
-          <button class="btn btn-secondary btn-sm" type="button" onclick="openFotosFolder()">📁 Abrir</button>
-        </div>
-        <div class="form-hint">Guarda la foto en <b>fotos-articulos/</b> y escribe el nombre del archivo (ej: panel-control.jpg)</div>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:6px;">
-        <button class="btn btn-primary" id="ba-save">💾 Guardar</button>
-        <button class="btn btn-secondary" type="button" onclick="showBlogPreview(document.getElementById('ba-title').value, ${!isNewStructure ? 'document.getElementById(\"ba-intro\").value' : '\"\"'}, document.getElementById('ba-body').value, document.getElementById('ba-photo').value)">👁 Preview</button>
-        <button class="btn btn-secondary" id="ba-cancel">Cancelar</button>
-      </div>
-    </div>`;
-  document.body.appendChild(ov);
-  const close = () => ov.remove();
-  ov.querySelector('#ba-close').onclick = close;
-  ov.querySelector('#ba-cancel').onclick = close;
-  ov.onclick = e => { if (e.target === ov) close(); };
-  ov.querySelector('#ba-save').onclick = () => {
-    const g = id2 => document.getElementById(id2)?.value.trim() || '';
-    const title = g('ba-title'); const body = g('ba-body');
-    if (!title || !body){ alert('Falta título o cuerpo del artículo.'); return; }
-    if (a){
-      a.title = title;
-      if (isNewStructure) {
-        a.body_blog = body;
-        a.platforms = ['Blog'];
-      } else {
-        a.body = body;
-        a.intro = g('ba-intro');
-        a.tag = g('ba-tag');
-        a.sugerencia_imagen = g('ba-sugerencia');
-      }
-      a.photoFile = g('ba-photo');
-      sessionStorage.setItem('lastEditedBlogId', a.id);
-    } else {
-      const newArticle = {
-        id: uuid(),
-        title,
-        status: 'draft',
-        plataforma: 'Blog',
-        createdAt: new Date().toISOString(),
-        platforms: ['Blog'],
-        photoFile: g('ba-photo')
-      };
-      newArticle.body_blog = body;
-      state.blogArticles.push(newArticle);
-      sessionStorage.setItem('lastEditedBlogId', newArticle.id);
-    }
-    saveState(); close(); render();
-    if (typeof showToast==='function') showToast('✅ Artículo guardado','success');
-  };
-}
 
 // LinkedIn no soporta negrita real — el truco es usar el bloque Unicode "Mathematical Bold",
 // que se ve en negrita en cualquier plataforma sin necesitar formato HTML/markdown.
@@ -2770,8 +2717,9 @@ function renderBlogArticlesList(){
       <div style="font-size:13px;color:var(--text-2);">Pide en el chat que reduzca uno de los artículos del banco de ideas a formato blog, y guárdalo aquí con <b>✎ Nuevo artículo</b>.</div>
     </div>`;
   return `<div class="card" style="padding:0;overflow:hidden;">
-    ${arts.map(a => `
+    ${arts.map((a, idx) => `
       <div class="li-article-row">
+        <div style="width:32px;text-align:center;font-size:13px;font-weight:700;color:var(--cyan);flex-shrink:0;">${idx+1}</div>
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
             <span class="b ${a.status==='published'?'bg':'bo'}">${a.status==='published'?'Publicado':'Borrador'}</span>
@@ -2786,7 +2734,6 @@ function renderBlogArticlesList(){
           <button class="btn-icon" title="Copiar todo" onclick="copyBlogArticle('${a.id}')">📋</button>
           <button class="btn-icon" title="Ir al blog de la landing" onclick="window.open('${BLOG_URL}','_blank','noopener')">↗</button>
           <button class="btn-icon" title="Editar" onclick="openBlogArticleForm('${a.id}')">✎</button>
-          ${a.status!=='published'?`<button class="btn-icon" title="Marcar publicado" onclick="markBlogPublished('${a.id}')">✓</button>`:''}
           <button class="btn-icon" title="Eliminar" onclick="deleteBlogArticle('${a.id}')">✕</button>
         </div>
       </div>`).join('')}
@@ -2816,7 +2763,7 @@ function openBlogArticleForm(id){
       <div class="form-group"><label class="form-label">Foto (nombre del archivo en fotos-articulos/)</label>
         <div style="display:flex;gap:8px;">
           <input class="form-input" id="ba-photo" value="${escAttr(a?.photoFile||'')}" placeholder="ej: panel-control.jpg" style="flex:1;" />
-          <button class="btn btn-secondary btn-sm" type="button" onclick="openFotosFolder()">📁 Abrir</button>
+          <button class="btn btn-secondary btn-sm" type="button" onclick="openFotosFolder('ba-photo')">📁 Abrir</button>
         </div>
         <div class="form-hint">Descarga la foto de Unsplash/Pexels, guárdala en la carpeta <b>fotos-articulos/</b>, y escribe el nombre del archivo aquí (ej: panel-control.jpg)</div>
       </div>
@@ -2830,7 +2777,7 @@ function openBlogArticleForm(id){
         </div>
       </div>
       <div style="display:flex;gap:10px;margin-top:6px;">
-        <button class="btn btn-primary" id="ba-save">💾 Guardar</button>
+        <button class="btn btn-primary" id="ba-preview">👁 Preview</button>
         <button class="btn btn-secondary" id="ba-cancel">Cancelar</button>
       </div>
     </div>`;
@@ -2839,17 +2786,23 @@ function openBlogArticleForm(id){
   ov.querySelector('#ba-close').onclick = close;
   ov.querySelector('#ba-cancel').onclick = close;
   ov.onclick = e => { if (e.target === ov) close(); };
-  ov.querySelector('#ba-save').onclick = () => {
+  ov.querySelector('#ba-preview').onclick = () => {
     const g = id2 => document.getElementById(id2).value.trim();
     const title = g('ba-title'); const body = g('ba-body');
     if (!title || !body){ alert('Falta título o cuerpo del artículo.'); return; }
+    let articleId;
     if (a){
       a.title = title; a.intro = g('ba-intro'); a.body = body; a.tag = g('ba-tag'); a.sugerencia_imagen = g('ba-sugerencia'); a.photoFile = g('ba-photo');
+      articleId = a.id;
     } else {
-      state.blogArticles.push({ id: uuid(), title, intro: g('ba-intro'), body, tag: g('ba-tag'), sugerencia_imagen: g('ba-sugerencia'), photoFile: g('ba-photo'), status: 'draft', plataforma: 'Blog', createdAt: new Date().toISOString() });
+      const newArticle = { id: uuid(), title, intro: g('ba-intro'), body, tag: g('ba-tag'), sugerencia_imagen: g('ba-sugerencia'), photoFile: g('ba-photo'), status: 'draft', plataforma: 'Blog', createdAt: new Date().toISOString() };
+      state.blogArticles.push(newArticle);
+      articleId = newArticle.id;
     }
-    saveState(); close(); render();
-    if (typeof showToast==='function') showToast('✅ Artículo guardado','success');
+    sessionStorage.setItem('lastEditedBlogId', articleId);
+    saveState();
+    showBlogPreview(title, g('ba-intro'), body, g('ba-photo'));
+    close();
   };
 }
 
@@ -2864,8 +2817,52 @@ function copyBlogArticle(id){
 }
 function markBlogPublished(id){
   const a = state.blogArticles.find(x=>x.id===id); if(!a) return;
-  a.status = 'published'; a.publishedAt = new Date().toISOString();
-  saveState(); render();
+  sessionStorage.setItem('lastEditedBlogId', id);
+  openBlogEditModal(a);
+}
+
+function openBlogEditModal(article){
+  const ov = document.createElement('div');
+  ov.className = 'vs-overlay';
+  ov.innerHTML = `
+    <div class="vs-modal" style="max-width:600px;max-height:90vh;overflow-y:auto;">
+      <div class="vs-head">
+        <div class="vs-title">📝 Editar artículo</div>
+        <button class="btn btn-secondary btn-sm" onclick="this.closest('.vs-overlay').remove()">✕</button>
+      </div>
+      <div style="padding:20px;color:var(--text-1);">
+        <div class="form-group">
+          <label class="form-label">Título</label>
+          <input class="form-input" id="blog-edit-title" value="${escAttr(article.title)}" readonly />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Intro</label>
+          <textarea class="form-input" id="blog-edit-intro" readonly style="height:80px;">${escAttr(article.intro)}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cuerpo del artículo</label>
+          <textarea class="form-input" id="blog-edit-body" readonly style="height:150px;">${escAttr(article.body)}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tag</label>
+          <input class="form-input" id="blog-edit-tag" value="${escAttr(article.tag)}" readonly />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sugerencia visual (concepto)</label>
+          <input class="form-input" id="blog-edit-visual" value="${escAttr(article.sugerencia_imagen)}" readonly />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Foto (nombre del archivo en fotos-articulos/)</label>
+          <input class="form-input" id="blog-edit-photo" value="${escAttr(article.photoFile)}" readonly />
+        </div>
+      </div>
+      <div style="padding:0 20px 20px 20px;display:flex;gap:10px;border-top:1px solid var(--border);margin-top:20px;padding-top:20px;">
+        <button class="btn btn-primary" onclick="showBlogPreview('${escAttr(article.title)}','${escAttr(article.intro)}','${escAttr(article.body)}','${escAttr(article.photoFile)}');this.closest('.vs-overlay').remove();">👁 Preview</button>
+        <button class="btn btn-secondary" onclick="this.closest('.vs-overlay').remove()">Cancelar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.onclick = e => { if (e.target === ov) ov.remove(); };
 }
 function deleteBlogArticle(id){
   if (!confirm('¿Eliminar este artículo?')) return;
@@ -3254,7 +3251,7 @@ function generateTemplate(platform, s, st) {
     { re:/belleza|spa|salón|peluquer|barber/i,     b:['Fichas de clientas con su historial','Reservas que se agendan solas','Recordatorios antes de cada cita'] },
     { re:/salud|clínic|médic|paciente|dental|consultorio/i, b:['Historial de cada paciente a la mano','Recordatorios que reducen ausencias','Agenda sin cruces ni llamadas'] },
     { re:/retail|moda|tienda física|minorista|inventario|almacén/i, b:['Sabes qué tienes en el almacén sin ir a mirar','Las ventas del día en una pantalla','Aviso antes de quedarte sin producto'] },
-    { re:/deporte|cancha|gimnasio|clase grupal|box|crossfit/i, b:['Reservas de canchas y clases sin chat','Cupos que se llenan solos, sin overbooking','Pagos confirmados al reservar'] },
+    { re:/deporte|cancha|gimnasio|clase grupal|box|crossfit/i, b:['Reservas de canchas y clases sin chat','Cupos que se llenan solos, sin sobrereserva','Pagos confirmados al reservar'] },
     { re:/educaci|alumno|matrícula|academia|colegio|curso/i, b:['Matrículas ordenadas y sin papeleo','Asistencia de cada alumno registrada','Aviso si alguien deja de venir'] },
     { re:/marketing|contenido|campaña|redes sociales/i, b:['Cada lead con su origen identificado','Seguimiento desde el primer contacto','Sabes qué campaña sí trae clientes'] },
     { re:/coaching|liderazgo|consultor|sesion/i,   b:['Agenda de sesiones en un solo lugar','Notas y avances por cada cliente','Cobros vinculados a cada sesión'] },
@@ -3699,6 +3696,21 @@ async function elevenTTS(text, voiceId, key){
   return await r.blob();
 }
 
+// Abre Clipchamp en nueva pestaña y copia el guión al portapapeles
+function openClipchamp(script){
+  if (!script || !script.trim()){
+    showToast('⚠️ No hay guión para copiar','warning');
+    return;
+  }
+  navigator.clipboard.writeText(script).then(() => {
+    showToast('📋 Guión copiado al portapapeles','success');
+    window.open('https://clipchamp.com', '_blank');
+  }).catch(err => {
+    showToast('❌ No se pudo copiar el guión','error');
+    console.error('Clipboard error:', err);
+  });
+}
+
 // Ajusta el tamaño de fuente y parte el texto en líneas para que quepa
 function _vsFit(ctx, text, maxW, maxH){
   for (let size = 92; size >= 34; size -= 3){
@@ -3804,6 +3816,7 @@ function openVideoStudio(btn){
           <div class="vs-progress"><div id="vs-bar"></div></div>
           <div class="vs-btns">
             <button class="btn btn-primary" id="vs-gen">▶ Generar video</button>
+            <button class="btn btn-secondary" id="vs-clipchamp" title="Abrir Clipchamp en nueva pestaña">🎬 Clipchamp</button>
             <a id="vs-dl" class="btn btn-secondary" style="display:none;">⬇ Descargar</a>
           </div>
         </div>
@@ -3817,10 +3830,56 @@ function openVideoStudio(btn){
   const status = overlay.querySelector('#vs-status');
   const bar = overlay.querySelector('#vs-bar');
   const genBtn = overlay.querySelector('#vs-gen');
+  const clipchampBtn = overlay.querySelector('#vs-clipchamp');
   const dl = overlay.querySelector('#vs-dl');
   const close = () => overlay.remove();
   overlay.querySelector('#vs-close').onclick = close;
   overlay.onclick = e => { if (e.target === overlay) close(); };
+
+  clipchampBtn.onclick = () => {
+    const clipModal = document.createElement('div');
+    clipModal.className = 'vs-overlay';
+    clipModal.innerHTML = `
+      <div class="vs-modal" style="max-width:600px;">
+        <div class="vs-head">
+          <div class="vs-title">🎬 Generar en Clipchamp</div>
+          <button class="btn btn-secondary btn-sm" id="clip-close">✕ Cerrar</button>
+        </div>
+        <div class="vs-body" style="padding:20px;">
+          <div style="font-size:13px; color:var(--text-1); margin-bottom:15px;">
+            <strong>Tu guión está listo para copiar:</strong>
+          </div>
+          <div style="background:var(--bg-card2); border:1px solid var(--border); border-radius:8px; padding:12px; margin-bottom:15px; max-height:250px; overflow-y:auto; font-size:12px; font-family:monospace; color:var(--text-2); line-height:1.6;">
+            ${escHtml(narrText).replace(/\n/g, '<br/>')}
+          </div>
+          <div style="display:flex; gap:10px; flex-direction:column; margin-bottom:15px;">
+            <button class="btn btn-primary" id="clip-copy" style="flex:1;">📋 Copiar guión</button>
+            <a href="https://app.clipchamp.com" target="_blank" class="btn btn-secondary" style="text-align:center; text-decoration:none;">🌐 Abrir Clipchamp en nueva pestaña</a>
+          </div>
+          <div style="font-size:12px; color:var(--text-2); background:rgba(167,139,250,0.08); border:1px solid rgba(167,139,250,0.2); border-radius:6px; padding:10px; line-height:1.6;">
+            <strong style="color:var(--text-1);">📌 Pasos en Clipchamp:</strong><br/>
+            1. Crea un video nuevo (vertical 9:16)<br/>
+            2. Pega el guión como <b>texto</b> o <b>narración</b><br/>
+            3. Agrega música y transiciones si quieres<br/>
+            4. Descarga como MP4 (ej: <code>2026-08-14_Instagram_Tu-Titulo.mp4</code>)<br/>
+            5. Guarda en <code>VIDEOS A PUBLICAR</code>
+          </div>
+        </div>
+      </div>`;
+    document.body.appendChild(clipModal);
+
+    const closeClip = () => clipModal.remove();
+    clipModal.querySelector('#clip-close').onclick = closeClip;
+    clipModal.onclick = e => { if (e.target === clipModal) closeClip(); };
+    clipModal.querySelector('#clip-copy').onclick = () => {
+      navigator.clipboard.writeText(narrText).then(() => {
+        const btn = clipModal.querySelector('#clip-copy');
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copiado!';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+      }).catch(err => alert('Error al copiar: ' + err));
+    };
+  };
 
   // Vista previa de la primera tarjeta
   _vsDrawCard(ctx, W, H, cards[0], 0, total, 1);
