@@ -79,13 +79,15 @@
                 // Mostrar SOLO el artículo más reciente (último en la lista)
                 const articuloReciente = articulos[articulos.length - 1];
                 const a = articuloReciente;
+                // Intentar obtener foto de varios campos posibles
+                const photoFile = a.photoFile || a.sugerencia_imagen || '';
                 container.innerHTML = `
                     <article class="bg-white/5 border border-white/10 rounded-lg p-8 hover:border-violet-400/40 hover:bg-white/[0.07] transition">
                         ${a.tag ? `<span class="text-xs uppercase tracking-widest text-cyan-400 font-bold">${escHtml(a.tag)}</span>` : ''}
                         <h2 class="text-2xl font-bold text-white mt-2 mb-3">${escHtml(a.title)}</h2>
                         ${a.intro ? `<p class="text-slate-300 leading-relaxed mb-4 font-medium">${escHtml(a.intro)}</p>` : ''}
-                        ${a.sugerencia_imagen ? `<img src="fotos-articulos/${escHtml(a.sugerencia_imagen)}" alt="${escHtml(a.title)}" style="margin:20px 0;width:100%;max-height:400px;object-fit:cover;border-radius:8px;" loading="lazy" onerror="this.style.display='none'" />` : ''}
-                        <p class="text-slate-400 leading-relaxed">${escHtml((a.body || a.body_blog || '').substring(0, 400))}...</p>
+                        ${photoFile ? `<img src="fotos-articulos/${escHtml(photoFile)}" alt="${escHtml(a.title)}" style="margin:20px 0;width:100%;max-height:400px;object-fit:cover;border-radius:8px;" loading="lazy" onerror="this.style.display='none'" />` : ''}
+                        <p class="text-slate-400 leading-relaxed">${escHtml(a.body || a.body_blog || '')}</p>
                     </article>
                 `;
             })
