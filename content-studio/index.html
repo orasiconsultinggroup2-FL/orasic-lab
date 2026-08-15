@@ -427,6 +427,18 @@ function loadState() {
   };
 }
 
+function syncArticlesFromJSON() {
+  fetch('../contenido/orasic-articulos-seed.json')
+    .then(r => r.json())
+    .then(data => {
+      state.linkedinArticles = data.linkedinArticles || [];
+      state.blogArticles = data.blogArticles || [];
+      saveState();
+      render();
+    })
+    .catch(e => console.warn('No se pudo sincronizar artículos desde JSON:', e));
+}
+
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   updateBadges();
@@ -568,6 +580,10 @@ function showLinkedInPreview(title, body, hashtags, photoFile) {
 }
 
 let state = loadState();
+// Sincronizar artículos desde JSON al iniciar
+window.addEventListener('DOMContentLoaded', () => {
+  syncArticlesFromJSON();
+});
 
 // ═══════════════════════════════════════════════════════════
 //  CALENDARIO SEED — 30 días planificados
