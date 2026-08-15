@@ -627,7 +627,7 @@ const CALENDAR_SEED = [
 // "Gancho" en los días 4-7 porque, con narración, 3 líneas + CTA duran 20-27s y
 // caen fuera de la zona que sí funcionó (8-13s, días 1-3). Menos texto = menos
 // segundos hablados, sin importar cuántas tarjetas visuales se generen.
-const GUIONES = {
+let GUIONES = {
   6:  ['Tu clienta pregunta a qué hora tiene su cita.', 'Su ficha, su historial y su próxima cita en una pantalla.'],
   7:  ['Cobras por WhatsApp y a fin de mes no sabes cuánto ganaste.', 'Cobro y registro en el mismo sitio. Cierre en minutos.'],
   8:  ['Crees que necesitas contratar un programador.', 'No armas un equipo técnico: contratas el resultado.'],
@@ -4159,9 +4159,30 @@ document.querySelectorAll('.nav-item').forEach(el => {
   el.addEventListener('click', () => navigate(el.dataset.page));
 });
 
-// Boot
-updateBadges();
-render();
+// Boot — Carga automática de guiones mejorados antes de inicializar
+(async () => {
+  // Cargar guiones mejorados (16-30) desde JSON
+  try {
+    const resp = await fetch('./guiones-mejorados.json');
+    if (resp.ok) {
+      const mejorados = await resp.json();
+      Object.assign(GUIONES, mejorados);
+      // Actualizar items existentes que usen estos guiones
+      state.items.filter(i => i.seedDay && i.seedDay >= 16 && i.seedDay <= 30).forEach(item => {
+        if (GUIONES[item.seedDay]) {
+          item.guionCards = GUIONES[item.seedDay];
+          item.updatedAt = new Date().toISOString();
+        }
+      });
+      if (state.items.some(i => i.seedDay && i.seedDay >= 16 && i.seedDay <= 30)) saveState();
+    }
+  } catch (e) {
+    // Silencioso si falla
+  }
+  // Inicializar la app después de cargar guiones
+  updateBadges();
+  render();
+})();
 
 // Sello de versión: muestra cuándo se guardó el archivo que estás viendo.
 (function(){
