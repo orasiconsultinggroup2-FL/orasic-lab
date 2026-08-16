@@ -228,6 +228,7 @@
     <div class="login-tabs">
       <div class="login-tab active" data-tab="signin">Ingresar</div>
       <div class="login-tab" data-tab="signup">Crear mi clínica</div>
+      <div class="login-tab" data-tab="demo" style="background:rgba(167,139,250,0.15);border-bottom:2px solid #A78BFA;">Prueba la Demo</div>
     </div>
     <div class="login-error" id="login-error"></div>
 
@@ -263,6 +264,12 @@
       </div>
       <button type="submit" class="btn btn-primary btn-full">Crear clínica y cuenta</button>
     </form>
+
+    <div id="form-demo" style="display:none;text-align:center;">
+      <p style="color:var(--text-2);margin-bottom:16px;font-size:14px;">Accede con datos de ejemplo sin crear cuenta.</p>
+      <button type="button" id="demo-btn" class="btn btn-primary btn-full">Entrar como Demo</button>
+      <p style="color:var(--text-3);margin-top:12px;font-size:11px;">Datos de ejemplo: 6 pacientes y 6 citas pendientes.</p>
+    </div>
   </div>
 </div>
 
@@ -367,11 +374,50 @@ document.querySelectorAll('.login-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    const isSignin = tab.dataset.tab === 'signin';
-    document.getElementById('form-signin').style.display = isSignin ? 'block' : 'none';
-    document.getElementById('form-signup').style.display = isSignin ? 'none' : 'block';
+    const tabType = tab.dataset.tab;
+    document.getElementById('form-signin').style.display = tabType === 'signin' ? 'block' : 'none';
+    document.getElementById('form-signup').style.display = tabType === 'signup' ? 'block' : 'none';
+    document.getElementById('form-demo').style.display = tabType === 'demo' ? 'block' : 'none';
     document.getElementById('login-error').style.display = 'none';
   });
+});
+
+// Demo mode
+document.getElementById('demo-btn').addEventListener('click', async () => {
+  // Carga datos de demo localmente
+  const demoData = {
+    profile: { id: 'demo-user', email: 'demo@clinica.local', full_name: 'Dr. Demo', clinic_id: 'demo-clinic', role: 'admin' },
+    clinic: { id: 'demo-clinic', name: 'Clínica Demo', created_at: new Date().toISOString() },
+    pacientes: [
+      { id: 'd1', clinic_id: 'demo-clinic', full_name: 'Rosa Quispe Mamani', phone: '987654321', dni: '45678912', email: 'rosa.quispe@gmail.com', birth_date: '1991-04-18', notes: 'Alergia a la penicilina', created_at: new Date().toISOString() },
+      { id: 'd2', clinic_id: 'demo-clinic', full_name: 'Diego Ramírez Soto', phone: '912345678', dni: '41235678', email: 'diego.rs@gmail.com', birth_date: '1988-11-02', notes: '', created_at: new Date().toISOString() },
+      { id: 'd3', clinic_id: 'demo-clinic', full_name: 'Valeria Ochoa Restrepo', phone: '956781234', dni: '47891234', email: null, birth_date: '1996-07-25', notes: 'Tratamiento de ortodoncia en curso', created_at: new Date().toISOString() },
+      { id: 'd4', clinic_id: 'demo-clinic', full_name: 'Luis Fernández Paz', phone: '998877665', dni: '09876543', email: 'luis.fpaz@gmail.com', birth_date: '1983-01-30', notes: '', created_at: new Date().toISOString() },
+      { id: 'd5', clinic_id: 'demo-clinic', full_name: 'Camila Torres Vega', phone: '955443322', dni: '72345678', email: null, birth_date: '1999-09-14', notes: 'Le teme al torno — avisar antes', created_at: new Date().toISOString() },
+      { id: 'd6', clinic_id: 'demo-clinic', full_name: 'Sergio Medina Cruz', phone: '944556677', dni: '43219876', email: null, birth_date: '1979-06-11', notes: '', created_at: new Date().toISOString() }
+    ]
+  };
+
+  profile = demoData.profile;
+  clinic = demoData.clinic;
+  pacientes = demoData.pacientes;
+  citas = [
+    { id: 'a1', clinic_id: 'demo-clinic', patient_id: 'd1', appointment_date: new Date().toISOString().split('T')[0], appointment_time: '09:00', service_type: 'Limpieza dental', status: 'confirmed', patients: { full_name: 'Rosa Quispe Mamani', phone: '987654321' }, profiles: { full_name: 'Dra. Mariana Ruiz' }, chairs: { name: 'Sillón 1' }, notes: '' },
+    { id: 'a2', clinic_id: 'demo-clinic', patient_id: 'd3', appointment_date: new Date().toISOString().split('T')[0], appointment_time: '11:30', service_type: 'Control de ortodoncia', status: 'confirmed', patients: { full_name: 'Valeria Ochoa Restrepo', phone: '956781234' }, profiles: { full_name: 'Dra. Mariana Ruiz' }, chairs: { name: 'Sillón 2' }, notes: '' },
+    { id: 'a3', clinic_id: 'demo-clinic', patient_id: 'd5', appointment_date: new Date().toISOString().split('T')[0], appointment_time: '16:00', service_type: 'Extracción', status: 'scheduled', patients: { full_name: 'Camila Torres Vega', phone: '955443322' }, profiles: { full_name: 'Dra. Mariana Ruiz' }, chairs: { name: 'Sillón 3' }, notes: 'Paciente nerviosa' },
+    { id: 'a4', clinic_id: 'demo-clinic', patient_id: 'd2', appointment_date: new Date(Date.now() + 86400000).toISOString().split('T')[0], appointment_time: '10:00', service_type: 'Resina', status: 'scheduled', patients: { full_name: 'Diego Ramírez Soto', phone: '912345678' }, profiles: { full_name: 'Dra. Mariana Ruiz' }, chairs: { name: 'Sillón 1' }, notes: '' },
+    { id: 'a5', clinic_id: 'demo-clinic', patient_id: 'd4', appointment_date: new Date(Date.now() + 172800000).toISOString().split('T')[0], appointment_time: '08:30', service_type: 'Evaluación inicial', status: 'scheduled', patients: { full_name: 'Luis Fernández Paz', phone: '998877665' }, profiles: { full_name: 'Dra. Mariana Ruiz' }, chairs: { name: 'Sillón 2' }, notes: '' },
+    { id: 'a6', clinic_id: 'demo-clinic', patient_id: 'd6', appointment_date: new Date(Date.now() + 259200000).toISOString().split('T')[0], appointment_time: '15:00', service_type: 'Blanqueamiento', status: 'scheduled', patients: { full_name: 'Sergio Medina Cruz', phone: '944556677' }, profiles: { full_name: 'Dra. Mariana Ruiz' }, chairs: { name: 'Sillón 3' }, notes: '' }
+  ];
+
+  // Muestra la app
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('clinic-name-label').textContent = clinic.name;
+  document.getElementById('user-email-label').textContent = profile.email;
+
+  // Carga la primera página (citas/pacientes)
+  renderCitas();
 });
 
 function showLoginError(msg) {
