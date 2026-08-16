@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview - Video 5 ORASIC Lab</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #080A0F;
+      font-family: 'Inter', system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      color: #F9FAFB;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+    }
+    h1 {
+      color: #F9FAFB;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 22px;
+    }
+    video {
+      width: 100%;
+      border: 2px solid #A78BFA;
+      border-radius: 12px;
+      background: #000;
+    }
+    .info {
+      color: #9CA3AF;
+      font-size: 13px;
+      margin-top: 20px;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .specs {
+      background: #111827;
+      border: 1px solid #1F2937;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+      color: #F9FAFB;
+      font-size: 12px;
+    }
+    .specs div {
+      margin: 5px 0;
+    }
+    .label { color: #A78BFA; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎬 Video 5 - ORASIC Lab</h1>
+    <video controls width="100%">
+      <source src="carrusel_5_demos_en_vivo_1.mp4" type="video/mp4">
+      Tu navegador no soporta reproducción de video.
+    </video>
+    <div class="info">
+      <p>Archivo: carrusel_5_demos_en_vivo_1.mp4</p>
+      <p>Demos en vivo - Carrusel ORASIC</p>
+    </div>
+    <div class="specs">
+      <div><span class="label">Tamaño:</span> 2.5 MB</div>
+      <div><span class="label">Duración:</span> <span id="duracion">-</span></div>
+      <div><span class="label">Resolución:</span> <span id="resolucion">-</span></div>
+      <div><span class="label">Formato:</span> MP4</div>
+      <div><span class="label">Plataforma:</span> TikTok, Instagram Reels, YouTube Shorts</div>
+    </div>
+  </div>
+
+  <script>
+    const video = document.querySelector('video');
+
+    function updateMetadata() {
+      const duration = Math.round(video.duration);
+      const width = video.videoWidth;
+      const height = video.videoHeight;
+
+      document.getElementById('duracion').textContent = duration + ' seg';
+      document.getElementById('resolucion').textContent = width + '×' + height;
+
+      console.log('Video 5 Metadatos:');
+      console.log('- Duración: ' + duration + ' seg');
+      console.log('- Resolución: ' + width + '×' + height);
+    }
+
+    if (video.readyState >= 1) {
+      updateMetadata();
+    } else {
+      video.addEventListener('loadedmetadata', updateMetadata, { once: true });
+    }
+  </script>
+</body>
+</html>

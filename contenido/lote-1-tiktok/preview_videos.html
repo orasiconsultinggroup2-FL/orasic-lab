@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview - Videos ORASIC Lab</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #080A0F;
+      font-family: 'Inter', system-ui, sans-serif;
+      padding: 20px;
+      color: #F9FAFB;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+      color: #F9FAFB;
+    }
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    .video-card {
+      background: #111827;
+      border: 1px solid #1F2937;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .video-preview {
+      background: #000;
+      aspect-ratio: 9/16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .video-info {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .video-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #A78BFA;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .video-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #F9FAFB;
+      margin-bottom: 12px;
+    }
+    .video-specs {
+      font-size: 12px;
+      color: #9CA3AF;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .spec {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 0.5px solid #1F2937;
+    }
+    .spec:last-child {
+      border-bottom: none;
+    }
+    .spec-label {
+      color: #6B7280;
+    }
+    .spec-value {
+      color: #22D3EE;
+      font-weight: 500;
+    }
+    .summary {
+      background: #0C0E16;
+      border: 1px solid #1F2937;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 20px;
+    }
+    .summary h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #22D3EE;
+    }
+    .summary-list {
+      list-style: none;
+      font-size: 13px;
+      color: #9CA3AF;
+      line-height: 1.8;
+    }
+    .summary-list li {
+      margin-bottom: 8px;
+      padding-left: 20px;
+      position: relative;
+    }
+    .summary-list li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #10b981;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎬 Preview Videos ORASIC Lab</h1>
+    <h2 style="text-align: center; color: #A78BFA; font-size: 16px; margin-bottom: 30px; font-weight: normal;">Lote 1 - TikTok (3 Videos + Carrusel)</h2>
+
+    <div class="videos-grid">
+      <div class="video-card">
+        <div class="video-preview">
+          <video controls>
+            <source src="video-1-mito-vs-realidad-FINAL.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="video-info">
+          <div class="video-title">Video 1</div>
+          <div class="video-name">Mito vs Realidad</div>
+          <div class="video-specs">
+            <div class="spec">
+              <span class="spec-label">Duración</span>
+              <span class="spec-value" id="dur1">-</span>
+            </div>
+            <div class="spec">
+              <span class="spec-label">Resolución</span>
+              <span class="spec-value" id="res1">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-preview">
+          <video controls>
+            <source src="video-2-antes-despues-FINAL.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="video-info">
+          <div class="video-title">Video 2</div>
+          <div class="video-name">Antes / Después</div>
+          <div class="video-specs">
+            <div class="spec">
+              <span class="spec-label">Duración</span>
+              <span class="spec-value" id="dur2">-</span>
+            </div>
+            <div class="spec">
+              <span class="spec-label">Resolución</span>
+              <span class="spec-value" id="res2">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-preview">
+          <video controls>
+            <source src="video-3-numeros-FINAL.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="video-info">
+          <div class="video-title">Video 3</div>
+          <div class="video-name">Números Reales</div>
+          <div class="video-specs">
+            <div class="spec">
+              <span class="spec-label">Duración</span>
+              <span class="spec-value" id="dur3">-</span>
+            </div>
+            <div class="spec">
+              <span class="spec-label">Resolución</span>
+              <span class="spec-value" id="res3">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <h2>📊 Resumen de Análisis</h2>
+      <ul class="summary-list">
+        <li>3 videos de lote-1-tiktok listos para publicar</li>
+        <li>Todos con narración en off (voz profesional)</li>
+        <li>Formato vertical 9:16 optimizado para TikTok/Instagram</li>
+        <li>Estructura narrativa: Mito → Antes/Después → Números</li>
+        <li>Reutilizables 2+ veces por semana sin regenerar</li>
+        <li>Integración propuesta: "Biblioteca de Videos Perennes" en Content Studio</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    function getVideoInfo(videoIndex) {
+      const videos = document.querySelectorAll('video');
+      const video = videos[videoIndex];
+
+      function updateInfo() {
+        const duration = Math.round(video.duration);
+        const width = video.videoWidth;
+        const height = video.videoHeight;
+
+        document.getElementById(`dur${videoIndex + 1}`).textContent = `${duration}s`;
+        document.getElementById(`res${videoIndex + 1}`).textContent = `${width}×${height}`;
+      }
+
+      if (video.readyState >= 1) {
+        updateInfo();
+      } else {
+        video.addEventListener('loadedmetadata', updateInfo, { once: true });
+      }
+    }
+
+    // Cargar info de los 3 videos
+    getVideoInfo(0);
+    getVideoInfo(1);
+    getVideoInfo(2);
+  </script>
+</body>
+</html>

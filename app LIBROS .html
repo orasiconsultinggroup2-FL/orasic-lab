@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VozLibre — Prototipo Interactivo</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',sans-serif}
+  body{background:#e9e2d6;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:16px}
+  .phone{width:390px;height:820px;background:#f6f0e6;border-radius:36px;overflow:hidden;position:relative;border:10px solid #1b1b1b;box-shadow:0 30px 60px rgba(0,0,0,.3)}
+  .screen{position:absolute;inset:0;display:none;flex-direction:column;overflow-y:auto;background:#f6f0e6;padding-bottom:90px}
+  .screen.active{display:flex}
+  .hidden{display:none!important}
+  h1,h2,h3,.serif{font-family:Georgia,serif}
+  /* ---------- chips y botones ---------- */
+  .chip{border:none;padding:10px 16px;border-radius:999px;background:#e5dccb;color:#4a3f33;font-size:13px;cursor:pointer;white-space:nowrap}
+  .chip.sel{background:#5b3a29;color:#fff}
+  .btn{border:none;border-radius:14px;padding:14px 18px;font-size:14px;font-weight:600;cursor:pointer}
+  .btn-primary{background:#5b3a29;color:#fff}
+  .btn-soft{background:#bcd6e4;color:#28424f}
+  .btn-ghost{background:#e5dccb;color:#4a3f33}
+  /* ---------- portadas ---------- */
+  .cover{width:96px;height:140px;border-radius:8px;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:8px;position:relative;flex-shrink:0;box-shadow:0 6px 14px rgba(0,0,0,.18);cursor:pointer}
+  .cover-t{font-family:Georgia,serif;font-size:12px;line-height:1.2}
+  .cover-a{font-size:9px;opacity:.85;margin-top:4px}
+  .badge-legal{position:absolute;top:6px;right:6px;background:#fff;color:#3c5a3a;font-size:8px;font-weight:700;padding:2px 6px;border-radius:6px}
+  /* ---------- onboarding ---------- */
+  #screen-onboarding{background:#f6f0e6;padding:40px 24px}
+  .ob-logo{font-family:Georgia,serif;font-size:34px;color:#5b3a29;text-align:center}
+  .ob-sub{text-align:center;color:#8a7c69;margin:6px 0 30px;font-size:14px}
+  .ob-step{display:none}
+  .ob-step.active{display:block}
+  .ob-step h2{font-size:20px;color:#3d332a;margin-bottom:16px}
+  .ob-chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px}
+  #ob-next{width:100%;margin-top:auto}
+  /* ---------- home ---------- */
+  .home-head{background:#232a31;color:#fff;padding:26px 20px 46px;border-radius:0 0 22px 22px;text-align:center}
+  .home-head .logo{font-family:Georgia,serif;font-size:15px;letter-spacing:1px;opacity:.9}
+  .home-head h1{font-size:24px;margin:10px 0 16px}
+  .home-search{width:100%;border:none;border-radius:999px;padding:14px 18px;font-size:14px;background:#f6f0e6;color:#4a3f33;outline:none}
+  .sec{padding:18px 20px 4px}
+  .sec h3{font-size:16px;color:#3d332a;margin-bottom:12px}
+  .row{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}
+  .cont-card{background:linear-gradient(160deg,#f2c078,#c26d3f);border:3px solid #a55a2b;border-radius:16px;padding:22px;text-align:center;color:#fff;cursor:pointer}
+  .cont-card h4{font-family:Georgia,serif;font-size:20px}
+  .cont-card p{font-size:12px;margin-top:6px;opacity:.9}
+  .prog{height:6px;background:rgba(255,255,255,.35);border-radius:99px;margin-top:12px}
+  .prog i{display:block;height:100%;width:34%;background:#fff;border-radius:99px}
+  .autor{display:flex;align-items:center;gap:10px;min-width:150px}
+  .avatar{width:44px;height:44px;border-radius:50%;background:#5b3a29;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .moods{display:flex;gap:10px;flex-wrap:wrap}
+  .mood{border:none;border-radius:999px;padding:12px 18px;color:#fff;font-size:13px;font-weight:600;cursor:pointer}
+  /* ---------- descubrir ---------- */
+  .disc-top{padding:24px 20px 10px}
+  .disc-top input{width:100%;border:1px solid #d8cdba;border-radius:12px;padding:12px 14px;font-size:14px;background:#fff;outline:none}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:14px 20px}
+  .grid .cover{width:100%;height:150px}
+  /* ---------- detalle ---------- */
+  .det-head{display:flex;align-items:center;justify-content:center;position:relative;padding:20px}
+  .back{position:absolute;left:16px;top:20px;border:none;background:none;font-size:22px;cursor:pointer;color:#5b3a29}
+  .det-body{padding:0 24px;text-align:center}
+  .det-body .cover{width:150px;height:210px;margin:0 auto}
+  .det-body h2{font-size:24px;color:#3d332a;margin-top:18px}
+  .det-body .aut{color:#8a7c69;margin:6px 0 14px}
+  .tags{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .tag{background:#e5dccb;color:#4a3f33;font-size:11px;padding:8px 12px;border-radius:999px}
+  .desc{font-size:13px;color:#6d6152;line-height:1.6;margin-bottom:18px}
+  .det-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  /* ---------- lector ---------- */
+  #screen-lector{background:#f3ead9}
+  #screen-lector.t-sepia{background:#ead9bd}
+  #screen-lector.t-noche{background:#191919;color:#d8d0c0}
+  .lec-bar{display:flex;gap:10px;justify-content:flex-end;padding:18px 20px;position:sticky;top:0}
+  .lec-bar button{border:none;border-radius:10px;padding:8px 12px;background:rgba(0,0,0,.12);cursor:pointer;font-size:13px}
+  #screen-lector.t-noche .lec-bar button{background:rgba(255,255,255,.15);color:#fff}
+  .lec-bar .back{position:absolute;left:16px;top:16px}
+  #lec-body{padding:10px 28px 60px;line-height:1.8}
+  #lec-body h3{margin-bottom:16px}
+  /* ---------- reproductor ---------- */
+  #screen-reproductor{background:#10161d;color:#f4ead8;text-align:center;justify-content:center}
+  #rep-title{font-size:22px;margin-top:8px}
+  #rep-cap{opacity:.6;font-size:13px;margin:6px 0 26px}
+  #rep-cover{width:190px;height:190px;border-radius:50%;margin:0 auto 30px;filter:blur(1px);opacity:.9}
+  .rep-times{display:flex;justify-content:space-between;font-size:12px;color:#e8a33d;padding:0 30px}
+  .rep-bar{height:5px;background:#3a424c;border-radius:99px;margin:8px 30px 30px;position:relative}
+  #rep-fill{position:absolute;left:0;top:0;bottom:0;background:#e8a33d;border-radius:99px;width:7%}
+  #rep-fill::after{content:'';position:absolute;right:-7px;top:-5px;width:15px;height:15px;background:#e8a33d;border-radius:50%}
+  .rep-ctrl{display:flex;align-items:center;justify-content:center;gap:34px;margin-bottom:30px}
+  .rep-ctrl button{border:none;background:none;color:#e8a33d;font-size:26px;cursor:pointer}
+  #btn-play{width:82px;height:82px;border-radius:50%;background:linear-gradient(160deg,#f2c078,#d98a2b);color:#10161d;font-size:30px;box-shadow:0 0 30px rgba(232,163,61,.45)}
+  .rep-extras{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:0 20px}
+  .rep-extras .chip{background:#242c35;color:#e8a33d}
+  .rep-note{margin-top:26px;font-size:12px;opacity:.55}
+  /* ---------- biblioteca / perfil ---------- */
+  .bib-tabs{display:flex;gap:10px;padding:20px}
+  .bib-item{display:flex;gap:14px;align-items:center;padding:12px 20px;cursor:pointer}
+  .bib-item .cover{width:56px;height:80px}
+  .empty{text-align:center;color:#8a7c69;padding:50px 30px;font-size:14px}
+  .perf-head{padding:30px 24px 10px;text-align:center}
+  .stat-row{display:flex;justify-content:space-around;padding:16px}
+  .stat{text-align:center}
+  .stat b{font-size:20px;color:#5b3a29;display:block}
+  .stat span{font-size:11px;color:#8a7c69}
+  .reto{margin:10px 24px;background:#e5dccb;border-radius:16px;padding:16px}
+  .reto .prog{background:#cbbfa9}
+  .reto .prog i{background:#5b3a29;width:33%}
+  .perf-btns{padding:16px 24px;display:flex;flex-direction:column;gap:12px}
+  .badge-pre{display:inline-block;background:#e8a33d;color:#3d2a10;font-size:10px;font-weight:800;padding:3px 10px;border-radius:99px;margin-left:8px}
+  /* ---------- tabbar / modal / toast ---------- */
+  #tabbar{position:absolute;bottom:0;left:0;right:0;background:#232a31;display:flex;padding:10px 6px 16px;border-radius:18px 18px 0 0}
+  .tab{flex:1;border:none;background:none;color:#9aa4ad;font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+  .tab span{font-size:18px}
+  .tab.active{color:#e8a33d}
+  .modal{position:absolute;inset:0;background:rgba(20,15,10,.55);display:none;align-items:flex-end;z-index:50}
+  .modal.open{display:flex}
+  .pay{background:#f6f0e6;width:100%;border-radius:26px 26px 0 0;padding:28px 24px 34px}
+  .pay h2{font-size:22px;color:#3d332a;text-align:center}
+  .pay p{text-align:center;color:#8a7c69;font-size:13px;margin:8px 0 20px}
+  .plans{display:flex;gap:12px;margin-bottom:18px}
+  .plan{flex:1;border:2px solid #d8cdba;border-radius:16px;padding:16px;text-align:center;cursor:pointer;background:#fff}
+  .plan.sel{border-color:#5b3a29;background:#f3e7d8}
+  .plan b{display:block;color:#3d332a}
+  .plan span{font-size:12px;color:#8a7c69}
+  #toast{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);background:#3d332a;color:#fff;font-size:13px;padding:12px 20px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:60;white-space:nowrap}
+  #toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ONBOARDING -->
+  <section id="screen-onboarding" class="screen active">
+    <div class="ob-logo">VozLibre</div>
+    <div class="ob-sub">Lee y escucha historias, gratis y legal ✨</div>
+    <div class="ob-step active" data-step="0">
+      <h2>¿Qué te gusta leer?</h2>
+      <div class="ob-chips" data-multi="1">
+        <button class="chip" data-val="romance">Romance</button>
+        <button class="chip" data-val="fantasia">Fantasía</button>
+        <button class="chip" data-val="thriller">Thriller</button>
+        <button class="chip" data-val="dormir">Para dormir</button>
+      </div>
+    </div>
+    <div class="ob-step" data-step="1">
+      <h2>¿Cómo prefieres disfrutarlo?</h2>
+      <div class="ob-chips">
+        <button class="chip" data-val="leer">Leer</button>
+        <button class="chip" data-val="escuchar">Escuchar</button>
+        <button class="chip" data-val="ambos">Ambos</button>
+      </div>
+    </div>
+    <div class="ob-step" data-step="2">
+      <h2>¿Cuál es tu meta?</h2>
+      <div class="ob-chips">
+        <button class="chip" data-val="leer-mas">Leer más</button>
+        <button class="chip" data-val="relajarme">Relajarme</button>
+        <button class="chip" data-val="descubrir">Descubrir autores nuevos</button>
+      </div>
+    </div>
+    <button id="ob-next" class="btn btn-primary">Siguiente</button>
+  </section>
+
+  <!-- INICIO -->
+  <section id="screen-inicio" class="screen">
+    <div class="home-head">
+      <div class="logo">VOZLIBRE <span id="hdr-premium" class="badge-pre hidden">PREMIUM</span></div>
+      <h1 id="hola">Hola, lector</h1>
+      <input id="home-search" class="home-search" placeholder="🔍 Busca por título, autor o mood" readonly>
+    </div>
+    <div class="sec"><h3>Continuar leyendo</h3><div id="cont-card"></div></div>
+    <div class="sec"><h3>Tendencias legales</h3><div id="tendencias" class="row"></div></div>
+    <div class="sec"><h3>Autores emergentes</h3><div id="autores" class="row"></div></div>
+    <div class="sec"><h3>Colecciones por ánimo</h3>
+      <div class="moods">
+        <button class="mood" data-mood="romance" style="background:#b0762c">Romance</button>
+        <button class="mood" data-mood="fantasia" style="background:#7a5fa0">Fantasía</button>
+        <button class="mood" data-mood="thriller" style="background:#2c3a6b">Thriller</button>
+        <button class="mood" data-mood="dormir" style="background:#6d7a86">Para dormir</button>
+        <button class="mood" data-mood="cortos" style="background:#c06a7a">Cortos</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESCUBRIR -->
+  <section id="screen-descubrir" class="screen">
+    <div class="disc-top">
+      <input id="disc-search" placeholder="🔍 Título, autor…">
+      <div class="row" style="margin-top:12px" id="disc-chips">
+        <button class="chip sel" data-mood="todos">Todos</button>
+        <button class="chip" data-mood="romance">Romance</button>
+        <button class="chip" data-mood="fantasia">Fantasía</button>
+        <button class="chip" data-mood="thriller">Thriller</button>
+        <button class="chip" data-mood="dormir">Para dormir</button>
+        <button class="chip" data-mood="cortos">Cortos</button>
+      </div>
+    </div>
+    <div id="grid" class="grid"></div>
+  </section>
+
+  <!-- DETALLE -->
+  <section id="screen-detalle" class="screen">
+    <div class="det-head"><button class="back" data-go="back">‹</button><b class="serif">VozLibre</b></div>
+    <div class="det-body">
+      <div id="det-cover"></div>
+      <h2 id="det-title"></h2>
+      <div class="aut" id="det-author"></div>
+      <div class="tags" id="det-tags"></div>
+      <div class="desc" id="det-desc"></div>
+      <div class="det-actions">
+        <button id="btn-escuchar" class="btn btn-soft"> Escuchar muestra</button>
+        <button id="btn-leer" class="btn btn-soft">📖 Leer muestra</button>
+        <button id="btn-lista" class="btn btn-primary">+ Añadir a mi lista</button>
+      </div>
+      <div class="tags" id="det-tropos" style="margin-top:18px"></div>
+    </div>
+  </section>
+
+  <!-- LECTOR -->
+  <section id="screen-lector" class="screen">
+    <div class="lec-bar">
+      <button class="back" data-go="back" style="color:inherit">‹</button>
+      <button id="lec-minus">A−</button>
+      <button id="lec-plus">A+</button>
+      <button id="lec-theme">🌙 Tema</button>
+    </div>
+    <div id="lec-body">
+      <h3 id="lec-title" class="serif"></h3>
+      <p>Cuando Vera empujó la puerta de madera, el jardín respondió con un susurro de hojas que parecía darle la bienvenida.</p>
+      <p>No era un jardín cualquiera: cada sendero guardaba una historia, y cada historia esperaba a alguien dispuesto a escucharla.</p>
+      <p>Vera respiró hondo, dejó atrás el ruido del mundo y dio el primer paso. La luz se filtraba entre las rosas como si el propio jardín quisiera contarle algo en voz baja.</p>
+      <p>«Los libros no se eligen —pensó—. Te eligen ellos a ti.»</p>
+    </div>
+  </section>
+
+  <!-- REPRODUCTOR -->
+  <section id="screen-reproductor" class="screen">
+    <div class="logo" style="opacity:.7">VOZLIBRE</div>
+    <h2 id="rep-title" class="serif"></h2>
+    <div id="rep-cap">Capítulo 1</div>
+    <div id="rep-cover" class="cover" style="width:190px;height:190px"></div>
+    <div class="rep-times"><span id="rep-cur">12:48</span><span id="rep-total">3:20:00</span></div>
+    <div class="rep-bar"><div id="rep-fill"></div></div>
+    <div class="rep-ctrl">
+      <button id="btn-back15">⏮</button>
+      <button id="btn-play">▶</button>
+      <button id="btn-fwd15">⏭</button>
+    </div>
+    <div class="rep-extras">
+      <button class="chip" id="rep-speed">Velocidad 1x</button>
+      <button class="chip" id="rep-sleep">Temporizador de sueño</button>
+      <button class="chip" id="btn-rep-desc">Descargar</button>
+      <button class="chip" id="btn-caps">Capítulos</button>
+    </div>
+    <div class="rep-note">Se reanuda donde lo dejaste</div>
+    <button class="back" data-go="back" style="position:absolute;top:18px;left:16px;color:#e8a33d">‹</button>
+  </section>
+
+  <!-- BIBLIOTECA -->
+  <section id="screen-biblioteca" class="screen">
+    <div class="bib-tabs" id="bib-tabs">
+      <button class="chip sel" data-tab="leyendo">Leyendo</button>
+      <button class="chip" data-tab="quiero">Quiero leer</button>
+      <button class="chip" data-tab="leidos">Leídos</button>
+    </div>
+    <div id="bib-list"></div>
+  </section>
+
+  <!-- PERFIL -->
+  <section id="screen-perfil" class="screen">
+    <div class="perf-head">
+      <div class="avatar" style="width:70px;height:70px;margin:0 auto;font-size:24px">L</div>
+      <h2 style="margin-top:10px">Lector</h2>
+      <span id="perf-premium" class="badge-pre hidden">PREMIUM ACTIVO</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><b>342</b><span>minutos</span></div>
+      <div class="stat"><b>4</b><span>libros</span></div>
+      <div class="stat"><b>6</b><span>días de racha</span></div>
+    </div>
+    <div class="reto"><b>Reto anual: 4 / 12 libros</b><div class="prog"><i></i></div></div>
+    <div class="perf-btns">
+      <button id="btn-premium" class="btn btn-primary">⭐ Probar Premium gratis 7 días</button>
+      <button id="btn-autores" class="btn btn-ghost">✍️ Portal de autores (próximamente)</button>
+    </div>
+  </section>
+
+  <!-- TABBAR -->
+  <nav id="tabbar" class="hidden">
+    <button class="tab active" data-screen="screen-inicio"><span>🏠</span>Inicio</button>
+    <button class="tab" data-screen="screen-descubrir"><span>🔍</span>Descubrir</button>
+    <button class="tab" data-screen="screen-biblioteca"><span>📚</span>Biblioteca</button>
+    <button class="tab" data-screen="clubes"><span>💬</span>Clubes</button>
+    <button class="tab" data-screen="screen-perfil"><span>👤</span>Perfil</button>
+  </nav>
+
+  <!-- PAYWALL -->
+  <div id="paywall" class="modal">
+    <div class="pay">
+      <h2>VozLibre Premium</h2>
+      <p>Descargas ilimitadas · sin patrocinios · estadísticas avanzadas · temas exclusivos</p>
+      <div class="plans">
+        <div class="plan" id="plan-mes"><b>Mensual</b><span>3,99 € / mes</span></div>
+        <div class="plan sel" id="plan-anio"><b>Anual</b><span>29,99 € / año<br>2 meses gratis</span></div>
+      </div>
+      <button id="btn-cta" class="btn btn-primary" style="width:100%">Activar prueba gratis de 7 días</button>
+      <button id="pay-close" class="btn btn-ghost" style="width:100%;margin-top:10px">Ahora no</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+const LIBROS=[
+ {id:1,titulo:'El Jardín de las Historias',autor:'Lucía Monte',genero:'Fantasía acogedora',moods:['romance','fantasia'],tropos:['Enemies to lovers','Final feliz','Lectura ligera'],tipo:'ambos',mins:200,desc:'Un jardín donde cada sendero guarda una historia. Fantasía acogedora con romance ligero.',c1:'#f2c078',c2:'#c26d3f',tendencia:1,emergente:1},
+ {id:2,titulo:'El Eco del Silencio',autor:'María Sánchez',genero:'Thriller',moods:['thriller'],tropos:['Suspense psicológico','Giro final'],tipo:'audio',mins:310,desc:'Un thriller que no podrás dejar de escuchar.',c1:'#2e4b4f',c2:'#0f2733',tendencia:1},
+ {id:3,titulo:'La Marea de Cristal',autor:'Javier Ruiz',genero:'Fantasía',moods:['fantasia','cortos'],tropos:['Aventura','Mundo nuevo'],tipo:'ebook',mins:165,desc:'Una aventura corta de mundos imposibles.',c1:'#7fb2c9',c2:'#31607d',tendencia:1,emergente:1},
+ {id:4,titulo:'Cartas desde el Faro',autor:'Elena Ríos',genero:'Romance',moods:['romance','dormir'],tropos:['Amor epistolar','Final feliz'],tipo:'ambos',mins:240,desc:'Romance sereno para leer o escuchar de noche.',c1:'#e8b4c8',c2:'#8d5a7a',tendencia:1,emergente:1},
+ {id:5,titulo:'El Último Invierno',autor:'Andrés Vega',genero:'Thriller',moods:['thriller','cortos'],tropos:['Misterio','Pueblo pequeño'],tipo:'ebook',mins:150,desc:'Misterio corto en un pueblo nevado.',c1:'#9fb8c8',c2:'#40566b'},
+ {id:6,titulo:'Susurros del Bosque',autor:'Lucía Monte',genero:'Para dormir',moods:['dormir','cortos'],tropos:['Relajante','Naturaleza'],tipo:'audio',mins:90,desc:'Relatos suaves para cerrar el día.',c1:'#7d9b76',c2:'#3c5a3a',emergente:1},
+ {id:7,titulo:'Corazón de Tinta',autor:'María Sánchez',genero:'Romance',moods:['romance'],tropos:['Slow burn','Librerías'],tipo:'ambos',mins:280,desc:'Romance lento entre librerías.',c1:'#d98c8c',c2:'#7d3b4a',tendencia:1},
+ {id:8,titulo:'La Ciudad Sumergida',autor:'Javier Ruiz',genero:'Fantasía',moods:['fantasia'],tropos:['Épica','Heroína'],tipo:'ebook',mins:330,desc:'Fantasía épica con protagonista valiente.',c1:'#6f86c9',c2:'#2c3a6b',emergente:1},
+ {id:9,titulo:'Poemas de la Tarde',autor:'Elena Ríos',genero:'Para dormir',moods:['dormir','cortos'],tropos:['Poesía','Calma'],tipo:'ebook',mins:60,desc:'Poesía breve para tardes tranquilas.',c1:'#e5c37d',c2:'#a07830'}
+];
+const state={lista:[],leyendo:null,mood:'todos',query:'',premium:false,playing:false,speed:1,sleep:0,fontSize:16,tema:0,libroActual:null,audioActual:null,cur:768,total:12000};
+const stack=[];
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200)}
+function showScreen(id){$$('.screen').forEach(s=>s.classList.remove('active'));$('#'+id).classList.add('active');stack.push(id);
+ const tabs=['screen-inicio','screen-descubrir','screen-biblioteca','screen-perfil'];
+ $('#tabbar').classList.toggle('hidden',!tabs.includes(id));
+ $$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.screen===id));}
+function goBack(){if(stack.length>1){stack.pop();const prev=stack[stack.length-1];$$('.screen').forEach(s=>s.classList.remove('active'));$('#'+prev).classList.add('active');
+ const tabs=['screen-inicio','screen-descubrir','screen-biblioteca','screen-perfil'];$('#tabbar').classList.toggle('hidden',!tabs.includes(prev));}}
+$$('[data-go="back"]').forEach(b=>b.onclick=goBack);
+function cover(b,extra=''){return `<div class="cover ${extra}" data-id="${b.id}" style="background:linear-gradient(160deg,${b.c1},${b.c2})"><span class="badge-legal">Legal</span><span class="cover-t">${b.titulo}</span><span class="cover-a">${b.autor}</span></div>`}
+/* onboarding */
+let obStep=0;
+$$('.ob-chips .chip').forEach(c=>c.onclick=()=>{if(c.closest('.ob-chips').dataset.multi!=='1')c.closest('.ob-chips').querySelectorAll('.chip').forEach(x=>x.classList.remove('sel'));c.classList.toggle('sel')});
+$('#ob-next').onclick=()=>{const steps=$$('.ob-step');steps[obStep].classList.remove('active');obStep++;
+ if(obStep<steps.length){steps[obStep].classList.add('active');if(obStep===steps.length-1)$('#ob-next').textContent='Entrar en VozLibre';}
+ else{showScreen('screen-inicio');toast('¡Bienvenido a VozLibre! 📚');}};
+/* home */
+$('#tendencias').innerHTML=LIBROS.filter(b=>b.tendencia).map(b=>cover(b)).join('');
+$('#autores').innerHTML=[...new Map(LIBROS.filter(b=>b.emergente).map(b=>[b.autor,b])).values()]
+ .map(b=>`<div class="autor"><div class="avatar">${b.autor.split(' ').map(p=>p[0]).join('')}</div><span style="font-size:13px">${b.autor}</span></div>`).join('');
+function renderCont(){const c=$('#cont-card');
+ if(state.leyendo){const b=LIBROS.find(x=>x.id===state.leyendo);c.innerHTML=`<div class="cont-card" id="cont-go"><h4>${b.titulo}</h4><p>${b.autor} · 34%</p><div class="prog"><i></i></div></div>`;$('#cont-go').onclick=()=>abrirLector(b.id);}
+ else c.innerHTML=`<div class="cont-card" id="cont-go"><h4>Empieza tu primera historia</h4><p>Toca para descubrir libros gratis</p></div>`, $('#cont-go').onclick=()=>showScreen('screen-descubrir');}
+renderCont();
+$('#home-search').onclick=()=>{showScreen('screen-descubrir');$('#disc-search').focus()};
+$$('.mood').forEach(m=>m.onclick=()=>{state.mood=m.dataset.mood;syncChips();renderGrid();showScreen('screen-descubrir')});
+/* descubrir */
+function syncChips(){$$('#disc-chips .chip').forEach(c=>c.classList.toggle('sel',c.dataset.mood===state.mood))}
+function renderGrid(){const q=state.query.toLowerCase();
+ const list=LIBROS.filter(b=>(state.mood==='todos'||b.moods.includes(state.mood))&&(!q||b.titulo.toLowerCase().includes(q)||b.autor.toLowerCase().includes(q)));
+ $('#grid').innerHTML=list.length?list.map(b=>cover(b)).join(''):`<div class="empty" style="grid-column:1/-1">Sin resultados 😕<br>Prueba otro mood o búsqueda.</div>`;
+ $$('#grid .cover').forEach(c=>c.onclick=()=>abrirDetalle(+c.dataset.id));}
+$$('#disc-chips .chip').forEach(c=>c.onclick=()=>{state.mood=c.dataset.mood;syncChips();renderGrid()});
+$('#disc-search').oninput=e=>{state.query=e.target.value;renderGrid()};
+/* detalle */
+function abrirDetalle(id){const b=LIBROS.find(x=>x.id===id);state.libroActual=b;
+ $('#det-cover').innerHTML=cover(b);$('#det-title').textContent=b.titulo;$('#det-author').textContent=b.autor+' · '+fmt(b.mins*60);
+ $('#det-tags').innerHTML=`<span class="tag">${b.genero}</span><span class="tag">Gratis legal</span><span class="tag">${b.tipo==='audio'?'Audiolibro':b.tipo==='ebook'?'Ebook':'Libro + Audio'}</span>`;
+ $('#det-desc').textContent=b.desc;
+ $('#det-tropos').innerHTML=b.tropos.map(t=>`<span class="tag">${t}</span>`).join('');
+ $('#btn-leer').classList.toggle('hidden',b.tipo==='audio');
+ $('#btn-escuchar').classList.toggle('hidden',b.tipo==='ebook');
+ showScreen('screen-detalle');}
+$('#btn-leer').onclick=()=>{state.leyendo=state.libroActual.id;renderCont();abrirLector(state.libroActual.id)};
+$('#btn-escuchar').onclick=()=>abrirReproductor(state.libroActual.id);
+$('#btn-lista').onclick=()=>{if(!state.lista.includes(state.libroActual.id)){state.lista.push(state.libroActual.id);toast('Añadido a tu lista ✅')}else toast('Ya está en tu lista')};
+/* lector */
+function abrirLector(id){const b=LIBROS.find(x=>x.id===id);$('#lec-title').textContent=b.titulo+' — Capítulo 1';showScreen('screen-lector')}
+$('#lec-plus').onclick=()=>{state.fontSize=Math.min(24,state.fontSize+2);$('#lec-body').style.fontSize=state.fontSize+'px'};
+$('#lec-minus').onclick=()=>{state.fontSize=Math.max(12,state.fontSize-2);$('#lec-body').style.fontSize=state.fontSize+'px'};
+$('#lec-theme').onclick=()=>{state.tema=(state.tema+1)%3;const s=$('#screen-lector');s.classList.remove('t-sepia','t-noche');if(state.tema===1)s.classList.add('t-sepia');if(state.tema===2)s.classList.add('t-noche')};
+/* reproductor */
+function fmt(s){const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=Math.floor(s%60),p=n=>String(n).padStart(2,'0');return h?`${h}:${p(m)}:${p(x)}`:`${m}:${p(x)}`}
+function abrirReproductor(id){const b=LIBROS.find(x=>x.id===id);state.audioActual=b;state.total=b.mins*60;state.cur=768;state.playing=false;$('#btn-play').textContent='▶';
+ $('#rep-title').textContent=b.titulo;$('#rep-cover').style.background=`linear-gradient(160deg,${b.c1},${b.c2})`;pintarRep();showScreen('screen-reproductor')}
+function pintarRep(){$('#rep-cur').textContent=fmt(state.cur);$('#rep-total').textContent=fmt(state.total);$('#rep-fill').style.width=Math.min(100,state.cur/state.total*100)+'%'}
+setInterval(()=>{if(state.playing){state.cur=Math.min(state.total,state.cur+30*state.speed);pintarRep();if(state.cur>=state.total){state.playing=false;$('#btn-play').textContent='▶'}}},1000);
+$('#btn-play').onclick=()=>{state.playing=!state.playing;$('#btn-play').textContent=state.playing?'⏸':'▶'};
+$('#btn-back15').onclick=()=>{state.cur=Math.max(0,state.cur-900);pintarRep()};
+$('#btn-fwd15').onclick=()=>{state.cur=Math.min(state.total,state.cur+900);pintarRep()};
+$('#rep-speed').onclick=e=>{const v=[1,1.2,1.5,2];state.speed=v[(v.indexOf(state.speed)+1)%v.length];e.target.textContent='Velocidad '+state.speed+'x'};
+$('#rep-sleep').onclick=()=>{const v=[0,15,30,45];state.sleep=v[(v.indexOf(state.sleep)+1)%v.length];toast(state.sleep?`⏰ Temporizador: ${state.sleep} min`:'Temporizador apagado')};
+$('#btn-rep-desc').onclick=()=>toast('⬇️ Descargado para modo offline ✅');
+$('#btn-caps').onclick=()=>toast('📑 12 capítulos (simulado)');
+/* biblioteca */
+function renderBib(tab){const l=$('#bib-list');
+ if(tab==='leyendo')l.innerHTML=state.leyendo?`<div class="bib-item">${cover(LIBROS.find(b=>b.id===state.leyendo))}<div><b>${LIBROS.find(b=>b.id===state.leyendo).titulo}</b><br><span style="font-size:12px;color:#8a7c69">34% completado</span></div></div>`:`<div class="empty">Aún no estás leyendo nada.<br>¡Descubre tu próxima historia! ✨</div>`;
+ if(tab==='quiero')l.innerHTML=state.lista.length?state.lista.map(id=>{const b=LIBROS.find(x=>x.id===id);return `<div class="bib-item">${cover(b)}<div><b>${b.titulo}</b><br><span style="font-size:12px;color:#8a7c69">${b.autor}</span></div></div>`}).join(''):`<div class="empty">Tu lista está vacía.<br>Añade libros desde su ficha 📖</div>`;
+ if(tab==='leidos')l.innerHTML=`<div class="empty">Cuando termines tu primer libro,<br>aparecerá aquí 🏆</div>`;
+ $$('#bib-list .cover').forEach(c=>c.onclick=()=>abrirDetalle(+c.dataset.id));}
+$$('#bib-tabs .chip').forEach(c=>c.onclick=()=>{$$('#bib-tabs .chip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');renderBib(c.dataset.tab)});
+/* perfil y paywall */
+$('#btn-premium').onclick=()=>$('#paywall').classList.add('open');
+$('#pay-close').onclick=()=>$('#paywall').classList.remove('open');
+$('#plan-mes').onclick=()=>{$('#plan-mes').classList.add('sel');$('#plan-anio').classList.remove('sel')};
+$('#plan-anio').onclick=()=>{$('#plan-anio').classList.add('sel');$('#plan-mes').classList.remove('sel')};
+$('#btn-cta').onclick=()=>{state.premium=true;$('#paywall').classList.remove('open');$('#hdr-premium').classList.remove('hidden');$('#perf-premium').classList.remove('hidden');toast('🎉 Prueba Premium activada (simulada)')};
+$('#btn-autores').onclick=()=>toast('✍️ Portal de autores: Fase 2');
+/* tabbar */
+$$('.tab').forEach(t=>t.onclick=()=>{if(t.dataset.screen==='clubes'){toast('💬 Clubes de lectura: Fase 2 ✨');return}showScreen(t.dataset.screen);if(t.dataset.screen==='screen-biblioteca')renderBib(document.querySelector('#bib-tabs .chip.sel').dataset.tab)});
+/* init */
+renderGrid();
+</script>
+</body>
+</html>

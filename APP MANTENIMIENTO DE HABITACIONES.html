@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MG RoomSync - Gestión + Mantenimiento</title>
+    <style>
+        :root {
+            --mg-primary: #2563eb;
+            --mg-dark: #1e293b;
+            --mg-light: #f8fafc;
+            --mg-success: #22c55e;
+            --mg-warning: #f59e0b;
+            --mg-danger: #ef4444;
+            --mg-gray: #64748b;
+            --mg-maint: #8b5cf6; /* Nuevo color para mantenimiento activo */
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--mg-light); color: var(--mg-dark); padding-bottom: 80px; overflow-x: hidden;}
+
+        /* HEADER */
+        header {
+            background: white; padding: 1rem; position: sticky; top: 0; z-index: 100;
+            box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-weight: 800; font-size: 1.2rem; color: var(--mg-primary); letter-spacing: -0.5px; }
+        .logo span { color: var(--mg-dark); }
+
+        .role-switch { display: flex; background: #e2e8f0; border-radius: 20px; padding: 4px; }
+        .role-btn {
+            border: none; background: transparent; padding: 6px 12px; border-radius: 16px;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+        }
+        .role-btn.active { background: white; color: var(--mg-primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        /* STATS */
+        .stats-bar { display: flex; gap: 0.5rem; padding: 1rem; overflow-x: auto; scrollbar-width: none; }
+        .stat-chip {
+            background: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; white-space: nowrap; box-shadow: var(--shadow); display: flex; align-items: center; gap: 6px;
+        }
+        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+        /* GRID & LIST */
+        .room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 1rem; padding: 1rem; }
+        .room-card {
+            background: white; aspect-ratio: 1; border-radius: var(--radius); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;
+            box-shadow: var(--shadow); cursor: pointer; transition: transform 0.2s; position: relative;
+            border: 2px solid transparent;
+        }
+        .room-card:active { transform: scale(0.95); }
+        .room-card small { font-size: 0.7rem; font-weight: 400; opacity: 0.8; margin-top: 4px; text-align: center; padding: 0 4px;}
+
+        .task-list { padding: 1rem; display: flex; flex-direction: column; gap: 0.8rem; }
+        .task-item {
+            background: white; padding: 1rem; border-radius: var(--radius); box-shadow: var(--shadow);
+            display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--mg-gray);
+        }
+        .task-info h3 { font-size: 1rem; margin-bottom: 2px; display: flex; align-items: center; gap: 6px;}
+        .task-info p { font-size: 0.8rem; color: #64748b; }
+        .action-btn {
+            background: var(--mg-primary); color: white; border: none; padding: 8px 16px;
+            border-radius: 8px; font-weight: 600; font-size: 0.8rem; cursor: pointer; min-width: 80px;
+        }
+
+        /* STATUS COLORS */
+        .status-ready { border-color: var(--mg-success); color: var(--mg-success); }
+        .status-cleaning { border-color: var(--mg-warning); color: var(--mg-warning); }
+        .status-dirty { border-color: var(--mg-danger); color: var(--mg-danger); }
+        .status-maint { border-color: var(--mg-maint); color: var(--mg-maint); background: #f5f3ff; }
+
+        .bg-ready { background-color: var(--mg-success); color: white; }
+        .bg-cleaning { background-color: var(--mg-warning); color: white; }
+        .bg-dirty { background-color: var(--mg-danger); color: white; }
+        .bg-maint { background-color: var(--mg-maint); color: white; }
+
+        /* MODALS */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6);
+            display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem;
+            backdrop-filter: blur(4px);
+        }
+        .modal.open { display: flex; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            background: white; width: 100%; max-width: 420px; border-radius: 16px;
+            padding: 1.5rem; text-align: center; max-height: 90vh; overflow-y: auto;
+        }
+        .modal-title { font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .modal-status { font-size: 0.85rem; margin-bottom: 1.5rem; padding: 4px 12px; border-radius: 20px; display: inline-block; font-weight: 600;}
+        .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+        .modal-btn {
+            padding: 14px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
+            font-size: 0.9rem; transition: opacity 0.2s;
+        }
+        .modal-btn:active { opacity: 0.8; }
+
+        /* MAINTENANCE FORM SPECIFICS */
+        .maint-form { text-align: left; margin-top: 1rem; }
+        .maint-form label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--mg-dark); }
+        .maint-form select, .maint-form textarea {
+            width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px;
+            font-size: 0.9rem; margin-bottom: 1rem; background: #f8fafc; font-family: inherit;
+        }
+        .maint-form textarea { resize: vertical; min-height: 80px; }
+        
+        .photo-upload-area {
+            border: 2px dashed #cbd5e1; border-radius: 10px; padding: 1.5rem; text-align: center;
+            cursor: pointer; margin-bottom: 1rem; transition: all 0.2s; position: relative; overflow: hidden;
+        }
+        .photo-upload-area:hover, .photo-upload-area.has-photo { border-color: var(--mg-primary); background: #eff6ff; }
+        .photo-upload-area input { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
+        .photo-preview { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; display: none; }
+        .photo-placeholder { color: #64748b; font-size: 0.9rem; }
+        .photo-placeholder svg { width: 32px; height: 32px; margin-bottom: 8px; stroke: #94a3b8; }
+
+        .report-badge { 
+            position: absolute; top: 6px; right: 6px; background: var(--mg-maint); color: white;
+            font-size: 10px; width: 20px; height: 20px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-weight: 700;
+        }
+
+        .view-report-btn {
+            margin-top: 1rem; width: 100%; padding: 12px; background: #f1f5f9; border: none;
+            border-radius: 8px; color: var(--mg-dark); font-weight: 600; cursor: pointer; font-size: 0.9rem;
+        }
+        .view-report-btn:hover { background: #e2e8f0; }
+
+        .hidden { display: none !important; }
+        .priority-tag { background: #fee2e2; color: #b91c1c; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">MG <span>RoomSync</span></div>
+        <div class="role-switch">
+            <button class="role-btn active" onclick="setView('reception')">Recepción</button>
+            <button class="role-btn" onclick="setView('housekeeping')">Housekeeping</button>
+        </div>
+    </header>
+
+    <div class="stats-bar" id="statsBar"></div>
+
+    <div id="receptionView" class="room-grid"></div>
+    <div id="housekeepingView" class="task-list hidden"></div>
+
+    <!-- MODAL PRINCIPAL DE HABITACIÓN -->
+    <div id="roomModal" class="modal" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalRoomNumber">HAB 101</h2>
+            <div class="modal-status" id="modalCurrentStatus">SUCIA</div>
+            
+            <!-- Sección de cambio de estado -->
+            <div id="statusActions">
+                <p style="margin-bottom: 0.8rem; color: #64748b; font-size: 0.85rem;">Cambiar estado:</p>
+                <div class="modal-actions">
+                    <button class="modal-btn bg-ready" onclick="updateStatus('ready')">✅ Lista</button>
+                    <button class="modal-btn bg-cleaning" onclick="updateStatus('cleaning')">🧹 Limpieza</button>
+                    <button class="modal-btn bg-dirty" onclick="updateStatus('dirty')">❌ Sucia</button>
+                    <button class="modal-btn bg-maint" onclick="showMaintForm()">🔧 Reportar Avería</button>
+                </div>
+            </div>
+
+            <!-- Formulario de Mantenimiento (Oculto por defecto) -->
+            <div id="maintFormSection" class="hidden">
+                <div class="maint-form">
+                    <label>Tipo de Avería</label>
+                    <select id="maintType">
+                        <option value="">Seleccionar...</option>
+                        <option value="plomeria">💧 Plomería / Fuga</option>
+                        <option value="electricidad">⚡ Electricidad / Iluminación</option>
+                        <option value="clima">❄️ Aire Acondicionado / Calefacción</option>
+                        <option value="mobiliario">🪑 Mobiliario / Puertas</option>
+                        <option value="tv">📺 TV / Internet / Electrónica</option>
+                        <option value="otro">🔧 Otro</option>
+                    </select>
+
+                    <label>Descripción (Opcional)</label>
+                    <textarea id="maintDesc" placeholder="Ej: La llave del lavabo gotea constantemente..."></textarea>
+
+                    <label>Evidencia Fotográfica *</label>
+                    <div class="photo-upload-area" id="photoArea">
+                        <input type="file" accept="image/*" capture="environment" id="photoInput" onchange="handlePhotoSelect(this)">
+                        <img class="photo-preview" id="photoPreview" alt="Preview">
+                        <div class="photo-placeholder" id="photoPlaceholder">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <div>Tocar para tomar foto</div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="modal-btn" style="background:#f1f5f9;color:var(--mg-dark)" onclick="hideMaintForm()">Cancelar</button>
+                        <button class="modal-btn bg-maint" onclick="submitMaintenance()">📤 Enviar Reporte</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista de Reporte Existente -->
+            <div id="existingReportSection" class="hidden">
+                <div style="text-align:left; background:#f5f3ff; padding:1rem; border-radius:10px; margin-bottom:1rem;">
+                    <p style="font-size:0.8rem; color:var(--mg-maint); font-weight:700; margin-bottom:4px;">⚠️ AVERÍA REPORTADA</p>
+                    <p id="reportTypeDisplay" style="font-weight:600; margin-bottom:4px;"></p>
+                    <p id="reportDescDisplay" style="font-size:0.85rem; color:#475569; margin-bottom:8px;"></p>
+                    <img id="reportPhotoDisplay" style="width:100%; border-radius:8px; display:none;" alt="Foto avería">
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn" style="background:#f1f5f9;color:var(--mg-dark)" onclick="closeModal()">Cerrar</button>
+                    <button class="modal-btn bg-ready" onclick="resolveMaintenance()">✅ Resolver</button>
+                </div>
+            </div>
+
+            <button onclick="closeModal()" style="margin-top:1rem; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:0.85rem;">Cancelar</button>
+        </div>
+    </div>
+
+<script>
+    // ESTADO INICIAL CON DATOS DE EJEMPLO (incluyendo una avería existente)
+    let rooms = [
+        { id: 101, status: 'dirty', type: 'Standard', priority: true, maintenance: null },
+        { id: 102, status: 'ready', type: 'Standard', priority: false, maintenance: null },
+        { id: 103, status: 'cleaning', type: 'Suite', priority: false, maintenance: null },
+        { id: 104, status: 'maint', type: 'Standard', priority: false, maintenance: { 
+            type: 'plomeria', desc: 'Fuga en tubería debajo del lavabo', photo: null, date: '2026-08-15 09:30' 
+        }},
+        { id: 201, status: 'dirty', type: 'Deluxe', priority: true, maintenance: null },
+        { id: 202, status: 'ready', type: 'Standard', priority: false, maintenance: null },
+        { id: 203, status: 'ready', type: 'Suite', priority: false, maintenance: null },
+        { id: 204, status: 'dirty', type: 'Standard', priority: false, maintenance: null },
+        { id: 301, status: 'cleaning', type: 'Deluxe', priority: false, maintenance: null },
+        { id: 302, status: 'ready', type: 'Standard', priority: false, maintenance: null },
+        { id: 303, status: 'dirty', type: 'Suite', priority: true, maintenance: null },
+        { id: 304, status: 'ready', type: 'Standard', priority: false, maintenance: null },
+    ];
+
+    let currentRoomId = null;
+    let currentView = 'reception';
+    let tempPhotoData = null; // Almacena foto temporal antes de enviar
+
+    const statusLabels = {
+        ready: 'LISTA', cleaning: 'EN LIMPIEZA', dirty: 'SUCIA / SALIDA', maint: 'MANTENIMIENTO'
+    };
+
+    const typeLabels = {
+        plomeria: '💧 Plomería', electricidad: '⚡ Electricidad', clima: '❄️ Clima',
+        mobiliario: '🪑 Mobiliario', tv: '📺 TV/Electrónica', otro: '🔧 Otro'
+    };
+
+    // RENDER
+    function render() {
+        updateStats();
+        if (currentView === 'reception') renderGrid();
+        else renderList();
+    }
+
+    function updateStats() {
+        const c = { ready: 0, cleaning: 0, dirty: 0, maint: 0 };
+        rooms.forEach(r => c[r.status]++);
+        document.getElementById('statsBar').innerHTML = `
+            <div class="stat-chip"><span class="dot" style="background:var(--mg-success)"></span> ${c.ready} Listas</div>
+            <div class="stat-chip"><span class="dot" style="background:var(--mg-warning)"></span> ${c.cleaning} Limpiando</div>
+            <div class="stat-chip"><span class="dot" style="background:var(--mg-danger)"></span> ${c.dirty} Sucias</div>
+            <div class="stat-chip"><span class="dot" style="background:var(--mg-maint)"></span> ${c.maint} Averías</div>
+        `;
+    }
+
+    function renderGrid() {
+        const container = document.getElementById('receptionView');
+        container.innerHTML = rooms.map(room => `
+            <div class="room-card status-${room.status}" onclick="openModal(${room.id})">
+                ${room.id}
+                <small>${statusLabels[room.status]}</small>
+                ${room.maintenance ? '<div class="report-badge">!</div>' : ''}
+                ${room.priority && room.status !== 'ready' && !room.maintenance ? '<span style="position:absolute;top:6px;right:6px;font-size:10px;">⚡</span>' : ''}
+            </div>
+        `).join('');
+    }
+
+    function renderList() {
+        const container = document.getElementById('housekeepingView');
+        const tasks = rooms
+            .filter(r => r.status !== 'ready')
+            .sort((a, b) => {
+                // Mantenimiento siempre arriba, luego prioridad, luego sucias antes que limpieza
+                if (a.maintenance && !b.maintenance) return -1;
+                if (!a.maintenance && b.maintenance) return 1;
+                if (b.priority !== a.priority) return b.priority ? 1 : -1;
+                if (a.status === 'dirty' && b.status === 'cleaning') return -1;
+                return 0;
+            });
+
+        if (tasks.length === 0) {
+            container.innerHTML = '<div style="text-align:center;padding:3rem;color:#64748b;">🎉 ¡Todo limpio! Sin tareas pendientes.</div>';
+            return;
+        }
+
+        container.innerHTML = tasks.map(room => {
+            const isMaint = !!room.maintenance;
+            const btnLabel = isMaint ? 'Ver Avería' : (room.status === 'dirty' ? 'Iniciar' : 'Terminar');
+            const btnAction = isMaint ? `openModal(${room.id})` : `quickUpdate(${room.id})`;
+            const borderColor = isMaint ? 'var(--mg-maint)' : (room.status === 'dirty' ? 'var(--mg-danger)' : 'var(--mg-warning)');
+            
+            return `
+            <div class="task-item" style="border-left-color: ${borderColor}">
+                <div class="task-info">
+                    <h3>
+                        Hab ${room.id} 
+                        ${isMaint ? '<span class="priority-tag" style="background:#ede9fe;color:var(--mg-maint)">🔧 AVERÍA</span>' : ''}
+                        ${!isMaint && room.priority ? '<span class="priority-tag">PRIORITARIA</span>' : ''}
+                    </h3>
+                    <p>${room.type} • ${isMaint ? typeLabels[room.maintenance.type] || 'Avería' : statusLabels[room.status]}</p>
+                </div>
+                <button class="action-btn" style="${isMaint ? 'background:var(--mg-maint)' : ''}" onclick="${btnAction}">${btnLabel}</button>
+            </div>`;
+        }).join('');
+    }
+
+    // NAVEGACIÓN
+    function setView(view) {
+        currentView = view;
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('receptionView').classList.toggle('hidden', view !== 'reception');
+        document.getElementById('housekeepingView').classList.toggle('hidden', view !== 'housekeeping');
+        render();
+    }
+
+    // MODAL LOGIC
+    function openModal(id) {
+        currentRoomId = id;
+        const room = rooms.find(r => r.id === id);
+        
+        document.getElementById('modalRoomNumber').innerText = `Habitación ${room.id}`;
+        const statusEl = document.getElementById('modalCurrentStatus');
+        statusEl.innerText = statusLabels[room.status];
+        statusEl.className = `modal-status bg-${room.status}`;
+
+        // Resetear secciones
+        document.getElementById('statusActions').classList.remove('hidden');
+        document.getElementById('maintFormSection').classList.add('hidden');
+        document.getElementById('existingReportSection').classList.add('hidden');
+        resetMaintForm();
+
+        // Si tiene avería activa, mostrar reporte en lugar de acciones normales
+        if (room.maintenance) {
+            document.getElementById('statusActions').classList.add('hidden');
+            document.getElementById('existingReportSection').classList.remove('hidden');
+            document.getElementById('reportTypeDisplay').innerText = typeLabels[room.maintenance.type] || room.maintenance.type;
+            document.getElementById('reportDescDisplay').innerText = room.maintenance.desc || 'Sin descripción adicional.';
+            
+            const photoEl = document.getElementById('reportPhotoDisplay');
+            if (room.maintenance.photo) {
+                photoEl.src = room.maintenance.photo;
+                photoEl.style.display = 'block';
+            } else {
+                photoEl.style.display = 'none';
+            }
+        }
+
+        document.getElementById('roomModal').classList.add('open');
+    }
+
+    function closeModal() {
+        document.getElementById('roomModal').classList.remove('open');
+        currentRoomId = null;
+        tempPhotoData = null;
+    }
+
+    function updateStatus(newStatus) {
+        if (!currentRoomId) return;
+        const idx = rooms.findIndex(r => r.id === currentRoomId);
+        if (idx > -1) {
+            rooms[idx].status = newStatus;
+            if (newStatus !== 'maint') rooms[idx].maintenance = null; // Limpiar avería si cambia de estado
+            if (navigator.vibrate) navigator.vibrate(50);
+            closeModal();
+            render();
+        }
+    }
+
+    function quickUpdate(id) {
+        const idx = rooms.findIndex(r => r.id === id);
+        if (idx > -1) {
+            rooms[idx].status = rooms[idx].status === 'dirty' ? 'cleaning' : 'ready';
+            if (navigator.vibrate) navigator.vibrate(50);
+            render();
+        }
+    }
+
+    // MANTENIMIENTO
+    function showMaintForm() {
+        document.getElementById('statusActions').classList.add('hidden');
+        document.getElementById('maintFormSection').classList.remove('hidden');
+    }
+
+    function hideMaintForm() {
+        document.getElementById('maintFormSection').classList.add('hidden');
+        document.getElementById('statusActions').classList.remove('hidden');
+        resetMaintForm();
+    }
+
+    function resetMaintForm() {
+        document.getElementById('maintType').value = '';
+        document.getElementById('maintDesc').value = '';
+        document.getElementById('photoInput').value = '';
+        document.getElementById('photoPreview').style.display = 'none';
+        document.getElementById('photoPlaceholder').style.display = 'block';
+        document.getElementById('photoArea').classList.remove('has-photo');
+        tempPhotoData = null;
+    }
+
+    function handlePhotoSelect(input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                tempPhotoData = e.target.result;
+                document.getElementById('photoPreview').src = tempPhotoData;
+                document.getElementById('photoPreview').style.display = 'block';
+                document.getElementById('photoPlaceholder').style.display = 'none';
+                document.getElementById('photoArea').classList.add('has-photo');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function submitMaintenance() {
+        const type = document.getElementById('maintType').value;
+        const desc = document.getElementById('maintDesc').value.trim();
+
+        if (!type) { alert('Selecciona un tipo de avería'); return; }
+        if (!tempPhotoData) { alert('La evidencia fotográfica es obligatoria para generar un ticket de mantenimiento.'); return; }
+
+        const idx = rooms.findIndex(r => r.id === currentRoomId);
+        if (idx > -1) {
+            rooms[idx].status = 'maint';
+            rooms[idx].maintenance = {
+                type: type,
+                desc: desc,
+                photo: tempPhotoData,
+                date: new Date().toLocaleString('es-MX')
+            };
+            if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+            closeModal();
+            render();
+        }
+    }
+
+    function resolveMaintenance() {
+        if (!confirm('¿Confirmar que la avería fue resuelta? La habitación pasará a estado SUCIA para limpieza final.')) return;
+        const idx = rooms.findIndex(r => r.id === currentRoomId);
+        if (idx > -1) {
+            rooms[idx].maintenance = null;
+            rooms[idx].status = 'dirty'; // Después de reparar, necesita limpieza
+            if (navigator.vibrate) navigator.vibrate(50);
+            closeModal();
+            render();
+        }
+    }
+
+    // INIT
+    render();
+</script>
+</body>
+</html>

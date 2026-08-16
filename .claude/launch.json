@@ -18,6 +18,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "gimnasios-app", "run", "dev"],
       "port": 5173
+    },
+    {
+      "name": "content-studio",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5050"],
+      "port": 5050
     }
   ]
 }
