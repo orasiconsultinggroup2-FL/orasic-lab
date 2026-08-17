@@ -198,7 +198,7 @@
       <div class="sb-icon">✦</div>
       <div><div class="sb-name">ORASIC <span>Studio</span></div><div class="sb-sub">Content Platform</div></div>
     </div>
-    <div class="sb-chip">MANUAL DE USUARIO v4</div>
+    <div class="sb-chip">MANUAL DE USUARIO v5</div>
   </div>
   <nav>
     <div class="nav-sec">
@@ -220,7 +220,8 @@
     </div>
     <div class="nav-sec">
       <div class="nav-sec-label">Producción y publicación</div>
-      <a class="nav-a" href="#video"><span class="nav-icon">🎬</span>Estudio de video</a>
+      <a class="nav-a" href="#biblioteca"><span class="nav-icon">🎬</span>Biblioteca de Videos</a>
+      <a class="nav-a" href="#video"><span class="nav-icon">🎞</span>Estudio de video</a>
       <a class="nav-a" href="#voz"><span class="nav-icon">🎙</span>Voz en off</a>
       <a class="nav-a" href="#publicar"><span class="nav-icon">↗</span>Publicar</a>
       <a class="nav-a" href="#rendimiento"><span class="nav-icon">📊</span>Rendimiento</a>
@@ -237,7 +238,7 @@
   </nav>
   <div class="sb-footer">
     Versión 2.0 · Agosto 2026<br>
-    <code>localhost:5050/content-studio/</code>
+    <code>localhost:8000/content-studio/</code>
   </div>
 </aside>
 
@@ -259,7 +260,7 @@
     <div class="card al-o"><div style="font-size:22px;margin-bottom:9px;">💾</div><div style="font-size:12.5px;font-weight:700;margin-bottom:4px;">Sin servidor ni login</div><div style="font-size:11.5px;color:var(--t2);">Todo en <code>localStorage</code>. Funciona offline. No requiere cuenta ni contraseña.</div></div>
   </div>
 
-  <div class="tip tp-c"><div class="tip-icon">ℹ️</div><div><div class="tip-title">Cómo abrir la app</div><div class="tip-text">Abre PowerShell en la carpeta del proyecto y ejecuta <code>python -m http.server 5050</code>. Luego navega a <code>http://localhost:5050/content-studio/</code>.</div></div></div>
+  <div class="tip tp-c"><div class="tip-icon">ℹ️</div><div><div class="tip-title">Cómo abrir la app</div><div class="tip-text">Abre PowerShell en la carpeta del proyecto y ejecuta <code>python -m http.server 8000</code>. Luego navega a <code>http://localhost:8000/content-studio/</code>.</div></div></div>
   <div class="tip tp-o"><div class="tip-icon">⚠️</div><div><div class="tip-title">Los datos solo existen en este navegador</div><div class="tip-text">Si limpias el caché o abres en modo incógnito, el banco de contenido no estará disponible. Todo vive en <code>localStorage</code> bajo la clave <code>orasic_studio_v2</code>.</div></div></div>
 </section>
 
@@ -273,7 +274,7 @@
   </div>
 
   <div class="tip tp-o"><div class="tip-icon">⚠️</div><div><div class="tip-title">Ábrela siempre por localhost, nunca como archivo</div><div class="tip-text">
-    Usa <code>http://localhost:5050/content-studio/</code>. Si el servidor no está corriendo, levántalo desde la carpeta ORASIC LAB con <code>python -m http.server 5050</code>.<br><br>
+    Usa <code>http://localhost:8000/content-studio/</code>. Si el servidor no está corriendo, levántalo desde la carpeta ORASIC LAB con <code>python -m http.server 8000</code>.<br><br>
     Abrirla con doble clic (<code>file:///C:/...</code>) causa dos problemas: el navegador <strong>bloquea las llamadas a Claude y ElevenLabs</strong>, y usa un <strong>almacenamiento distinto</strong>, así que tus piezas y claves parecerán haber desaparecido.
   </div></div></div>
 
@@ -550,12 +551,86 @@
 </section>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- 8. ESTUDIO DE VIDEO -->
+<!-- 8. BIBLIOTECA DE VIDEOS PERENNES -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="biblioteca">
+  <div class="sec-header">
+    <div class="sec-icon ic-p">🎬</div>
+    <div><div class="sec-num">Sección 08</div><div class="sec-title">Biblioteca de Videos Perennes</div><div class="sec-sub">Guarda y reutiliza videos pre-creados indefinidamente</div></div>
+  </div>
+  <p class="lead">La Biblioteca almacena videos ya producidos (con o sin narración) para publicarlos múltiples veces sin regenerar contenido. Ideal para videos evergreen que funcionan bien — publica 2+ veces por semana en diferentes plataformas sin rehacer el trabajo.</p>
+
+  <div class="tip tp-c"><div class="tip-icon">ℹ️</div><div><div class="tip-title">¿Cuándo usar Biblioteca?</div><div class="tip-text">Cuando un video funciona bien y quieres reutilizarlo: "Mito vs Realidad", "Antes/Después", "Números reales", etc. Carga el MP4 una vez, y reutilízalo el lunes, miércoles y viernes sin volver a generar.</div></div></div>
+
+  <div class="card al-v" style="margin-bottom:14px;">
+    <div class="card-title">Agregar video a la Biblioteca</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Clic en 🎬 Biblioteca de Videos</div><div class="fdesc">En el menú lateral.</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">+ Agregar Video Perenne</div><div class="fdesc">Botón en la parte superior derecha. Se abre un modal con los campos.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">Rellenar metadatos</div><div class="fdesc"><strong>Título:</strong> nombre del video (ej. "Mito vs Realidad"). <strong>Rubro:</strong> categoría (General, Salud, Retail, etc.). <strong>Duración:</strong> segundos. <strong>Resolución:</strong> tamaño (ej. 1080×1920). <strong>¿Tiene narración?</strong> checkbox sí/no. <strong>URL del video:</strong> ruta relativa o absoluta del MP4.</div></div></div>
+    <div class="flow"><div class="fnum">4</div><div><div class="ftitle">Guardar</div><div class="fdesc">El video aparece en la lista con sus metadatos.</div></div></div>
+  </div>
+
+  <div class="card al-c" style="margin-bottom:14px;">
+    <div class="card-title">Tarjeta de video en la Biblioteca</div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:10px;">Cada video muestra:</p>
+    <ul style="font-size:12px;color:var(--t2);margin-left:16px;line-height:1.9;">
+      <li><strong>Título</strong> del video</li>
+      <li><strong>Duración</strong> (segundos)</li>
+      <li><strong>Resolución</strong> (1080×1920, etc.)</li>
+      <li><strong>¿Narración?</strong> — ✓ Sí / ✗ No</li>
+      <li><strong>Rubro</strong> — categoría del contenido</li>
+      <li>Tres botones de acción: <strong>📅 Programar</strong>, <strong>✎ Editar</strong>, <strong>🗑 Eliminar</strong></li>
+    </ul>
+  </div>
+
+  <div class="card al-o" style="margin-bottom:14px;">
+    <div class="card-title">Programar un video para publicar</div>
+    <div class="flow"><div class="fnum">1</div><div><div class="ftitle">Clic en 📅 Programar</div><div class="fdesc">Se abre un modal con fecha, hora y plataformas.</div></div></div>
+    <div class="flow"><div class="fnum">2</div><div><div class="ftitle">Selecciona fecha y hora</div><div class="fdesc">Date input para la fecha. Time input para la hora (default: 09:00). Puedes cambiar a cualquier hora: 09:00, 14:00, 21:00, etc.</div></div></div>
+    <div class="flow"><div class="fnum">3</div><div><div class="ftitle">Elige plataformas</div><div class="fdesc">Checkboxes: <span class="b pb-tiktok">TikTok</span> · <span class="b pb-instagram">Instagram</span> · <span class="b pb-linkedin">YouTube</span>. Puedes marcar varias.</div></div></div>
+    <div class="flow"><div class="fnum">4</div><div><div class="ftitle">✓ Confirmar programación</div><div class="fdesc">El sistema guarda la programación (fecha + hora + plataformas). El video aparece en el panel "HOY" cuando llega esa fecha.</div></div></div>
+  </div>
+
+  <div class="card al-c" style="margin-bottom:14px;">
+    <div class="card-title">Panel "HOY" — Videos para publicar hoy</div>
+    <p style="font-size:12px; color:var(--t2); margin-bottom:10px;">Al abrir la Biblioteca, si hay videos programados para HOY, aparece un panel <span class="b br">🔴 HOY - Videos para publicar</span> con:</p>
+    <ul style="font-size:12px; color:var(--t2); margin-left:16px; line-height:1.9;">
+      <li><strong>Hora:</strong> 09:00, 14:00, 21:00 (la que programaste)</li>
+      <li><strong>Video:</strong> Título + duración</li>
+      <li><strong>Plataformas:</strong> Dónde publicar</li>
+      <li><strong>Botones de acción:</strong> 🎵 TikTok, 📸 Insta, ▶ YT</li>
+    </ul>
+  </div>
+
+  <div class="card al-v">
+    <div class="card-title">Clic en el botón de plataforma</div>
+    <p style="font-size:12px; color:var(--t2); margin-bottom:10px;">Al hacer clic en <strong>🎵 Publicar TikTok</strong> (o Instagram/YouTube):</p>
+    <ul style="font-size:12px; color:var(--t2); margin-left:16px; line-height:1.9;">
+      <li>✅ Se copia el caption automáticamente al portapapeles</li>
+      <li>✅ Se abre TikTok en una pestaña nueva</li>
+      <li>✅ Tú subes el MP4 + pegas el caption (Ctrl+V) + publicas</li>
+      <li>✅ Repites en Instagram y YouTube si está programado en esas redes</li>
+    </ul>
+  </div>
+
+  <div class="card al-g">
+    <div class="card-title">Editar o eliminar</div>
+    <div class="arow"><div class="abtn">✎ Editar</div><div class="adesc">Modifica el título, rubro, duración, resolución o si tiene narración. No edita la URL ni el contenido del video — solo los metadatos.</div></div>
+    <div class="arow"><div class="abtn">🗑 Eliminar</div><div class="adesc">Borra el video de la Biblioteca. No borra el archivo MP4 del servidor — solo la entrada en la app. No se puede deshacer.</div></div>
+  </div>
+
+  <div class="tip tp-o"><div class="tip-icon">⚠️</div><div><div class="tip-title">La programación es registro, no automatización</div><div class="tip-text">Guardar una programación en la app <strong>no publica automáticamente</strong> en TikTok/Instagram. Solo guarda la fecha y plataformas. Tú debes ir a cada red en esa fecha, descargar el MP4 desde la Biblioteca y subirlo manualmente.</div></div></div>
+
+  <div class="tip tp-v"><div class="tip-icon">💡</div><div><div class="tip-title">Flujo típico de reutilización</div><div class="tip-text">Lunes 09:00 → sube video-1 a TikTok + Instagram. Miércoles 14:00 → sube el mismo video-1 a Instagram. Viernes 21:00 → sube video-1 + video-2 a TikTok. Con 5 videos en la Biblioteca, tienes contenido para 2 semanas sin hacer nada nuevo.</div></div></div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 9. ESTUDIO DE VIDEO -->
 <!-- ══════════════════════════════════════════ -->
 <section class="section" id="video">
   <div class="sec-header">
     <div class="sec-icon ic-p">🎬</div>
-    <div><div class="sec-num">Sección 08</div><div class="sec-title">Estudio de video</div><div class="sec-sub">Convierte el guion en un MP4 vertical, dentro del navegador</div></div>
+    <div><div class="sec-num">Sección 09</div><div class="sec-title">Estudio de video</div><div class="sec-sub">Convierte el guion en un MP4 vertical, dentro del navegador</div></div>
   </div>
   <p class="lead">Toma el guion ya generado y arma un video vertical 9:16 con la paleta de ORASIC. Todo ocurre <strong>en tu navegador</strong>: no sube nada a ningún servidor, no usa servicios de pago y no requiere instalar nada.</p>
 
@@ -604,7 +679,7 @@
 <section class="section" id="voz">
   <div class="sec-header">
     <div class="sec-icon ic-o">🎙</div>
-    <div><div class="sec-num">Sección 09</div><div class="sec-title">Voz en off</div><div class="sec-sub">Narración automática con ElevenLabs</div></div>
+    <div><div class="sec-num">Sección 10</div><div class="sec-title">Voz en off</div><div class="sec-sub">Narración automática con ElevenLabs</div></div>
   </div>
   <p class="lead">La app puede narrar el guion y dejar el audio incorporado en el MP4, sin editores externos. La duración del video se ajusta sola a lo que dura la locución.</p>
 
@@ -659,12 +734,12 @@
 </section>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- 10. PUBLICAR -->
+<!-- 11. PUBLICAR -->
 <!-- ══════════════════════════════════════════ -->
 <section class="section" id="publicar">
   <div class="sec-header">
     <div class="sec-icon ic-c">↗</div>
-    <div><div class="sec-num">Sección 10</div><div class="sec-title">Publicar</div><div class="sec-sub">Del guion a la red, en dos clics y un pegado</div></div>
+    <div><div class="sec-num">Sección 11</div><div class="sec-title">Publicar</div><div class="sec-sub">Del guion a la red, en dos clics y un pegado</div></div>
   </div>
 
   <div class="card al-o" style="margin-bottom:14px;">
@@ -693,12 +768,12 @@
 </section>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- 11. RENDIMIENTO -->
+<!-- 12. RENDIMIENTO -->
 <!-- ══════════════════════════════════════════ -->
 <section class="section" id="rendimiento">
   <div class="sec-header">
     <div class="sec-icon ic-p">📊</div>
-    <div><div class="sec-num">Sección 11</div><div class="sec-title">Rendimiento</div><div class="sec-sub">Evalúa lo publicado y detecta qué corregir en cada pieza</div></div>
+    <div><div class="sec-num">Sección 12</div><div class="sec-title">Rendimiento</div><div class="sec-sub">Evalúa lo publicado y detecta qué corregir en cada pieza</div></div>
   </div>
   <p class="lead">Cargas los números de cada publicación (TikTok e Instagram por separado) y la app diagnostica <strong>dónde se rompe el embudo</strong> — no solo si el video "funcionó o no". TikTok e Instagram no dan estas estadísticas gratis por API sin backend propio, así que se cargan a mano: toma unos 2 minutos por pieza.</p>
 
@@ -736,12 +811,12 @@
 </section>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- 12. LINKEDIN -->
+<!-- 13. LINKEDIN -->
 <!-- ══════════════════════════════════════════ -->
 <section class="section" id="linkedin">
   <div class="sec-header">
     <div class="sec-icon ic-c">📰</div>
-    <div><div class="sec-num">Sección 12</div><div class="sec-title">LinkedIn</div><div class="sec-sub">Artículos de actualidad y banco de fotos</div></div>
+    <div><div class="sec-num">Sección 13</div><div class="sec-title">LinkedIn</div><div class="sec-sub">Artículos de actualidad y banco de fotos</div></div>
   </div>
   <p class="lead">A diferencia del resto de la app, estos artículos <strong>no se generan solos</strong> — requieren investigación real de un tema vigente, así que se preparan en el chat con Claude y esta sección solo los guarda, organiza y prepara para publicar.</p>
 
@@ -762,12 +837,12 @@
 </section>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- 13. ESTRATEGIA -->
+<!-- 14. ESTRATEGIA -->
 <!-- ══════════════════════════════════════════ -->
 <section class="section" id="estrategia">
   <div class="sec-header">
     <div class="sec-icon ic-g">◎</div>
-    <div><div class="sec-num">Sección 13</div><div class="sec-title">Estrategia de Marca</div><div class="sec-sub">Pilares editoriales, reglas y paleta</div></div>
+    <div><div class="sec-num">Sección 14</div><div class="sec-title">Estrategia de Marca</div><div class="sec-sub">Pilares editoriales, reglas y paleta</div></div>
   </div>
   <p class="lead">Pantalla de referencia (solo lectura) con los pilares estratégicos y las reglas que guían la producción.</p>
 
@@ -818,12 +893,12 @@
 </section>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- 9. CONFIGURACIÓN -->
+<!-- 15. CONFIGURACIÓN -->
 <!-- ══════════════════════════════════════════ -->
 <section class="section" id="config">
   <div class="sec-header">
     <div class="sec-icon ic-c">⚙</div>
-    <div><div class="sec-num">Sección 14</div><div class="sec-title">Configuración</div><div class="sec-sub">Marca, APIs, voces y gestión del calendario</div></div>
+    <div><div class="sec-num">Sección 15</div><div class="sec-title">Configuración</div><div class="sec-sub">Marca, APIs, voces y gestión del calendario</div></div>
   </div>
 
   <div class="card al-v" style="margin-bottom:12px;">
@@ -873,12 +948,12 @@
 </section>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- 10. FLUJO DE TRABAJO -->
+<!-- 16. FLUJO DE TRABAJO -->
 <!-- ══════════════════════════════════════════ -->
 <section class="section" id="flujo">
   <div class="sec-header">
     <div class="sec-icon ic-v">⟳</div>
-    <div><div class="sec-num">Sección 15</div><div class="sec-title">Flujo de trabajo</div><div class="sec-sub">La rutina para mantener el calendario activo</div></div>
+    <div><div class="sec-num">Sección 16</div><div class="sec-title">Flujo de trabajo</div><div class="sec-sub">La rutina para mantener el calendario activo</div></div>
   </div>
 
   <div class="card al-g" style="margin-bottom:12px;">
@@ -915,12 +990,12 @@
 </section>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- 11. GLOSARIO -->
+<!-- 17. GLOSARIO -->
 <!-- ══════════════════════════════════════════ -->
 <section class="section" id="glosario">
   <div class="sec-header">
     <div class="sec-icon ic-c">≡</div>
-    <div><div class="sec-num">Sección 16</div><div class="sec-title">Glosario</div><div class="sec-sub">Términos clave de la app</div></div>
+    <div><div class="sec-num">Sección 17</div><div class="sec-title">Glosario</div><div class="sec-sub">Términos clave de la app</div></div>
   </div>
 
   <div class="card">
@@ -948,7 +1023,7 @@
   <div style="margin-top:28px;padding:22px;background:var(--bg-card2);border-radius:11px;border:1px solid var(--border);text-align:center;">
     <div style="font-size:18px;margin-bottom:7px;">✦</div>
     <div style="font-size:12px;color:var(--t3);">ORASIC Content Studio · Uso interno exclusivo</div>
-    <div style="font-size:11px;color:var(--t3);margin-top:3px;"><code>localhost:5050/content-studio/</code> · <code>orasic_studio_v2</code> · Manual v4 · Agosto 2026</div>
+    <div style="font-size:11px;color:var(--t3);margin-top:3px;"><code>localhost:8000/content-studio/</code> · <code>orasic_studio_v2</code> · Manual v5 · Agosto 2026</div>
   </div>
 </section>
 
