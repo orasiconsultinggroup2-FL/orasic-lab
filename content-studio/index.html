@@ -437,7 +437,18 @@ function syncArticlesFromJSON() {
     render();
     console.log('✅ Artículos sincronizados desde ARTICULOS_DATA');
   } else {
-    console.warn('ARTICULOS_DATA no está disponible');
+    fetch('./articulos-datos.js')
+      .then(r => r.text())
+      .then(text => {
+        eval(text);
+        if (typeof ARTICULOS_DATA !== 'undefined') {
+          state.linkedinArticles = ARTICULOS_DATA.linkedinArticles || [];
+          state.blogArticles = ARTICULOS_DATA.blogArticles || [];
+          saveState();
+          render();
+        }
+      })
+      .catch(e => console.warn('No se pudo cargar articulos-datos.js:', e));
   }
 }
 
