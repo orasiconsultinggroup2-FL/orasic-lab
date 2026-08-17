@@ -13,6 +13,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/orasic-tour.js"></script>
   <script src="/tour-content-studio.js" defer></script>
+  <script src="articulos-datos.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -429,15 +430,15 @@ function loadState() {
 }
 
 function syncArticlesFromJSON() {
-  fetch('../contenido/orasic-articulos-seed.json')
-    .then(r => r.json())
-    .then(data => {
-      state.linkedinArticles = data.linkedinArticles || [];
-      state.blogArticles = data.blogArticles || [];
-      saveState();
-      render();
-    })
-    .catch(e => console.warn('No se pudo sincronizar artículos desde JSON:', e));
+  if (typeof ARTICULOS_DATA !== 'undefined' && ARTICULOS_DATA) {
+    state.linkedinArticles = ARTICULOS_DATA.linkedinArticles || [];
+    state.blogArticles = ARTICULOS_DATA.blogArticles || [];
+    saveState();
+    render();
+    console.log('✅ Artículos sincronizados desde ARTICULOS_DATA');
+  } else {
+    console.warn('ARTICULOS_DATA no está disponible');
+  }
 }
 
 function saveState() {
@@ -766,17 +767,40 @@ function importCalendarSeed() {
 if (!state.biblioteca) state.biblioteca = [];
 
 function renderBiblioteca() {
+  const hoy = new Date().toISOString().split('T')[0];
+  const videosHoy = [];
+  state.biblioteca.forEach(v => {
+    v.publicaciones?.forEach(pub => {
+      if (pub.fecha === hoy) {
+        videosHoy.push({ video: v, publicacion: pub });
+      }
+    });
+  });
+  videosHoy.sort((a, b) => (a.publicacion.hora || '00:00').localeCompare(b.publicacion.hora || '00:00'));
+
   return `
     <div class="page-header">
       <div class="page-header-inner">
         <div>
-          <div class="page-title">Biblioteca de Videos</div>
+          <div class="page-title">🎬 Biblioteca de Videos</div>
           <div class="page-sub">Videos pre-creados, listos para publicar sin regenerar</div>
         </div>
         <button class="btn btn-primary" onclick="openAgregarVideoModal()">🎬 Agregar Video Perenne</button>
       </div>
     </div>
     <div class="page-body">
+      ${videosHoy.length > 0 ? `
+        <div style="background:rgba(248,113,113,0.08); border:1px solid rgba(248,113,113,0.3); border-radius:12px; padding:20px; margin-bottom:28px;">
+          <div style="font-size:16px; font-weight:700; color:var(--red); margin-bottom:16px;">🔴 HOY - Videos para publicar</div>
+          <div style="display:grid; gap:12px;">
+            ${videosHoy.map(item => {
+              const v = item.video;
+              const pub = item.publicacion;
+              return '<div style="background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:14px; display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:center;"><div style="font-size:28px; font-weight:700; color:var(--violet);">' + (pub.hora || '09:00') + '</div><div><div style="font-weight:600; color:var(--text-1); margin-bottom:4px;">' + escHtml(v.titulo) + ' (' + v.duracion + 's)</div><div style="font-size:12px; color:var(--text-2);">' + pub.plataformas.join(' · ') + '</div></div><div style="display:flex; gap:8px; flex-wrap:wrap;">' + (pub.plataformas.includes('TikTok') ? '<button class="btn btn-secondary btn-sm" onclick="irAPublicar(\'tiktok\', \'' + escHtml(v.titulo) + '\')">🎵 TikTok</button>' : '') + (pub.plataformas.includes('Instagram') ? '<button class="btn btn-secondary btn-sm" onclick="irAPublicar(\'instagram\', \'' + escHtml(v.titulo) + '\')">📸 Insta</button>' : '') + (pub.plataformas.includes('YouTube') ? '<button class="btn btn-secondary btn-sm" onclick="irAPublicar(\'youtube\', \'' + escHtml(v.titulo) + '\')">▶ YT</button>' : '') + '</div></div>';
+            }).join('')}
+          </div>
+        </div>
+      ` : ''}
       ${state.biblioteca.length === 0 ? `
         <div style="text-align:center; padding:60px 20px; color:var(--text-2);">
           <div style="font-size:48px; margin-bottom:16px;">🎬</div>
@@ -901,9 +925,15 @@ function programarVideoPerenne(videoId) {
         <div style="font-size:13px; color:var(--text-2);">Video: ${video.duracion}s · ${video.resolucion}</div>
       </div>
       <div style="display:grid; gap:16px;">
-        <div>
-          <label style="display:block; font-size:12px; font-weight:600; color:var(--text-2); margin-bottom:6px; text-transform:uppercase;">Fecha de publicación</label>
-          <input type="date" id="pv-fecha" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-card2); color:var(--text-1);">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:600; color:var(--text-2); margin-bottom:6px; text-transform:uppercase;">Fecha</label>
+            <input type="date" id="pv-fecha" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-card2); color:var(--text-1);">
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:600; color:var(--text-2); margin-bottom:6px; text-transform:uppercase;">Hora</label>
+            <input type="time" id="pv-hora" value="09:00" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-card2); color:var(--text-1);">
+          </div>
         </div>
         <div>
           <label style="display:block; font-size:12px; font-weight:600; color:var(--text-2); margin-bottom:6px; text-transform:uppercase;">Plataformas</label>
@@ -932,6 +962,7 @@ function programarVideoPerenne(videoId) {
 function confirmarProgramacionVideo(videoId) {
   const video = state.biblioteca.find(v => v.id === videoId);
   const fecha = document.getElementById('pv-fecha').value;
+  const hora = document.getElementById('pv-hora').value || '09:00';
   const plataformas = [
     document.getElementById('pv-tiktok').checked ? 'TikTok' : null,
     document.getElementById('pv-instagram').checked ? 'Instagram' : null,
@@ -939,22 +970,45 @@ function confirmarProgramacionVideo(videoId) {
   ].filter(p => p);
 
   if (!fecha || plataformas.length === 0) {
-    alert('Selecciona fecha y al menos una plataforma');
+    alert('Selecciona fecha, hora y al menos una plataforma');
     return;
   }
 
   video.publicaciones.push({
-    fecha, plataformas, publishedAt: new Date().toISOString()
+    fecha, hora, plataformas, publishedAt: new Date().toISOString()
   });
 
   saveState();
   render();
   document.querySelector('.modal-overlay').remove();
-  showToast('✓ Video programado para ' + plataformas.join(', '), 'success');
+  showToast('✓ Video programado para ' + hora + ' — ' + plataformas.join(', '), 'success');
 }
 
 function editarVideoPerenne(videoId) {
   showToast('Función en desarrollo', 'info');
+}
+
+function irAPublicar(plataforma, titulo) {
+  let url = '';
+  const caption = titulo + ' — ORASICLab\n\n+51 999 039 947\norasic-lab.vercel.app';
+
+  if (plataforma === 'tiktok') {
+    url = 'https://www.tiktok.com/upload';
+  } else if (plataforma === 'instagram') {
+    url = 'https://www.instagram.com/';
+  } else if (plataforma === 'youtube') {
+    url = 'https://www.youtube.com/upload';
+  }
+
+  if (url) {
+    try {
+      navigator.clipboard.writeText(caption);
+      showToast('✓ Caption copiado al portapapeles', 'success');
+    } catch(e) {
+      console.log('Caption:', caption);
+    }
+    window.open(url, '_blank');
+  }
 }
 
 function eliminarVideoPerenne(videoId) {
