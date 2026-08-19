@@ -2912,31 +2912,22 @@ function deleteArticle(id){
 //  BLOG (landing) — mismo patrón que LinkedIn: borrador → copiar → ir a publicar → marcar
 // ═══════════════════════════════════════════════════════════
 const BLOG_URL = '/blog.html';
-const SEED_URL = '/contenido/orasic-articulos-seed.json';
 
 async function importSeedArticles(){
   try {
-    const res = await fetch(SEED_URL + '?t=' + Date.now());
-    if (!res.ok) throw new Error('No se encontró el archivo');
-    const seed = await res.json();
+    const res = await fetch('/api/articles-published?t=' + Date.now());
+    if (!res.ok) throw new Error('No se pudo conectar al servidor');
+    const allArticles = await res.json();
 
-    // Limpiar arrays antes de importar para evitar duplicados
-    state.linkedinArticles = [];
-    state.blogArticles = [];
+    // Filtrar por plataforma y limpiar arrays antes de importar
+    state.linkedinArticles = allArticles.filter(a => a.plataforma === 'LinkedIn');
+    state.blogArticles = allArticles.filter(a => a.plataforma === 'Blog');
 
-    let added = 0;
-    (seed.linkedinArticles||[]).forEach(s=>{
-      state.linkedinArticles.push({ id: uuid(), title: s.title, body: s.body, hashtags: s.hashtags||'', imageUrl:'', sugerencia_imagen: s.sugerencia_imagen||'', plataforma: 'LinkedIn', status:'draft', createdAt: new Date().toISOString() });
-      added++;
-    });
-    (seed.blogArticles||[]).forEach(s=>{
-      state.blogArticles.push({ id: uuid(), title: s.title, intro: s.intro||'', body: s.body, tag: s.tag||'', sugerencia_imagen: s.sugerencia_imagen||'', imageUrl:'', status:'draft', plataforma: 'Blog', createdAt: new Date().toISOString() });
-      added++;
-    });
+    const added = state.linkedinArticles.length + state.blogArticles.length;
     saveState(); render();
     if (typeof showToast==='function') showToast(added ? `✅ ${added} artículos cargados` : 'Error en carga','success');
   } catch(e){
-    alert('No se pudo cargar el banco de artículos. Verifica que el servidor esté corriendo desde la carpeta del proyecto (Abrir-Content-Studio.bat) y que exista contenido/orasic-articulos-seed.json.');
+    alert('No se pudo cargar los artículos. Verifica que el servidor esté corriendo (node server.js en puerto 5051).');
   }
 }
 
@@ -2983,6 +2974,7 @@ function renderBlogArticlesList(){
           <button class="btn-icon" title="Copiar todo" onclick="copyBlogArticle('${a.id}')">📋</button>
           <button class="btn-icon" title="Ir al blog de la landing" onclick="window.open('${BLOG_URL}','_blank','noopener')">↗</button>
           <button class="btn-icon" title="Editar" onclick="openBlogArticleForm('${a.id}')">✎</button>
+          ${a.status!=='published'?`<button class="btn-icon" title="Marcar publicado" onclick="markBlogArticlePublished('${a.id}')">✓</button>`:''}
           <button class="btn-icon" title="Eliminar" onclick="deleteBlogArticle('${a.id}')">✕</button>
         </div>
       </div>`).join('')}
@@ -3158,6 +3150,12 @@ function openBlogEditModal(article){
 function deleteBlogArticle(id){
   if (!confirm('¿Eliminar este artículo?')) return;
   state.blogArticles = state.blogArticles.filter(x=>x.id!==id);
+  saveState(); render();
+}
+
+function markBlogArticlePublished(id){
+  const a = state.blogArticles.find(x=>x.id===id); if(!a) return;
+  a.status = 'published'; a.publishedAt = new Date().toISOString();
   saveState(); render();
 }
 
