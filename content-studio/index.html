@@ -3137,11 +3137,7 @@ function openBlogArticleForm(id){
       close();
       render();
     }, 1500);
-    }).catch(err => {
-      alert('Error al publicar: ' + err.message);
-      btn.disabled = false;
-      btn.textContent = '✓ Publicar en Blog';
-    });
+  };
   };
 }
 
