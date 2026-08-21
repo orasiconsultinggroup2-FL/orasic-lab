@@ -431,19 +431,30 @@ function loadState() {
 
 function syncArticlesFromJSON() {
   if (typeof ARTICULOS_DATA !== 'undefined' && ARTICULOS_DATA) {
-    state.linkedinArticles = ARTICULOS_DATA.linkedinArticles || [];
-    state.blogArticles = ARTICULOS_DATA.blogArticles || [];
+    // NO reemplazar artículos publicados localmente - solo cargar drafts del banco
+    const serverBlog = ARTICULOS_DATA.blogArticles || [];
+    const serverLinkedin = ARTICULOS_DATA.linkedinArticles || [];
+
+    // Preservar los artículos publicados en localStorage
+    const localPublished = state.blogArticles.filter(a => a.status === 'published');
+    state.linkedinArticles = serverLinkedin;
+    state.blogArticles = [...serverBlog, ...localPublished];
     saveState();
     render();
-    console.log('✅ Artículos sincronizados desde ARTICULOS_DATA');
+    console.log('✅ Artículos sincronizados (preservando publicados)');
   } else {
     fetch('./articulos-datos.js')
       .then(r => r.text())
       .then(text => {
         eval(text);
         if (typeof ARTICULOS_DATA !== 'undefined') {
-          state.linkedinArticles = ARTICULOS_DATA.linkedinArticles || [];
-          state.blogArticles = ARTICULOS_DATA.blogArticles || [];
+          const serverBlog = ARTICULOS_DATA.blogArticles || [];
+          const serverLinkedin = ARTICULOS_DATA.linkedinArticles || [];
+
+          // Preservar los artículos publicados en localStorage
+          const localPublished = state.blogArticles.filter(a => a.status === 'published');
+          state.linkedinArticles = serverLinkedin;
+          state.blogArticles = [...serverBlog, ...localPublished];
           saveState();
           render();
         }
