@@ -127,19 +127,33 @@
 
   (async function () {
     if (!(await esperarAppLista())) return;
-    OrasicTour.iniciar({
-      clave: 'tourContentStudioVisto',
-      boton: '[data-page="manual"]',
-      demora: 400,
-      tema: {
-        acento: '#A78BFA',
-        acento2: '#22D3EE',
-        fondo: '#080A0F',
-        texto: '#F9FAFB',
-        textoSuave: '#9CA3AF',
-        velo: 'rgba(8, 10, 15, .85)',
-      },
-      pasos: PASOS,
-    });
+
+    // Tour SOLO en demo (Vercel), NO en localhost (trabajo diario)
+    const IS_DEMO = window.location.hostname.includes('vercel.app');
+    const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (IS_LOCAL) {
+      // En localhost: tour deshabilitado (trabajo tranquilo sin molestias)
+      // Si lo necesitas, puedes abrirlo manualmente desde Ayuda/Manual
+      return;
+    }
+
+    if (IS_DEMO) {
+      // En Vercel: tour automático para clientes
+      OrasicTour.iniciar({
+        clave: 'tourContentStudioVisto',
+        boton: '[data-page="manual"]',
+        demora: 400,
+        tema: {
+          acento: '#A78BFA',
+          acento2: '#22D3EE',
+          fondo: '#080A0F',
+          texto: '#F9FAFB',
+          textoSuave: '#9CA3AF',
+          velo: 'rgba(8, 10, 15, .85)',
+        },
+        pasos: PASOS,
+      });
+    }
   })();
 })();
