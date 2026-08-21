@@ -517,32 +517,27 @@ function publishBlogArticle() {
   const article = state.blogArticles.find(a => a.id === lastEdited);
   if (!article) { alert('No se encontró el artículo'); return; }
 
-  // Marcar como published localmente
+  // Marcar como published
   article.status = 'published';
   article.publishedAt = new Date().toISOString();
   saveState();
 
-  // Enviar al servidor para actualizar articulos.json
-  fetch('/api/publish-blog', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(article)
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.success || data.article) {
-      showToast('✅ Artículo publicado en Blog', 'success');
-      setTimeout(() => {
-        window.location.href = 'https://orasic-lab.vercel.app/blog.html';
-      }, 1500);
-    } else {
-      throw new Error(data.error || 'Error desconocido');
-    }
-  })
-  .catch(err => {
-    console.error('Error al publicar:', err);
-    showToast('❌ Error: ' + err.message, 'error');
-  });
+  // Descargar JSON actualizado
+  const jsonData = JSON.stringify(state.blogArticles, null, 2);
+  const blob = new Blob([jsonData], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'articulos.json';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  showToast('✅ Artículo marcado como publicado\n📥 JSON descargado → Cópialo a GitHub', 'success');
+
+  // Después de 2s, abrir el blog en Vercel
+  setTimeout(() => {
+    window.location.href = 'https://orasic-lab.vercel.app/blog.html';
+  }, 2000);
 }
 
 function copyForLinkedIn(title, body, hashtags, photoFile) {
@@ -3086,8 +3081,10 @@ function openBlogArticleForm(id){
     const btn = ov.querySelector('#ba-publish');
     btn.disabled = true;
     btn.textContent = '⏳ Publicando...';
+
+    const articleId = a?.id || uuid();
     const article = {
-      id: a?.id || uuid(),
+      id: articleId,
       title: title,
       intro: g('ba-intro'),
       body: body,
@@ -3099,21 +3096,36 @@ function openBlogArticleForm(id){
       createdAt: a?.createdAt || new Date().toISOString(),
       publishedAt: new Date().toISOString()
     };
-    fetch('/api/publish-blog', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(article)
-    }).then(r => r.json()).then(data => {
-      if (data.success) {
-        if (typeof showToast === 'function') showToast('✓ Artículo publicado en el Blog', 'success');
-        if (a) { a.status = 'published'; a.publishedAt = new Date().toISOString(); }
-        saveState();
-        close();
-      } else {
-        alert('Error: ' + (data.error || 'No se pudo publicar'));
-        btn.disabled = false;
-        btn.textContent = '✓ Publicar en Blog';
-      }
+
+    // Si es nuevo artículo, añádelo al estado
+    if (!a) {
+      state.blogArticles.push(article);
+    } else {
+      // Si es edición, actualiza el existente
+      const idx = state.blogArticles.findIndex(x => x.id === articleId);
+      if (idx >= 0) state.blogArticles[idx] = article;
+    }
+
+    // Marcar lastEditedBlogId para que publishBlogArticle() lo use
+    sessionStorage.setItem('lastEditedBlogId', articleId);
+    saveState();
+
+    // Descargar JSON y mostrar instrucciones
+    const jsonData = JSON.stringify(state.blogArticles, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = 'articulos.json';
+    downloadLink.click();
+    URL.revokeObjectURL(url);
+
+    if (typeof showToast === 'function') showToast('✅ Publicado\n📥 JSON descargado → Cópialo a GitHub', 'success');
+
+    setTimeout(() => {
+      close();
+      render();
+    }, 1500);
     }).catch(err => {
       alert('Error al publicar: ' + err.message);
       btn.disabled = false;

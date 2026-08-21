@@ -110,14 +110,30 @@ def create_card_image(text, card_num, total_cards):
     except:
         main_font = ImageFont.load_default()
 
-    # Wrappea el texto
-    wrapped = textwrap.fill(text, width=25)
-    lines = wrapped.split('\n')
+    # Parsea bullets y texto normal
+    lines = text.split('\n')
+    display_lines = []
+
+    for line in lines:
+        line = line.strip()
+        if line.startswith('✓'):
+            # Bullet con checkmark: wrappea el contenido después del ✓
+            content = line[2:].strip()
+            wrapped = textwrap.fill(content, width=20)
+            for i, wrap_line in enumerate(wrapped.split('\n')):
+                if i == 0:
+                    display_lines.append('✓ ' + wrap_line)
+                else:
+                    display_lines.append('  ' + wrap_line)
+        elif line:
+            # Texto normal: wrappea normalmente
+            wrapped = textwrap.fill(line, width=25)
+            display_lines.extend(wrapped.split('\n'))
 
     line_height = int(72 * 1.22)
-    y_start = HEIGHT // 2 - (len(lines) - 1) * line_height // 2
+    y_start = HEIGHT // 2 - (len(display_lines) - 1) * line_height // 2
 
-    for i, line in enumerate(lines):
+    for i, line in enumerate(display_lines):
         y = y_start + i * line_height
         draw.text((WIDTH // 2, y), line, fill=hex_to_rgb('#F9FAFB'), font=main_font, anchor="mm")
 
