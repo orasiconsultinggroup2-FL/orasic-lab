@@ -122,7 +122,7 @@ async function llamarOpenAI(prompt, apiKey) {
 }
 
 async function llamarGemini(prompt, apiKey) {
-  const modelo = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+  const modelo = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`,
     {
