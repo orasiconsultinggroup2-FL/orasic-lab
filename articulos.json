@@ -7,10 +7,10 @@
         "tag": "Gestión de Crisis",
         "sugerencia_imagen": "Gráfico vectorial de un mapa de calor o tablero de riesgos operativos en modo oscuro con indicadores de tensión.",
         "imageUrl": "",
-        "status": "draft",
+        "status": "published",
         "plataforma": "Blog",
         "createdAt": "2026-08-12T17:04:24.818Z",
-        "publishedAt": null,
+        "publishedAt": "2026-08-21T00:00:00.000Z",
         "photoFile": "3195376.jpg"
     },
     {
@@ -65,10 +65,10 @@
         "tag": "Estrategia Tecnológica",
         "sugerencia_imagen": "Gráfico comparativo de barras: costo de alquiler vs. propiedad de código a 3 años.",
         "imageUrl": "",
-        "status": "draft",
+        "status": "published",
         "plataforma": "Blog",
         "createdAt": "2026-08-21T00:00:00.000Z",
-        "publishedAt": null,
+        "publishedAt": "2026-08-21T00:00:00.000Z",
         "photoFile": ""
     },
     {
