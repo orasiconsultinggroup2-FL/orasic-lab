@@ -447,7 +447,7 @@ function syncArticlesFromJSON() {
     fetch('./articulos-datos.js')
       .then(r => r.text())
       .then(text => {
-        eval(text);
+        // eval() removed: articulos-datos.js already loaded via <script> tag at line 16
         if (typeof ARTICULOS_DATA !== 'undefined') {
           const serverBlog = ARTICULOS_DATA.blogArticles || [];
           const serverLinkedin = ARTICULOS_DATA.linkedinArticles || [];

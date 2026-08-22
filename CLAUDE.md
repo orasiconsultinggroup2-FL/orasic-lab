@@ -21,7 +21,8 @@ Landing page de ORASIC Lab (agencia de software/apps a medida con IA, Perú y Co
 
 ## ORASIC Content Studio (app interna, `content-studio/index.html`)
 - App de gestión de contenido: genera guiones, arma videos verticales con voz en off y organiza el calendario. **Todavía NO está versionada ni desplegada** — el usuario no quiere hacerla pública aún. Vive solo local.
-- Abrirla SIEMPRE por `http://localhost:5050/content-studio/` (levantar con `python -m http.server 5050`). Con `file://` el navegador bloquea las llamadas a APIs y además usa un `localStorage` distinto.
+- **Arrancar con `Abrir-Content-Studio.bat`** (Windows) o `npm start` dentro de `content-studio/`. Accesible por `http://localhost:3000/content-studio/`. Con `file://` el navegador bloquea las llamadas a APIs y además usa un `localStorage` distinto.
+- Backend Node.js seguro: endpoints autenticados (localhost), sin CORS abierto, RCE prevenido. Publica/sincroniza artículos en Supabase.
 - **Regla del usuario: todo tiene que ser gratuito.** Se descartaron Ayrshare, suscripción de Higgsfield y el plan Starter de ElevenLabs por costo.
 - **Publicar a redes NO es automático** y no puede serlo gratis (TikTok exige backend + auditoría; Meta, app aprobada). Se verificó que ZOLLA tampoco lo hace: su `SocialManager.js` solo copia al portapapeles. Flujo vigente: *Copiar todo para publicar* → *Ir a TikTok/Instagram* → pegar → publicar → marcar ✓ Publicado.
 
