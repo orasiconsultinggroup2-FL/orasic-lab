@@ -75,7 +75,6 @@
         </div>
     </section>
 
-    <script src="sync-blog.js"></script>
     <script>
         function escHtml(txt) {
             return (txt || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -93,7 +92,7 @@
                 return;
             }
 
-            const photoFile = article.photoFile || '';
+            const photoFile = article.photoFile || article.sugerencia_imagen || '';
             const photoHtml = photoFile
                 ? `<img src="fotos-articulos/${escHtml(photoFile)}" alt="${escHtml(article.title)}" class="w-full h-96 object-cover rounded-lg mb-8" loading="lazy" onerror="this.style.display='none'" />`
                 : '';
@@ -104,8 +103,8 @@
                     <h1 class="text-5xl font-bold text-white mt-4 mb-6">${escHtml(article.title)}</h1>
                     ${article.intro ? `<p class="text-xl text-slate-300 leading-relaxed mb-8 font-semibold">${escHtml(article.intro)}</p>` : ''}
                     ${photoHtml}
-                    <div class="prose prose-invert max-w-none text-base text-slate-300 leading-relaxed" style="line-height:1.8;">
-                        ${escHtml(article.body || '').split('\n\n').map(p => `<p>${p}</p>`).join('')}
+                    <div class="text-base text-slate-300 leading-relaxed" style="line-height:1.8;">
+                        ${escHtml(article.body || article.body_blog || '').split('\n\n').map(p => `<p>${p}</p>`).join('')}
                     </div>
                 </article>
             `;
@@ -119,54 +118,55 @@
             }
 
             grid.innerHTML = articles.map(a => {
-                const photoFile = a.photoFile || '';
+                const photoFile = a.photoFile || a.sugerencia_imagen || '';
                 const photoHtml = photoFile
                     ? `<img src="fotos-articulos/${escHtml(photoFile)}" alt="${escHtml(a.title)}" class="w-full h-40 object-cover rounded-lg mb-4" loading="lazy" onerror="this.style.display='none'" />`
                     : '';
 
                 return `
-                    <article class="bg-white/5 border border-white/10 rounded-lg p-6 hover:border-violet-400/40 hover:bg-white/[0.07] hover:scale-105 transition cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); loadArticle('${escHtml(a.slug)}')">
+                    <article class="bg-white/5 border border-white/10 rounded-lg p-6 hover:border-violet-400/40 hover:bg-white/[0.07] hover:scale-105 transition">
                         ${photoHtml}
                         ${a.tag ? `<span class="text-xs uppercase tracking-widest text-cyan-400 font-bold">${escHtml(a.tag)}</span>` : ''}
                         <h3 class="text-lg font-bold text-white mt-2 mb-3 line-clamp-2">${escHtml(a.title)}</h3>
-                        <p class="text-sm text-slate-400 line-clamp-2">${truncate(a.intro || a.body || '', 80)}</p>
+                        <p class="text-sm text-slate-400 line-clamp-2">${truncate(a.intro || a.body || a.body_blog || '', 80)}</p>
                     </article>
                 `;
             }).join('');
         }
 
-        async function loadArticles() {
-            try {
-                const articles = await window.blogSync.load();
-                if (articles.length === 0) {
-                    document.getElementById('featured-article').innerHTML = '<p class="text-slate-400 text-center">No hay artículos publicados aún.</p>';
-                    return;
-                }
+        function loadArticles() {
+            fetch('./articulos.json')
+                .then(r => r.json())
+                .then(articulos => {
+                    // Filtrar solo publicados
+                    const published = articulos.filter(a => a.status === 'published');
 
-                // Ordenar por fecha (más recientes primero)
-                articles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    if (published.length === 0) {
+                        document.getElementById('featured-article').innerHTML = '<p class="text-slate-400 text-center">No hay artículos publicados aún.</p>';
+                        return;
+                    }
 
-                // Artículo destacado es el primero (más reciente)
-                renderFeatured(articles[0]);
+                    // Ordenar por fecha (más recientes primero)
+                    published.sort((a, b) => {
+                        const dateA = new Date(a.publishedAt || a.created_at || 0);
+                        const dateB = new Date(b.publishedAt || b.created_at || 0);
+                        return dateB - dateA;
+                    });
 
-                // Artículos en grid son los demás
-                renderGrid(articles.slice(1));
-            } catch (err) {
-                console.error('Error loading articles:', err);
-                document.getElementById('featured-article').innerHTML = '<p class="text-red-400">Error al cargar artículos.</p>';
-            }
-        }
+                    // Artículo destacado es el primero (más reciente)
+                    renderFeatured(published[0]);
 
-        function loadArticle(slug) {
-            // Placeholder para cargar un artículo específico (podría expandirse)
-            console.log('Loading article:', slug);
+                    // Artículos en grid son los demás
+                    renderGrid(published.slice(1));
+                })
+                .catch(err => {
+                    console.error('Error loading articles:', err);
+                    document.getElementById('featured-article').innerHTML = '<p class="text-red-400">Error al cargar artículos.</p>';
+                });
         }
 
         // Cargar artículos al abrir la página
         loadArticles();
-
-        // Refresh cada 30 segundos (opcional, comentar si es molesto)
-        // setInterval(loadArticles, 30000);
     </script>
 
     <!-- FOOTER SIMPLE -->
