@@ -58,78 +58,115 @@
         </div>
     </header>
 
-    <!-- LISTADO DE POSTS -->
-    <section class="px-6 pb-24">
-        <div class="max-w-3xl mx-auto space-y-6" id="blog-posts">
+    <!-- ARTÍCULO DESTACADO -->
+    <section class="px-6 py-12">
+        <div class="max-w-5xl mx-auto" id="featured-article">
             <p class="text-slate-400 text-center">Cargando artículos...</p>
         </div>
     </section>
 
+    <!-- GALERÍA DE VENTANILLAS PEQUEÑAS -->
+    <section class="px-6 pb-24">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-2xl font-bold text-white mb-8">Notas anteriores</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="articles-grid">
+                <p class="text-slate-400 col-span-full text-center">Cargando...</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="sync-blog.js"></script>
     <script>
-        function escHtml(txt) { return (txt || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+        function escHtml(txt) {
+            return (txt || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
 
-        function renderArticles(articulos) {
-            const container = document.getElementById('blog-posts');
-            if (!articulos || articulos.length === 0) {
-                container.innerHTML = '<p class="text-slate-400 text-center">No hay artículos publicados aún.</p>';
+        function truncate(text, limit = 150) {
+            if (!text) return '';
+            return text.length > limit ? text.substring(0, limit) + '...' : text;
+        }
+
+        function renderFeatured(article) {
+            const featured = document.getElementById('featured-article');
+            if (!article) {
+                featured.innerHTML = '<p class="text-slate-400 text-center">No hay artículos publicados aún.</p>';
                 return;
             }
 
-            // Filtrar solo artículos publicados
-            const published = articulos.filter(a => a.status === 'published');
-            if (published.length === 0) {
-                container.innerHTML = '<p class="text-slate-400 text-center">No hay artículos publicados aún.</p>';
+            const photoFile = article.photoFile || '';
+            const photoHtml = photoFile
+                ? `<img src="fotos-articulos/${escHtml(photoFile)}" alt="${escHtml(article.title)}" class="w-full h-96 object-cover rounded-lg mb-8" loading="lazy" onerror="this.style.display='none'" />`
+                : '';
+
+            featured.innerHTML = `
+                <article class="bg-white/5 border border-white/10 rounded-lg p-12 hover:border-violet-400/40 hover:bg-white/[0.07] transition">
+                    ${article.tag ? `<span class="text-sm uppercase tracking-widest text-cyan-400 font-bold">${escHtml(article.tag)}</span>` : ''}
+                    <h1 class="text-5xl font-bold text-white mt-4 mb-6">${escHtml(article.title)}</h1>
+                    ${article.intro ? `<p class="text-xl text-slate-300 leading-relaxed mb-8 font-semibold">${escHtml(article.intro)}</p>` : ''}
+                    ${photoHtml}
+                    <div class="prose prose-invert max-w-none text-base text-slate-300 leading-relaxed" style="line-height:1.8;">
+                        ${escHtml(article.body || '').split('\n\n').map(p => `<p>${p}</p>`).join('')}
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderGrid(articles) {
+            const grid = document.getElementById('articles-grid');
+            if (!articles || articles.length === 0) {
+                grid.innerHTML = '<p class="text-slate-400 col-span-full text-center">Sin más artículos.</p>';
                 return;
             }
 
-            // Mostrar todos los publicados (más recientes primero)
-            container.innerHTML = published.reverse().map(a => {
-                const photoFile = a.photoFile || a.sugerencia_imagen || '';
+            grid.innerHTML = articles.map(a => {
+                const photoFile = a.photoFile || '';
+                const photoHtml = photoFile
+                    ? `<img src="fotos-articulos/${escHtml(photoFile)}" alt="${escHtml(a.title)}" class="w-full h-40 object-cover rounded-lg mb-4" loading="lazy" onerror="this.style.display='none'" />`
+                    : '';
+
                 return `
-                    <article class="bg-white/5 border border-white/10 rounded-lg p-12 hover:border-violet-400/40 hover:bg-white/[0.07] transition">
-                        ${a.tag ? `<span class="text-sm uppercase tracking-widest text-cyan-400 font-bold">${escHtml(a.tag)}</span>` : ''}
-                        <h2 class="text-4xl font-bold text-white mt-4 mb-6">${escHtml(a.title)}</h2>
-                        ${a.intro ? `<p class="text-lg text-slate-300 leading-relaxed mb-6 font-semibold">${escHtml(a.intro)}</p>` : ''}
-                        ${photoFile ? `<img src="fotos-articulos/${escHtml(photoFile)}" alt="${escHtml(a.title)}" style="margin:32px 0;width:100%;max-height:500px;object-fit:cover;border-radius:8px;" loading="lazy" onerror="this.style.display='none'" />` : ''}
-                        <p class="text-base text-slate-300 leading-relaxed" style="line-height:1.8;">${escHtml(a.body || a.body_blog || '').split('\n\n').join('</p><p class="text-base text-slate-300 leading-relaxed" style="line-height:1.8;margin-top:16px;">')}</p>
+                    <article class="bg-white/5 border border-white/10 rounded-lg p-6 hover:border-violet-400/40 hover:bg-white/[0.07] hover:scale-105 transition cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); loadArticle('${escHtml(a.slug)}')">
+                        ${photoHtml}
+                        ${a.tag ? `<span class="text-xs uppercase tracking-widest text-cyan-400 font-bold">${escHtml(a.tag)}</span>` : ''}
+                        <h3 class="text-lg font-bold text-white mt-2 mb-3 line-clamp-2">${escHtml(a.title)}</h3>
+                        <p class="text-sm text-slate-400 line-clamp-2">${truncate(a.intro || a.body || '', 80)}</p>
                     </article>
                 `;
             }).join('');
         }
 
-        fetch('./articulos.json')
-            .then(r => r.json())
-            .then(articulos => {
-                // En localhost, mezclar con artículos de localStorage (preview)
-                if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-                    const localData = localStorage.getItem('content-studio-state');
-                    if (localData) {
-                        try {
-                            const state = JSON.parse(localData);
-                            if (state.blogArticles && Array.isArray(state.blogArticles)) {
-                                // Mezclar: priorizar localStorage, luego GitHub
-                                articulos = [...state.blogArticles, ...articulos.filter(a => !state.blogArticles.find(b => b.id === a.id))];
-                            }
-                        } catch (e) { console.warn('No se pudo cargar localStorage'); }
-                    }
+        async function loadArticles() {
+            try {
+                const articles = await window.blogSync.load();
+                if (articles.length === 0) {
+                    document.getElementById('featured-article').innerHTML = '<p class="text-slate-400 text-center">No hay artículos publicados aún.</p>';
+                    return;
                 }
-                renderArticles(articulos);
-            })
-            .catch(err => {
-                console.error('Error cargando artículos:', err);
-                // Fallback: intentar cargar solo de localStorage
-                if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-                    const localData = localStorage.getItem('content-studio-state');
-                    if (localData) {
-                        try {
-                            const state = JSON.parse(localData);
-                            renderArticles(state.blogArticles || []);
-                            return;
-                        } catch (e) {}
-                    }
-                }
-                document.getElementById('blog-posts').innerHTML = '<p class="text-red-400">Error al cargar artículos.</p>';
-            });
+
+                // Ordenar por fecha (más recientes primero)
+                articles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                // Artículo destacado es el primero (más reciente)
+                renderFeatured(articles[0]);
+
+                // Artículos en grid son los demás
+                renderGrid(articles.slice(1));
+            } catch (err) {
+                console.error('Error loading articles:', err);
+                document.getElementById('featured-article').innerHTML = '<p class="text-red-400">Error al cargar artículos.</p>';
+            }
+        }
+
+        function loadArticle(slug) {
+            // Placeholder para cargar un artículo específico (podría expandirse)
+            console.log('Loading article:', slug);
+        }
+
+        // Cargar artículos al abrir la página
+        loadArticles();
+
+        // Refresh cada 30 segundos (opcional, comentar si es molesto)
+        // setInterval(loadArticles, 30000);
     </script>
 
     <!-- FOOTER SIMPLE -->

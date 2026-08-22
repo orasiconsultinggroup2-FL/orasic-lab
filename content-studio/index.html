@@ -14,6 +14,7 @@
   <script src="/orasic-tour.js"></script>
   <script src="/tour-content-studio.js" defer></script>
   <script src="articulos-datos.js"></script>
+  <script src="../sync-blog.js" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -521,7 +522,7 @@ function showBlogPreview(title, intro, body, photoFile) {
   ov.onclick = e => { if (e.target === ov) ov.remove(); };
 }
 
-function publishBlogArticle() {
+async function publishBlogArticle() {
   const lastEdited = sessionStorage.getItem('lastEditedBlogId');
   if (!lastEdited) { alert('No hay artículo para publicar'); return; }
 
@@ -533,22 +534,57 @@ function publishBlogArticle() {
   article.publishedAt = new Date().toISOString();
   saveState();
 
-  // Descargar JSON actualizado
-  const jsonData = JSON.stringify(state.blogArticles, null, 2);
-  const blob = new Blob([jsonData], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'articulos.json';
-  a.click();
-  URL.revokeObjectURL(url);
+  showToast('📤 Sincronizando con Supabase...', 'info');
 
-  showToast('✅ Artículo marcado como publicado\n📥 JSON descargado → Cópialo a GitHub', 'success');
+  try {
+    // Llamar a la API de sincronización (si está disponible)
+    if (window.blogSync && window.blogSync.publish) {
+      const result = await window.blogSync.publish({
+        title: article.title,
+        intro: article.intro,
+        body: article.body,
+        body_blog: article.body,
+        tag: article.tag,
+        photoFile: article.photoFile,
+        status: 'published',
+      });
 
-  // Después de 2s, abrir el blog en Vercel
-  setTimeout(() => {
-    window.location.href = 'https://orasic-lab.vercel.app/blog.html';
-  }, 2000);
+      if (result.success) {
+        showToast('✅ Publicado en el blog automáticamente\n🌐 Verifica en orasic-lab.vercel.app/blog', 'success');
+
+        // Descargar JSON como backup
+        const jsonData = JSON.stringify(state.blogArticles, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'articulos.json';
+        a.click();
+        URL.revokeObjectURL(url);
+
+        setTimeout(() => {
+          window.location.href = 'https://orasic-lab.vercel.app/blog.html';
+        }, 3000);
+      } else {
+        showToast('⚠️ Error: ' + (result.error || 'No se pudo sincronizar'), 'error');
+      }
+    } else {
+      // Fallback si sync-blog.js no está cargado
+      showToast('ℹ️ Descargando JSON (sync-blog.js no disponible)', 'info');
+
+      const jsonData = JSON.stringify(state.blogArticles, null, 2);
+      const blob = new Blob([jsonData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'articulos.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  } catch (err) {
+    console.error('Publish error:', err);
+    showToast('❌ Error al publicar: ' + err.message, 'error');
+  }
 }
 
 function copyForLinkedIn(title, body, hashtags, photoFile) {
