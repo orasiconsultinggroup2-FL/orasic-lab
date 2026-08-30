@@ -7,6 +7,39 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>ORASIC Dental CRM</title>
+  <!-- 🛡️ Red de seguridad ORASIC (variante lite, no invasiva) — plantilla en guardias/capa1-lite-aviso-no-invasivo.html -->
+  <script>
+  (function(){
+    var CFG = { empresa: 'ORASIC Lab', app: 'ORASIC Dental CRM', whatsapp: '51999039947' };
+    var shown = false, falla = null;
+    function registrar(msg, donde){ if (falla) return; falla = { msg: (msg==null?'':(''+msg)).slice(0,300), donde: donde || '' }; }
+    function linkWhatsApp(){
+      var f = falla || { msg:'Algo no funcionó como debía', donde:'' };
+      var texto = ['🛠️ Reporte de falla — ' + CFG.empresa, 'App: ' + CFG.app, 'Falla: ' + f.msg, (f.donde ? 'Dónde: ' + f.donde : ''), 'Página: ' + location.href, 'Hora: ' + new Date().toLocaleString(), 'Equipo: ' + navigator.userAgent].filter(Boolean).join('\n');
+      return 'https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(texto);
+    }
+    function showBanner(){
+      if (shown) return; shown = true;
+      try {
+        var o = document.createElement('div');
+        o.setAttribute('style','position:fixed;right:16px;bottom:16px;z-index:2147483647;max-width:300px;background:#111827;border:1px solid rgba(167,139,250,0.35);color:#E5E7EB;border-radius:12px;padding:14px 16px;font-family:Inter,system-ui,"Segoe UI",Roboto,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.4);');
+        o.innerHTML = '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;"><div style="font-size:13px;line-height:1.5;">⚠️ Algo no cargó bien en esta página. Si ves un error, repórtalo con un toque.</div><button id="og-close" style="background:none;border:none;color:#9CA3AF;cursor:pointer;font-size:14px;line-height:1;">✕</button></div><a id="og-wa" href="#" style="display:block;margin-top:10px;color:#22D3EE;font-size:12px;text-decoration:none;font-weight:600;">📲 Reportar por WhatsApp</a>';
+        (document.body||document.documentElement).appendChild(o);
+        var c = document.getElementById('og-close'); if (c) c.onclick = function(){ o.remove(); };
+        var w = document.getElementById('og-wa'); if (w){ w.href = linkWhatsApp(); w.target = '_blank'; w.rel = 'noopener'; }
+      } catch(_){}
+    }
+    window.addEventListener('error', function(e){
+      if (e && e.target && e.target !== window) return;
+      var donde = e.filename ? (e.filename.split('/').pop() + ':' + e.lineno + ':' + e.colno) : '';
+      registrar(e.message, donde); showBanner();
+    }, true);
+    window.addEventListener('unhandledrejection', function(e){
+      var r = e && e.reason; registrar((r && (r.message || r)) || 'Promesa rechazada', ''); showBanner();
+    });
+    window.OG_SAFETY = { registrar: registrar, linkWhatsApp: linkWhatsApp };
+  })();
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />

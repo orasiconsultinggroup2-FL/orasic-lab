@@ -1,0 +1,97 @@
+<!--
+  🛡️ CAPA 1 — RED DE SEGURIDAD ORASIC (plantilla)
+  ═══════════════════════════════════════════════════════════════════════════
+  Qué hace: si la app falla al cargar (error de JS, script roto, etc.), el
+  usuario ve un aviso claro con botón de recargar y de reportar por WhatsApp
+  (con el detalle técnico de la falla ya escrito), en vez de una pantalla
+  muerta en blanco.
+
+  Cómo instalar en una app nueva:
+  1. Copia TODO este bloque <script>...</script> como el PRIMER script del <head>.
+  2. Ajusta los 4 valores de CFG:
+     - empresa: nombre del cliente dueño de esta app
+     - app: nombre de esta aplicación
+     - readySelector: el selector CSS del contenedor que la app llena al cargar
+       (ej. '#page-content', '#root', '#app', 'main', 'body > div')
+     - whatsapp: número de soporte, código de país sin '+' (ej. '51999039947')
+  3. Verifica sintaxis: node guardias/verificar-html.js ruta/al/archivo.html
+  4. (Opcional, Capa 4) otras partes del código pueden llamar a
+     window.OG_SAFETY.registrar(mensaje, donde) para reportar un fallo puntual
+     de una sección sin tumbar toda la app, y usar
+     window.OG_SAFETY.linkWhatsApp() para armar el mismo link de reporte.
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<script>
+(function(){
+  var CFG = {
+    empresa: 'ORASIC Lab',          // ← CAMBIAR: cliente dueño de esta app
+    app: 'NOMBRE_DE_LA_APP',        // ← CAMBIAR: nombre de esta aplicación
+    readySelector: '#page-content', // ← CAMBIAR: contenedor que la app debe llenar al cargar
+    readyMs: 4000,                  // margen para que renderice antes de darla por muerta
+    whatsapp: '51999039947'         // WhatsApp de soporte (código de país, sin +)
+  };
+  var shown = false, falla = null;
+  function rendered(){
+    var el = document.querySelector(CFG.readySelector);
+    return !!(el && (el.childElementCount > 0 || (el.textContent||'').trim().length > 0));
+  }
+  function registrar(msg, donde){
+    if (falla) return;
+    falla = { msg: (msg==null?'':(''+msg)).slice(0,300), donde: donde || '' };
+  }
+  function linkWhatsApp(){
+    var f = falla || { msg:'La app no cargó correctamente', donde:'' };
+    var texto = [
+      '🛠️ Reporte de falla — ' + CFG.empresa,
+      'App: ' + CFG.app,
+      'Falla: ' + f.msg,
+      (f.donde ? 'Dónde: ' + f.donde : ''),
+      'Página: ' + location.href,
+      'Hora: ' + new Date().toLocaleString(),
+      'Equipo: ' + navigator.userAgent
+    ].filter(Boolean).join('\n');
+    return 'https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(texto);
+  }
+  function showFallback(){
+    if (shown) return; shown = true;
+    try {
+      var o = document.createElement('div');
+      o.setAttribute('style','position:fixed;inset:0;z-index:2147483647;background:#080A0F;color:#E5E7EB;display:flex;align-items:center;justify-content:center;padding:24px;font-family:Inter,system-ui,\"Segoe UI\",Roboto,sans-serif;');
+      o.innerHTML =
+        '<div style="max-width:420px;text-align:center;">'
+        + '<div style="font-size:44px;margin-bottom:14px;">🛠️</div>'
+        + '<div style="font-size:19px;font-weight:700;margin-bottom:8px;">Estamos teniendo un problema para cargar la app</div>'
+        + '<div style="font-size:14px;color:#9CA3AF;line-height:1.6;margin-bottom:22px;">No es tu conexión. Prueba recargar la página; si sigue igual, repórtalo con un toque y lo resolvemos rápido.</div>'
+        + '<button id="og-reload" style="background:#A78BFA;color:#0b0b12;border:none;border-radius:10px;padding:12px 22px;font-size:15px;font-weight:700;cursor:pointer;">↻ Recargar</button>'
+        + '<a id="og-wa" href="#" style="display:block;margin-top:16px;color:#22D3EE;font-size:13px;text-decoration:none;">📲 Reportar por WhatsApp</a>'
+        + '</div>';
+      (document.body||document.documentElement).appendChild(o);
+      var b = document.getElementById('og-reload');
+      if (b) b.onclick = function(){ location.reload(); };
+      var w = document.getElementById('og-wa');
+      if (w){ w.href = linkWhatsApp(); w.target = '_blank'; w.rel = 'noopener'; }
+    } catch(_){ /* si ni esto se puede, no empeorar */ }
+  }
+  window.addEventListener('error', function(e){
+    if (e && e.target && e.target !== window){
+      registrar('No cargó un recurso: ' + (e.target.src || e.target.href || 'recurso'), '');
+      return;
+    }
+    var donde = e.filename ? (e.filename.split('/').pop() + ':' + e.lineno + ':' + e.colno) : '';
+    registrar(e.message, donde);
+    if (!rendered()) showFallback();
+  }, true);
+  window.addEventListener('unhandledrejection', function(e){
+    var r = e && e.reason;
+    registrar((r && (r.message || r)) || 'Promesa rechazada', '');
+    if (!rendered()) showFallback();
+  });
+  function watchdog(){ setTimeout(function(){
+    if (!rendered()){ registrar('La app no mostró contenido en ' + (CFG.readyMs/1000) + ' s', ''); showFallback(); }
+  }, CFG.readyMs); }
+  if (document.readyState === 'complete' || document.readyState === 'interactive') watchdog();
+  else window.addEventListener('DOMContentLoaded', watchdog);
+
+  window.OG_SAFETY = { registrar: registrar, linkWhatsApp: linkWhatsApp };
+})();
+</script>

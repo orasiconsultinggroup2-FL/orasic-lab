@@ -47,10 +47,16 @@ for (const file of files) {
   catch (e) { console.error(`⚠ No pude leer ${file}: ${e.message}`); continue; }
   revisados++;
 
+  // Anula los comentarios HTML (<!-- ... -->) ANTES de buscar <script>, para que
+  // una documentación que mencione "<script>" como texto dentro de un comentario
+  // no se confunda con una etiqueta real (falso positivo). Se reemplaza por
+  // espacios preservando saltos de línea, así los números de línea no se corren.
+  const htmlSinComentarios = html.replace(/<!--[\s\S]*?-->/g, m => m.replace(/[^\n]/g, ' '));
+
   // Recorre cada <script ...> ... </script>
   const re = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
   let m;
-  while ((m = re.exec(html)) !== null) {
+  while ((m = re.exec(htmlSinComentarios)) !== null) {
     const attrs = m[1] || '';
     const code  = m[2] || '';
 
