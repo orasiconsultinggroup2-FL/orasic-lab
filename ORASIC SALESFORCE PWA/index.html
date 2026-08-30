@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#080A0F">
+<meta name="description" content="ORASIC SalesForce — Asistente de campo IA para la fuerza de ventas: radar de prospección, check-in GPS, pitch por WhatsApp, entrenamiento de voz y gamificación.">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SalesForce">
+<title>ORASIC SalesForce</title>
+<!-- 🛡️ Red de seguridad ORASIC (variante lite, no invasiva) — plantilla en guardias/capa1-lite-aviso-no-invasivo.html -->
+<script>
+(function(){
+  var CFG = { empresa: 'ORASIC Lab', app: 'ORASIC SalesForce', whatsapp: '51999039947' };
+  var shown = false, falla = null;
+  function registrar(msg, donde){ if (falla) return; falla = { msg: (msg==null?'':(''+msg)).slice(0,300), donde: donde || '' }; }
+  function linkWhatsApp(){
+    var f = falla || { msg:'Algo no funcionó como debía', donde:'' };
+    var texto = ['🛠️ Reporte de falla — ' + CFG.empresa, 'App: ' + CFG.app, 'Falla: ' + f.msg, (f.donde ? 'Dónde: ' + f.donde : ''), 'Página: ' + location.href, 'Hora: ' + new Date().toLocaleString(), 'Equipo: ' + navigator.userAgent].filter(Boolean).join('\n');
+    return 'https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(texto);
+  }
+  function showBanner(){
+    if (shown) return; shown = true;
+    try {
+      var o = document.createElement('div');
+      o.setAttribute('style','position:fixed;right:16px;bottom:16px;z-index:2147483647;max-width:300px;background:#111827;border:1px solid rgba(167,139,250,0.35);color:#E5E7EB;border-radius:12px;padding:14px 16px;font-family:Inter,system-ui,"Segoe UI",Roboto,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.4);');
+      o.innerHTML = '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;"><div style="font-size:13px;line-height:1.5;">⚠️ Algo no cargó bien en esta página. Si ves un error, repórtalo con un toque.</div><button id="og-close" style="background:none;border:none;color:#9CA3AF;cursor:pointer;font-size:14px;line-height:1;">✕</button></div><a id="og-wa" href="#" style="display:block;margin-top:10px;color:#22D3EE;font-size:12px;text-decoration:none;font-weight:600;">📲 Reportar por WhatsApp</a>';
+      (document.body||document.documentElement).appendChild(o);
+      var c = document.getElementById('og-close'); if (c) c.onclick = function(){ o.remove(); };
+      var w = document.getElementById('og-wa'); if (w){ w.href = linkWhatsApp(); w.target = '_blank'; w.rel = 'noopener'; }
+    } catch(_){}
+  }
+  window.addEventListener('error', function(e){
+    if (e && e.target && e.target !== window) return;
+    var donde = e.filename ? (e.filename.split('/').pop() + ':' + e.lineno + ':' + e.colno) : '';
+    registrar(e.message, donde); showBanner();
+  }, true);
+  window.addEventListener('unhandledrejection', function(e){
+    var r = e && e.reason; registrar((r && (r.message || r)) || 'Promesa rechazada', ''); showBanner();
+  });
+  window.OG_SAFETY = { registrar: registrar, linkWhatsApp: linkWhatsApp };
+})();
+</script>
+<style>
+:root{
+  --bg:#080A0F; --panel:#0e1524; --panel2:#0b111d; --card:#111a2b;
+  --border:#1e293b; --border-soft:#172033;
+  --t:#e6eaf2; --t2:#c3cbdb; --muted:#8b95ab;
+  --blue:#3b82f6; --blue-l:#60a5fa; --blue-bg:rgba(59,130,246,.14); --blue-bd:rgba(59,130,246,.32);
+  --em:#10b981; --em-l:#34d399; --em-bg:rgba(16,185,129,.14); --em-bd:rgba(16,185,129,.32);
+  --amber:#f59e0b; --amber-l:#fbbf24; --amber-bg:rgba(245,158,11,.14); --amber-bd:rgba(245,158,11,.32);
+  --red:#ef4444; --red-l:#f87171; --purple:#a78bfa;
+  --nav-h:66px; --radius:22px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--t);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;line-height:1.45;
+}
+.wrap{max-width:460px;margin:0 auto;padding:0 16px}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:40;background:rgba(11,15,25,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-soft);padding:12px 0;padding-top:calc(12px + env(safe-area-inset-top))}
+.hrow{display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--em));padding:2px;box-shadow:0 6px 18px rgba(59,130,246,.25)}
+.logo>div{width:100%;height:100%;background:var(--bg);border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:.95rem;background-clip:padding-box}
+.logo span{background:linear-gradient(90deg,var(--blue-l),var(--em-l));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand h1{margin:0;font-size:.9rem;font-weight:800;letter-spacing:.3px;display:flex;align-items:center;gap:6px}
+.tag{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--blue-bg);color:var(--blue-l);border:1px solid var(--blue-bd);font-family:ui-monospace,monospace}
+.brand p{margin:1px 0 0;font-size:.64rem;color:var(--muted);font-weight:500}
+.net{display:flex;align-items:center;gap:6px;font-size:.68rem;font-weight:700;padding:5px 10px;border-radius:20px;border:1px solid}
+.net.on{background:var(--em-bg);color:var(--em-l);border-color:var(--em-bd)}
+.net.off{background:var(--amber-bg);color:var(--amber-l);border-color:var(--amber-bd);animation:pulse 1.4s infinite}
+.net .d{width:7px;height:7px;border-radius:50%;background:currentColor}
+@keyframes pulse{50%{opacity:.5}}
+
+/* VIEWS */
+main{padding-top:16px;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.view{display:none}.view.active{display:block}
+.stack>*+*{margin-top:14px}
+
+/* CARDS */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card.soft{background:var(--panel2)}
+.ico-box{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:0 0 36px}
+.ico-blue{background:var(--blue-bg);color:var(--blue-l)}
+.ico-em{background:var(--em-bg);color:var(--em-l)}
+.ico-amber{background:var(--amber-bg);color:var(--amber-l)}
+.head-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.head-row h3{margin:0;font-size:.92rem;font-weight:800}
+.head-row p{margin:2px 0 0;font-size:.68rem;color:var(--muted)}
+.svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.svg.sm{width:15px;height:15px}
+.svg.lg{width:30px;height:30px}
+
+/* HERO */
+.hero{background:linear-gradient(120deg,rgba(37,99,235,.22),rgba(11,17,29,.4) 55%,var(--panel2));border:1px solid var(--blue-bd);border-radius:26px;padding:18px}
+.hero .top{display:flex;justify-content:space-between;align-items:flex-start}
+.kicker{font-size:.64rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--blue-l)}
+.hero h2{margin:3px 0 2px;font-size:1.25rem;font-weight:800}
+.hero .sub{font-size:.72rem;color:var(--muted)}
+.big{font-size:1.7rem;font-weight:900;color:var(--em-l);line-height:1}
+.big+.l{font-size:.6rem;color:var(--muted);text-align:right}
+.bar{height:9px;background:#1b2537;border-radius:20px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),#6366f1,var(--em-l));border-radius:20px}
+.pr-row{display:flex;justify-content:space-between;font-size:.72rem;font-weight:600;margin-top:14px}
+.pr-row .g{color:var(--em-l);font-weight:800}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-soft)}
+.qbtn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;border-radius:16px;font-size:.74rem;font-weight:700;border:1px solid;cursor:pointer;background:none}
+.qbtn.b{background:var(--blue-bg);color:var(--blue-l);border-color:var(--blue-bd)}
+.qbtn.e{background:var(--em-bg);color:var(--em-l);border-color:var(--em-bd)}
+
+/* FORM */
+input,textarea{width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:12px 14px;color:var(--t);font-size:.85rem;font-family:inherit}
+input:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.18)}
+input::placeholder,textarea::placeholder{color:#5b6577}
+.btn{width:100%;border:none;border-radius:16px;padding:14px;font-weight:800;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:filter .15s,transform .1s}
+.btn:active{transform:scale(.98)}
+.btn-em{background:linear-gradient(90deg,var(--em),#0d9488);color:#04140f;box-shadow:0 6px 18px rgba(16,185,129,.28)}
+.btn-blue{background:linear-gradient(90deg,var(--blue),#4f46e5);color:#fff;box-shadow:0 6px 18px rgba(59,130,246,.28)}
+.btn-wa{background:#059669;color:#fff}
+.btn:hover{filter:brightness(1.07)}
+.btn[disabled]{opacity:.6;cursor:default}
+.gps-ok{margin-top:4px;padding:11px;background:var(--em-bg);border:1px solid var(--em-bd);border-radius:14px;font-size:.72rem;color:var(--em-l);display:flex;justify-content:space-between;align-items:center;gap:8px}
+
+/* CHIPS */
+.chips4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.chip{padding:9px 4px;border-radius:12px;font-size:.7rem;font-weight:700;text-transform:capitalize;background:#182234;color:var(--muted);border:1px solid transparent;cursor:pointer;text-align:center}
+.chip.on{background:var(--em);color:#04140f}
+
+/* CATALOG */
+.prod{border-radius:22px;padding:16px;border:1px solid var(--border);margin-top:0}
+.prod.starter{background:linear-gradient(135deg,rgba(59,130,246,.16),rgba(59,130,246,.04));border-color:var(--blue-bd)}
+.prod.manager{background:linear-gradient(135deg,rgba(167,139,250,.16),rgba(59,130,246,.05));border-color:rgba(167,139,250,.3)}
+.prod.pro{background:linear-gradient(135deg,rgba(16,185,129,.16),rgba(20,184,166,.05));border-color:var(--em-bd)}
+.prod.custom{background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(11,17,29,.4));border-color:var(--amber-bd)}
+.prod .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.tier{font-size:.62rem;font-weight:900;letter-spacing:.5px;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.08);color:#fff}
+.prod h4{margin:7px 0 2px;font-size:1rem;font-weight:800}
+.prod .desc{font-size:.74rem;color:var(--t2);margin:0}
+.price{text-align:right;flex:0 0 auto}
+.price .venta{font-size:1.15rem;font-weight:900;color:var(--em-l);line-height:1.05}
+.price .alq{font-size:.6rem;color:var(--muted);margin-top:3px;line-height:1.25}
+.ptoggle{display:flex;background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:4px;gap:4px;margin-bottom:2px}
+.ptoggle button{flex:1;border:none;background:none;color:var(--muted);font-weight:800;font-size:.76rem;padding:9px;border-radius:10px;cursor:pointer}
+.ptoggle button.on{background:linear-gradient(90deg,var(--blue),#4f46e5);color:#fff;box-shadow:0 3px 10px rgba(59,130,246,.3)}
+.feats{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:5px}
+.feats li{font-size:.72rem;color:var(--t2);display:flex;gap:7px;align-items:flex-start}
+.feats li .svg{color:var(--em-l);flex:0 0 14px;margin-top:2px}
+.badges-row{margin-top:11px;display:flex;gap:6px;flex-wrap:wrap}
+.mini{font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:5px}
+.mini.off{background:var(--em-bg);color:var(--em-l);border:1px solid var(--em-bd)}
+.mini.on{background:#182234;color:var(--muted)}
+.mini.time{background:#182234;color:var(--muted)}
+
+/* RADAR */
+.radar-map{position:relative;height:210px;background:radial-gradient(circle at 50% 50%,#0d1830,#070b14);border:1px solid var(--border);border-radius:24px;overflow:hidden;display:grid;place-items:center}
+.ping{position:absolute;width:70px;height:70px;border:1.5px solid var(--blue-bd);border-radius:50%;animation:ping 2s infinite}
+.ping.p2{animation-delay:.6s}.ping.p3{animation-delay:1.2s}
+@keyframes ping{0%{transform:scale(.4);opacity:.9}100%{transform:scale(2.6);opacity:0}}
+.me{position:relative;z-index:2;text-align:center}
+.me .dot{width:16px;height:16px;background:var(--blue);border:3px solid #fff;border-radius:50%;margin:0 auto;box-shadow:0 0 14px var(--blue)}
+.me .lbl{font-size:.6rem;font-weight:700;color:var(--blue-l);background:var(--panel);border:1px solid var(--blue-bd);padding:2px 8px;border-radius:20px;margin-top:6px;display:inline-block}
+.lead{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;display:flex;gap:11px;align-items:center}
+.lead .ava{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:1.1rem;flex:0 0 38px;background:#182234}
+.lead .info{flex:1;min-width:0}
+.lead .nm{font-weight:800;font-size:.85rem}
+.lead .meta{font-size:.68rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.st{font-size:.6rem;font-weight:800;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px}
+.st.frio{background:rgba(96,165,250,.15);color:#93c5fd}
+.st.tibio{background:var(--amber-bg);color:var(--amber-l)}
+.st.caliente{background:rgba(239,68,68,.16);color:var(--red-l)}
+.st.visitado{background:rgba(148,163,184,.14);color:var(--muted)}
+.lead .acts{display:flex;gap:6px;margin-top:9px}
+.iconbtn{background:#182234;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer;color:var(--t);display:inline-flex}
+.iconbtn.wa{background:var(--em-bg);color:var(--em-l);border-color:var(--em-bd)}
+.iconbtn.ok:hover{background:var(--em-bg);color:var(--em-l)}
+.flabel{display:block;font-size:.74rem;font-weight:700;color:var(--t2);margin:14px 0 6px}
+.flabel b{color:var(--blue-l);font-weight:800}
+.rchips{display:flex;gap:7px;flex-wrap:wrap}
+.rchip{padding:9px 15px;border-radius:20px;font-size:.78rem;font-weight:700;background:#182234;color:var(--muted);border:1px solid var(--border);cursor:pointer}
+.rchip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ROLEPLAY */
+.mic-wrap{text-align:center;padding:6px 0}
+.mic{width:88px;height:88px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;margin:0 auto;color:#fff;transition:transform .1s}
+.mic:active{transform:scale(.95)}
+.mic.idle{background:linear-gradient(135deg,var(--blue),#4f46e5);box-shadow:0 8px 26px rgba(59,130,246,.4)}
+.mic.rec{background:var(--red);box-shadow:0 0 0 8px rgba(239,68,68,.15);animation:pulse 1.1s infinite}
+.transcript{background:var(--panel2);border:1px dashed var(--border);border-radius:14px;padding:12px;font-size:.8rem;color:var(--t2);min-height:52px;text-align:left;white-space:pre-wrap}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.score{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px}
+.score .lbl{font-size:.64rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.score .n{font-size:1.35rem;font-weight:900;margin-top:2px}
+.score .n.g{color:var(--em-l)}.score .n.y{color:var(--amber-l)}.score .n.r{color:var(--red-l)}
+.sbar{height:5px;background:#1b2537;border-radius:20px;overflow:hidden;margin-top:6px}
+.sbar>i{display:block;height:100%;border-radius:20px}
+.kw{display:inline-block;font-size:.66rem;background:var(--blue-bg);color:var(--blue-l);border:1px solid var(--blue-bd);padding:2px 8px;border-radius:20px;margin:3px 3px 0 0}
+.obj-pill{display:inline-block;background:var(--amber-bg);color:var(--amber-l);border:1px solid var(--amber-bd);font-size:.72rem;font-weight:700;padding:5px 11px;border-radius:20px}
+
+/* GAMIFICATION */
+.level{background:linear-gradient(120deg,rgba(16,185,129,.2),var(--panel2));border:1px solid var(--em-bd);border-radius:24px;padding:18px;text-align:center}
+.level .pts{font-size:2rem;font-weight:900}
+.level .lv{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--em-l);margin-top:2px}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat3 .s{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 6px;text-align:center}
+.stat3 .s b{display:block;font-size:1.2rem;font-weight:900;color:var(--blue-l)}
+.stat3 .s span{font-size:.6rem;color:var(--muted);text-transform:uppercase;font-weight:700}
+.badge-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.bg-item{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;display:flex;gap:10px;align-items:center}
+.bg-item.locked{opacity:.45;filter:grayscale(.6)}
+.bg-item .em{font-size:1.5rem}
+.bg-item .nm{font-size:.76rem;font-weight:800}
+.bg-item .rr{font-size:.6rem;font-weight:700}
+.rr.comun{color:var(--muted)}.rr.raro{color:var(--blue-l)}.rr.epico{color:var(--purple)}.rr.legendario{color:var(--amber-l)}
+.lb-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-soft)}
+.lb-row:last-child{border:none}
+.lb-row.me{background:var(--blue-bg);margin:0 -8px;padding:10px 8px;border-radius:12px;border:1px solid var(--blue-bd)}
+.rank{width:24px;font-weight:900;color:var(--muted);text-align:center}
+.rank.top{color:var(--amber-l)}
+.lb-av{width:32px;height:32px;border-radius:10px;background:#182234;display:grid;place-items:center;font-size:1rem}
+.lb-nm{flex:1;font-size:.8rem;font-weight:700}
+.lb-pts{font-size:.78rem;font-weight:800;color:var(--em-l)}
+
+.section-title{font-size:.85rem;font-weight:800;display:flex;align-items:center;gap:8px;margin:2px 0}
+.hint{font-size:.68rem;color:var(--muted)}
+
+/* MANUAL */
+.man-item{border-bottom:1px solid var(--border-soft);padding:13px 0}
+.man-item:last-child{border:none;padding-bottom:0}
+.man-item h5{margin:0 0 4px;font-size:.84rem;font-weight:800;display:flex;align-items:center;gap:7px}
+.man-item p{margin:0;font-size:.76rem;color:var(--t2);line-height:1.5}
+
+/* TOUR / DEMO GUIADA */
+.tour-bd{position:fixed;inset:0;background:rgba(3,5,10,.78);z-index:300;display:none}
+.tour-bd.show{display:block}
+body.touring nav{z-index:320;pointer-events:none}
+.tab.hl{position:relative}
+.tab.hl::after{content:'';position:absolute;inset:-2px;border:2px solid var(--blue-l);border-radius:14px;animation:tpulse 1.1s infinite}
+@keyframes tpulse{50%{opacity:.3}}
+.tour-card{position:fixed;left:50%;bottom:calc(var(--nav-h) + 20px);transform:translateX(-50%);width:calc(100% - 30px);max-width:430px;background:var(--panel);border:1px solid var(--border);border-radius:22px;box-shadow:0 16px 46px rgba(0,0,0,.6);z-index:330;padding:20px;display:none;animation:fade .25s}
+.tour-card.show{display:block}
+.tour-emoji{font-size:1.9rem;line-height:1}
+.tour-card h4{margin:8px 0 6px;font-size:1.1rem;font-weight:800;color:var(--blue-l)}
+.tour-card p{margin:0;font-size:.86rem;color:var(--t2);line-height:1.55}
+.tdots{display:flex;gap:6px;justify-content:center;margin:15px 0 4px}
+.tdots i{width:7px;height:7px;border-radius:50%;background:var(--border);transition:.2s}
+.tdots i.on{background:var(--blue);width:20px;border-radius:4px}
+.tbtns{display:flex;gap:8px;align-items:center;margin-top:13px}
+.tbtns .sp{flex:1}
+.tskip{background:none;border:none;color:var(--muted);font-size:.8rem;font-weight:700;cursor:pointer;padding:8px 4px}
+.tbtn{border:none;border-radius:12px;padding:11px 18px;font-weight:800;font-size:.85rem;cursor:pointer}
+.tprev{background:var(--card);color:var(--blue-l);border:1px solid var(--border)}
+.tnext{background:linear-gradient(90deg,var(--blue),#4f46e5);color:#fff}
+.tmute{position:absolute;top:14px;right:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;font-size:1rem;cursor:pointer;line-height:1}
+
+/* NAV */
+nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(11,15,23,.96);backdrop-filter:blur(14px);border-top:1px solid var(--border-soft);padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+.navrow{max-width:460px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:0 6px}
+.tab{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 1px;border-radius:14px;border:none;background:none;color:var(--muted);cursor:pointer;font-size:.6rem;font-weight:700}
+.tab.active{color:var(--blue-l);background:var(--blue-bg)}
+.tab .nb{position:absolute;top:2px;right:calc(50% - 20px);background:var(--em);color:#04140f;font-size:.58rem;font-weight:900;min-width:15px;height:15px;padding:0 3px;border-radius:20px;display:grid;place-items:center}
+
+/* TOAST */
+#toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 14px);transform:translateX(-50%) translateY(16px);background:#1a2233;border:1px solid var(--border);color:#fff;padding:11px 18px;border-radius:14px;font-size:.82rem;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.3s;z-index:200;max-width:88%}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hrow">
+    <div class="brand">
+      <div class="logo"><div><span>O</span></div></div>
+      <div>
+        <h1>ORASIC <span class="tag">SalesForce</span></h1>
+        <p>Asistente de Campo IA</p>
+      </div>
+    </div>
+    <div id="net" class="net on"><span class="d"></span><span id="netTxt">Online</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ========= DASHBOARD ========= -->
+  <section id="v-dashboard" class="view active">
+    <div class="stack">
+      <div class="hero">
+        <div class="top">
+          <div>
+            <div class="kicker">Modo Asistente Activo</div>
+            <h2>¡Hola, Alex! 👋</h2>
+            <div class="sub">Tienes 3 visitas agendadas para hoy</div>
+          </div>
+          <div style="text-align:right"><div class="big" id="metaPct">80%</div><div class="l">Meta del día</div></div>
+        </div>
+        <div class="pr-row"><span>Progreso de ventas (4 / 5)</span><span class="g">S/ 1,800 / S/ 2,200</span></div>
+        <div class="bar"><i style="width:80%"></i></div>
+        <div class="quick">
+          <button class="qbtn b" onclick="go('radar')"><svg class="svg sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></svg> Prospectar cerca</button>
+          <button class="qbtn e" onclick="go('roleplay')"><svg class="svg sm" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8L4 10l5.1 3.2L8 19l4-3.5 4 3.5-1.1-5.8L20 10l-6.1-1.2z"/></svg> Practicar pitch</button>
+        </div>
+      </div>
+
+      <!-- CHECK-IN -->
+      <div class="card">
+        <div class="head-row">
+          <div class="ico-box ico-blue"><svg class="svg" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div><h3>Registro de visita presencial</h3><p>Captura ubicación y notas del prospecto</p></div>
+        </div>
+        <input id="ciName" type="text" placeholder="Nombre del negocio o cliente...">
+        <div style="height:10px"></div>
+        <button id="ciBtn" class="btn btn-em" onclick="checkIn()">📍 MARCAR CHECK-IN AHORA</button>
+        <div id="ciResult"></div>
+      </div>
+
+      <!-- WHATSAPP -->
+      <div class="card">
+        <div class="head-row">
+          <div class="ico-box ico-em"><svg class="svg" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8Z"/></svg></div>
+          <div><h3>Pitch rápido vía WhatsApp</h3><p>Genera un mensaje wa.me prellenado por rubro</p></div>
+        </div>
+        <div class="chips4" id="waChips"></div>
+        <div style="height:10px"></div>
+        <a id="waLink" class="btn btn-wa" href="#" target="_blank" rel="noopener">
+          <svg class="svg sm" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4 20-7Z"/></svg> ABRIR EN WHATSAPP
+        </a>
+      </div>
+
+      <!-- CATALOG -->
+      <div class="section-title"><svg class="svg sm" viewBox="0 0 24 24" style="color:var(--blue-l)"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/></svg> Catálogo de soluciones ORASIC</div>
+      <div class="ptoggle">
+        <button id="pm-venta" class="on" onclick="setPriceMode('venta')">💰 Compra</button>
+        <button id="pm-alquiler" onclick="setPriceMode('alquiler')">🔁 Alquiler</button>
+      </div>
+      <div id="catalog" class="stack"></div>
+    </div>
+  </section>
+
+  <!-- ========= RADAR ========= -->
+  <section id="v-radar" class="view">
+    <div class="stack">
+      <div class="card">
+        <div class="head-row">
+          <div class="ico-box ico-blue"><svg class="svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></svg></div>
+          <div><h3>Radar de prospección por zona</h3><p>Elige un rubro y una zona, y encuentra negocios reales</p></div>
+        </div>
+
+        <label class="flabel"><b>1.</b> ¿Qué rubro quieres encontrar?</label>
+        <select id="rRubro" onchange="rRubroChange()"></select>
+        <input id="rRubroOtro" style="display:none;margin-top:8px" placeholder="Escribe el rubro que buscas...">
+
+        <label class="flabel"><b>2.</b> ¿Dónde? (distrito, urbanización o referencia)</label>
+        <input id="rZona" placeholder="Ej: Miraflores, La Molina, Óvalo Gutiérrez...">
+
+        <label class="flabel"><b>3.</b> Radio de acción</label>
+        <div class="rchips" id="rRadio"></div>
+
+        <div style="height:16px"></div>
+        <button class="btn btn-blue" onclick="radarSearch()">🔎 Buscar negocios</button>
+      </div>
+
+      <div id="radarResult"></div>
+      <div id="recentSearches"></div>
+    </div>
+  </section>
+
+  <!-- ========= ROLEPLAY ========= -->
+  <section id="v-roleplay" class="view">
+    <div class="stack">
+      <div class="card mic-wrap">
+        <div class="obj-pill">🎯 Objeción a rebatir: "Está muy caro"</div>
+        <div style="height:16px"></div>
+        <button id="mic" class="mic idle" onclick="toggleRec()">
+          <svg id="micIcon" class="svg lg" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v4"/></svg>
+        </button>
+        <div style="height:12px"></div>
+        <h3 id="micTitle" style="margin:0;font-size:.92rem;font-weight:800">Graba tu pitch de prueba</h3>
+        <p class="hint" id="micHint" style="margin-top:3px">Toca el micrófono y responde en voz alta. La IA transcribe y califica.</p>
+      </div>
+
+      <div class="card">
+        <div class="section-title">📝 Transcripción</div>
+        <div style="height:8px"></div>
+        <div id="transcript" class="transcript">Aún no hay grabación. Toca el micrófono para empezar…</div>
+        <div style="height:10px"></div>
+        <button class="btn btn-blue" onclick="analyzePitch()">🧠 Analizar mi pitch</button>
+      </div>
+
+      <div id="scoreCard" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- ========= LOGROS ========= -->
+  <section id="v-logros" class="view">
+    <div class="stack">
+      <div class="level">
+        <svg class="svg lg" viewBox="0 0 24 24" style="color:var(--em-l);margin:0 auto"><path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2m12 6h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2M6 3h12v6a6 6 0 0 1-12 0V3ZM9 21h6M12 15v6"/></svg>
+        <div class="pts" id="gPts">1,980 PTS</div>
+        <div class="lv" id="gLv">Nivel 4 · Ejecutivo Cazador</div>
+      </div>
+      <div class="stat3">
+        <div class="s"><b id="gDeals">12</b><span>Cierres</span></div>
+        <div class="s"><b id="gVisits">0</b><span>Check-ins</span></div>
+        <div class="s"><b id="gBadges">3</b><span>Insignias</span></div>
+      </div>
+
+      <div class="section-title">🏅 Insignias</div>
+      <div id="badgeGrid" class="badge-grid"></div>
+
+      <div class="card">
+        <div class="section-title">🥇 Ranking del equipo</div>
+        <div style="height:6px"></div>
+        <div id="leaderboard"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========= MANUAL ========= -->
+  <section id="v-manual" class="view">
+    <div class="stack">
+      <div class="card">
+        <div class="head-row">
+          <div class="ico-box ico-blue"><svg class="svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
+          <div><h3>Cómo usar ORASIC SalesForce</h3><p>Guía rápida para el equipo de campo</p></div>
+        </div>
+        <div id="manualList"></div>
+        <button class="btn btn-blue" style="margin-top:14px" onclick="startTour()">▶️ Ver demo guiada (con voz)</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<nav>
+  <div class="navrow">
+    <button class="tab active" id="t-dashboard" onclick="go('dashboard')">
+      <svg class="svg" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2Z"/></svg>Inicio</button>
+    <button class="tab" id="t-radar" onclick="go('radar')">
+      <svg class="svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></svg>Radar</button>
+    <button class="tab" id="t-roleplay" onclick="go('roleplay')">
+      <svg class="svg" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8L4 10l5.1 3.2L8 19l4-3.5 4 3.5-1.1-5.8L20 10l-6.1-1.2z"/></svg>Entrenar</button>
+    <button class="tab" id="t-logros" onclick="go('logros')">
+      <svg class="svg" viewBox="0 0 24 24"><path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2m12 6h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2M6 3h12v6a6 6 0 0 1-12 0V3ZM9 21h6M12 15v6"/></svg>Logros</button>
+    <button class="tab" id="t-manual" onclick="go('manual')">
+      <svg class="svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>Manual</button>
+  </div>
+</nav>
+
+<!-- DEMO GUIADA -->
+<div id="tourBd" class="tour-bd"></div>
+<div id="tourCard" class="tour-card">
+  <button class="tmute" id="tMute" onclick="toggleTTS()" title="Voz">🔊</button>
+  <div class="tour-emoji" id="tEmoji">👋</div>
+  <h4 id="tTitle"></h4>
+  <p id="tText"></p>
+  <div class="tdots" id="tDots"></div>
+  <div class="tbtns">
+    <button class="tskip" onclick="endTour()">Saltar</button>
+    <span class="sp"></span>
+    <button class="tbtn tprev" id="tPrev" onclick="tourPrev()">Anterior</button>
+    <button class="tbtn tnext" id="tNext" onclick="tourNext()">Siguiente</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ================= UTIL / STORE ================= */
+const DB={ checkins:'sf_checkins', searches:'sf_searches', game:'sf_game' };
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);}
+
+/* ================= NAV ================= */
+function go(tab){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+tab).classList.add('active');
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('t-'+tab).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ================= ONLINE / OFFLINE ================= */
+function setNet(){
+  const on=navigator.onLine, el=document.getElementById('net');
+  el.className='net '+(on?'on':'off');
+  document.getElementById('netTxt').textContent=on?'Online':'Modo Offline';
+}
+window.addEventListener('online',setNet);window.addEventListener('offline',setNet);setNet();
+
+/* ================= CATÁLOGO (precios reales — Carta de Servicios ORASIC) ================= */
+const PRODUCTS=[
+  {cls:'starter',tier:'STARTER',title:'Presencia Digital Básica',venta:'S/ 2,497',alqIni:'S/ 599',alqMes:'S/ 99/mes',dev:'2-3 h',offline:true,
+   feats:['Landing page + Contacto','WhatsApp automático + Horarios','Base de datos de clientes','Recordatorios automáticos']},
+  {cls:'manager',tier:'MANAGER',title:'Gestión Completa + Reservas',venta:'S/ 4,997',alqIni:'S/ 649',alqMes:'S/ 149/mes',dev:'5-6 h',offline:true,
+   feats:['Todo lo de Starter','Reservas automáticas + Histórico','Cotizaciones + Dashboard','Pagos Yape/Plin + Reportes']},
+  {cls:'pro',tier:'PRO',title:'Operaciones + IA',venta:'S/ 7,997',alqIni:'S/ 699',alqMes:'S/ 199/mes',dev:'10-12 h',offline:false,
+   feats:['Todo lo de Manager','Múltiples usuarios + Chatbot IA','Automatizaciones + Google Calendar','App móvil + Soporte 24h']},
+  {cls:'custom',tier:'CUSTOM',title:'Solución a Medida',venta:'S/ 10,000+',alqIni:null,alqMes:null,dev:'20-40+ h',offline:false,
+   feats:['Auditoría de negocio','Especificación a detalle','Desarrollo personalizado','Integraciones complejas']}
+];
+let priceMode='venta';
+function setPriceMode(m){
+  priceMode=m;
+  document.getElementById('pm-venta').className=m==='venta'?'on':'';
+  document.getElementById('pm-alquiler').className=m==='alquiler'?'on':'';
+  renderCatalog();
+}
+function priceBlock(p){
+  if(priceMode==='alquiler'){
+    if(!p.alqIni) return `<div class="venta">A medida</div><div class="alq">Cotización personalizada</div>`;
+    return `<div class="venta">${p.alqIni}</div><div class="alq">inicial<br>+ ${esc(p.alqMes)}</div>`;
+  }
+  const alqHint = p.alqIni?`o alquiler:<br>${p.alqIni} + ${esc(p.alqMes)}`:'sin alquiler';
+  return `<div class="venta">${p.venta}</div><div class="alq">${alqHint}</div>`;
+}
+function renderCatalog(){
+  document.getElementById('catalog').innerHTML=PRODUCTS.map(p=>`
+    <div class="prod ${p.cls}">
+      <div class="top">
+        <div><span class="tier">${p.tier}</span><h4>${esc(p.title)}</h4></div>
+        <div class="price">${priceBlock(p)}</div>
+      </div>
+      <ul class="feats">${p.feats.map(f=>`<li><svg class="svg sm" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></svg>${esc(f)}</li>`).join('')}</ul>
+      <div class="badges-row">
+        ${p.offline?'<span class="mini off"><svg class="svg sm" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg> Disponible offline</span>':'<span class="mini on">☁️ Requiere conexión</span>'}
+        <span class="mini time">⏱️ Dev: ${p.dev}</span>
+      </div>
+    </div>`).join('');
+}
+
+/* ================= CHECK-IN GPS ================= */
+function checkIn(){
+  const btn=document.getElementById('ciBtn'), name=document.getElementById('ciName').value.trim();
+  btn.disabled=true;btn.textContent='Obteniendo GPS…';
+  const done=(lat,lng,approx)=>{
+    const rec={id:Date.now(),name:name||'Sin nombre',lat,lng,approx,at:new Date().toISOString()};
+    const list=load(DB.checkins,[]);list.unshift(rec);save(DB.checkins,list);
+    addPoints(20,'Check-in registrado (+20 pts)');
+    document.getElementById('ciResult').innerHTML=
+      `<div class="gps-ok"><span><strong>GPS capturado${approx?' (aprox.)':''}:</strong> ${lat.toFixed(4)}, ${lng.toFixed(4)}</span><span style="font-family:monospace;font-size:.62rem">Guardado ✓</span></div>`;
+    document.getElementById('ciName').value='';
+    btn.disabled=false;btn.textContent='📍 MARCAR CHECK-IN AHORA';
+    renderGame();
+  };
+  if('geolocation'in navigator){
+    navigator.geolocation.getCurrentPosition(
+      p=>done(p.coords.latitude,p.coords.longitude,false),
+      ()=>{toast('Sin permiso GPS — uso ubicación aprox.');done(-12.0864,-77.0328,true);},
+      {enableHighAccuracy:true,timeout:8000}
+    );
+  }else done(-12.0864,-77.0328,true);
+}
+
+/* ================= WHATSAPP PITCH ================= */
+const WA={
+  barberia:"Hola! 👋 Vi tu Barbería y me pareció excelente. Te escribo de ORASIC Lab: ayudamos a barberías a automatizar citas por WhatsApp para no perder clientes mientras cortan. ¿Te gustaría ver un demo de 2 min?",
+  gym:"Hola! 💪 Genial tu Gimnasio/Centro. Desde ORASIC Lab ayudamos a Gyms a cobrar mensualidades automáticas y retener alumnos por WhatsApp. ¿Te muestro cómo funciona?",
+  coach:"Hola coach! 🚀 Veo tu contenido. En ORASIC Lab desarrollamos apps a medida para creadores y coaches para agendar mentorías sin lidiar con chats manuales. ¿Tienes 2 minutos?",
+  clinica:"Estimados, gusto en saludarles. En ORASIC Lab automatizamos la confirmación de citas para clínicas y consultorios, reduciendo ausentismo hasta un 40%. ¿Podríamos coordinar una breve llamada?"
+};
+let waCat='barberia';
+function renderWa(){
+  document.getElementById('waChips').innerHTML=Object.keys(WA).map(c=>
+    `<div class="chip ${c===waCat?'on':''}" onclick="pickWa('${c}')">${c}</div>`).join('');
+  document.getElementById('waLink').href='https://wa.me/?text='+encodeURIComponent(WA[waCat]);
+}
+function pickWa(c){waCat=c;renderWa();}
+
+/* ================= RADAR (buscador por zona — Google Maps, gratis) ================= */
+const RUBROS=['Barbería','Peluquería / Salón de belleza','Gimnasio','Clínica / Consultorio','Dentista','Restaurante','Cafetería','Ferretería','Bodega / Minimarket','Boutique / Tienda de ropa','Inmobiliaria','Veterinaria','Farmacia / Botica','Coach / Consultor'];
+let rRadio='3';
+function initRadar(){
+  document.getElementById('rRubro').innerHTML='<option value="" disabled selected>Elige un rubro...</option>'+
+    RUBROS.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('')+
+    '<option value="__otro__">✏️ Otro (escribir)…</option>';
+  document.getElementById('rRadio').innerHTML=['1','3','5','10'].map(k=>
+    `<span class="rchip ${k===rRadio?'on':''}" onclick="pickRadio('${k}')">${k} km</span>`).join('');
+  renderRecent();
+}
+function rRubroChange(){const s=document.getElementById('rRubro');document.getElementById('rRubroOtro').style.display=s.value==='__otro__'?'block':'none';if(s.value==='__otro__')document.getElementById('rRubroOtro').focus();}
+function pickRadio(k){rRadio=k;document.querySelectorAll('#rRadio .rchip').forEach(c=>c.classList.toggle('on',c.textContent===k+' km'));}
+function radarSearch(){
+  const s=document.getElementById('rRubro');
+  const rubro=s.value==='__otro__'?document.getElementById('rRubroOtro').value.trim():s.value;
+  const zona=document.getElementById('rZona').value.trim();
+  if(!rubro||s.value===''){toast('Elige un rubro primero');return;}
+  if(!zona){toast('Escribe el distrito, urbanización o referencia');document.getElementById('rZona').focus();return;}
+  const url='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(rubro+' en '+zona);
+  window.open(url,'_blank','noopener');
+  const rec=load(DB.searches,[]);rec.unshift({id:Date.now(),rubro,zona,radio:rRadio,url});save(DB.searches,rec.slice(0,8));
+  addPoints(5,'Búsqueda de zona (+5 pts)');renderGame();
+  document.getElementById('radarResult').innerHTML=`
+    <div class="card" style="border-color:var(--blue-bd)">
+      <div class="section-title" style="color:var(--blue-l)">🔎 ${esc(rubro)} en ${esc(zona)}</div>
+      <p class="hint" style="margin:6px 0 12px">Radio aprox. ${rRadio} km. Se abrió Google Maps con los negocios reales de esa zona — toca cada uno para ver su teléfono/WhatsApp y contáctalo. Puedes acercar o alejar el mapa para ampliar el radio.</p>
+      <a class="btn btn-blue" href="${url}" target="_blank" rel="noopener">🗺️ Abrir resultados en Google Maps</a>
+    </div>`;
+  renderRecent();
+}
+function renderRecent(){
+  const rec=load(DB.searches,[]),box=document.getElementById('recentSearches');
+  if(!box)return;
+  if(!rec.length){box.innerHTML='';return;}
+  box.innerHTML='<div class="section-title" style="margin-top:8px">🕘 Búsquedas recientes</div><div class="stack" style="margin-top:8px">'+
+    rec.map(r=>`<a class="lead" href="${r.url}" target="_blank" rel="noopener" style="text-decoration:none">
+      <div class="ava">🗺️</div>
+      <div class="info"><div class="nm">${esc(r.rubro)}</div><div class="meta"><span>📍 ${esc(r.zona)}</span><span>• ${esc(r.radio)} km</span></div></div>
+      <svg class="svg sm" viewBox="0 0 24 24" style="color:var(--muted)"><path d="M7 17 17 7M7 7h10v10"/></svg>
+    </a>`).join('')+'</div>';
+}
+
+/* ================= ROLEPLAY (Web Speech — gratis) ================= */
+let rec=null,recording=false,transcript='';
+function toggleRec(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ // fallback: entrada manual
+    if(!recording){toast('Este navegador no soporta voz — escribe tu pitch');
+      document.getElementById('transcript').contentEditable=true;
+      document.getElementById('transcript').textContent='';
+      document.getElementById('transcript').focus();recording=true;setMic(true);}
+    else{recording=false;setMic(false);transcript=document.getElementById('transcript').textContent;}
+    return;
+  }
+  if(!recording){
+    rec=new SR();rec.lang='es-PE';rec.continuous=true;rec.interimResults=true;
+    transcript='';document.getElementById('transcript').textContent='Escuchando…';
+    rec.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;transcript=t;document.getElementById('transcript').textContent=t||'Escuchando…';};
+    rec.onerror=e=>{toast('Micrófono: '+e.error);setMic(false);recording=false;};
+    rec.onend=()=>{if(recording){setMic(false);recording=false;}};
+    try{rec.start();recording=true;setMic(true);}catch(e){toast('No se pudo iniciar el micrófono');}
+  }else{recording=false;try{rec.stop();}catch(e){}setMic(false);}
+}
+function setMic(on){
+  document.getElementById('mic').className='mic '+(on?'rec':'idle');
+  document.getElementById('micTitle').textContent=on?'Escuchando tu pitch…':'Graba tu pitch de prueba';
+  document.getElementById('micHint').textContent=on?'Habla claro. Toca de nuevo para detener.':'Toca el micrófono y responde en voz alta. La IA transcribe y califica.';
+  document.getElementById('micIcon').innerHTML=on
+    ?'<path d="M1 1l22 22M9 9v3a3 3 0 0 0 5.1 2.1M15 9.3V4a3 3 0 0 0-5.9-.6"/><path d="M17 16.9A7 7 0 0 1 5 12M12 19v3"/>'
+    :'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v4"/>';
+}
+function analyzePitch(){
+  const t=(transcript||document.getElementById('transcript').textContent||'').trim();
+  if(t.length<12){toast('Graba o escribe tu pitch primero');return;}
+  const low=t.toLowerCase();
+  const has=(...w)=>w.some(x=>low.includes(x));
+  const empathy=has('entiendo','comprendo','claro','tiene sentido','imagino','válido','sé que');
+  const value=has('ahorr','gan','tiempo','recuper','invers','retorn','clientes','vend','automat');
+  const question=t.includes('?')||has('¿');
+  const objection=has('caro','precio','presupuesto','cuesta','pagar','económic','vale');
+  const words=t.split(/\s+/).length;
+  const empathyScore=empathy?(question?90:75):(question?60:45);
+  const clarityScore=Math.max(40,Math.min(95,50+Math.min(words,60)));
+  const persuasionScore=value?(words>25?88:72):55;
+  const objectionScore=objection?(empathy?92:70):(empathy?60:48);
+  const kws=[];if(empathy)kws.push('empatía');if(value)kws.push('valor');if(question)kws.push('pregunta de cierre');if(objection)kws.push('maneja objeción');
+  let fb;const avg=(empathyScore+clarityScore+persuasionScore+objectionScore)/4;
+  if(avg>=82)fb='¡Excelente pitch! Validaste la emoción, mostraste valor y guiaste con una pregunta. Así se cierra.';
+  else if(avg>=65)fb='Buen pitch. Refuerza el cierre con una pregunta directa ("¿Avanzamos hoy?") y menciona un beneficio concreto en soles.';
+  else fb='Mejorable. Primero valida ("Entiendo que el precio importa…"), luego reencuadra el valor (ahorro/tiempo) y cierra con una pregunta.';
+  const color=n=>n>=80?'g':n>=60?'y':'r';
+  const barc=n=>n>=80?'var(--em-l)':n>=60?'var(--amber-l)':'var(--red-l)';
+  const row=(lbl,n)=>`<div class="score"><div class="lbl">${lbl}</div><div class="n ${color(n)}">${n}</div><div class="sbar"><i style="width:${n}%;background:${barc(n)}"></i></div></div>`;
+  document.getElementById('scoreCard').style.display='block';
+  document.getElementById('scoreCard').innerHTML=`
+    <div class="card">
+      <div class="section-title">📊 Análisis del pitch</div>
+      <div style="height:10px"></div>
+      <div class="score-grid">
+        ${row('Empatía',empathyScore)}${row('Claridad',clarityScore)}
+        ${row('Persuasión',persuasionScore)}${row('Manejo objeción',objectionScore)}
+      </div>
+      <div style="margin-top:12px;padding:12px;background:var(--panel2);border:1px solid var(--border);border-radius:14px;font-size:.8rem;color:var(--t2)">${esc(fb)}</div>
+      ${kws.length?`<div style="margin-top:10px">${kws.map(k=>`<span class="kw">✓ ${esc(k)}</span>`).join('')}</div>`:''}
+    </div>`;
+  addPoints(15,'Pitch analizado (+15 pts)');renderGame();
+  document.getElementById('scoreCard').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ================= GAMIFICACIÓN ================= */
+const LEVELS=[{p:0,n:'Novato'},{p:500,n:'Prospectador'},{p:1000,n:'Vendedor'},{p:1500,n:'Ejecutivo Cazador'},{p:2500,n:'Closer Elite'},{p:4000,n:'Leyenda ORASIC'}];
+const BADGES=[
+  {id:'first_checkin',emoji:'📍',nm:'Primer Check-in',rr:'comun'},
+  {id:'pitch_master',emoji:'🎤',nm:'Orador de Campo',rr:'raro'},
+  {id:'closer',emoji:'🤝',nm:'Cierre Cerrado',rr:'epico'},
+  {id:'streak',emoji:'🔥',nm:'Racha de Fuego',rr:'raro'},
+  {id:'hunter',emoji:'🎯',nm:'Cazador Nato',rr:'epico'},
+  {id:'legend',emoji:'👑',nm:'Leyenda',rr:'legendario'}
+];
+const LEADERBOARD=[
+  {rank:1,name:'Kevin M.',av:'🥇',pts:2680},
+  {rank:2,name:'Diana R.',av:'🥈',pts:2310},
+  {rank:3,name:'Alex (Tú)',av:'😎',pts:1980,me:true},
+  {rank:4,name:'Jorge P.',av:'🧑',pts:1740},
+  {rank:5,name:'Lucía T.',av:'👩',pts:1520}
+];
+function getGame(){return load(DB.game,{points:1980,deals:12,badges:['first_checkin','pitch_master','closer']});}
+function levelOf(p){let lv=1,nm=LEVELS[0].n;LEVELS.forEach((l,i)=>{if(p>=l.p){lv=i+1;nm=l.n;}});return{lv,nm};}
+function addPoints(n,msg){const g=getGame();g.points+=n;save(DB.game,g);if(msg)toast(msg);}
+function renderGame(){
+  const g=getGame(),{lv,nm}=levelOf(g.points),chk=load(DB.checkins,[]).length;
+  document.getElementById('gPts').textContent=g.points.toLocaleString('es-PE')+' PTS';
+  document.getElementById('gLv').textContent='Nivel '+lv+' · '+nm;
+  document.getElementById('gDeals').textContent=g.deals;
+  document.getElementById('gVisits').textContent=chk;
+  document.getElementById('gBadges').textContent=(g.badges||[]).length;
+  document.getElementById('badgeGrid').innerHTML=BADGES.map(b=>{
+    const on=(g.badges||[]).includes(b.id);
+    return `<div class="bg-item ${on?'':'locked'}"><div class="em">${b.emoji}</div><div><div class="nm">${esc(b.nm)}</div><div class="rr ${b.rr}">${b.rr==='comun'?'Común':b.rr==='raro'?'Raro':b.rr==='epico'?'Épico':'Legendario'}${on?'':' · 🔒'}</div></div></div>`;
+  }).join('');
+  // reflejar puntos del usuario en el ranking
+  const lb=LEADERBOARD.map(u=>u.me?{...u,pts:g.points}:u).sort((a,b)=>b.pts-a.pts).map((u,i)=>({...u,rank:i+1}));
+  document.getElementById('leaderboard').innerHTML=lb.map(u=>`
+    <div class="lb-row ${u.me?'me':''}">
+      <div class="rank ${u.rank<=3?'top':''}">${u.rank}</div>
+      <div class="lb-av">${u.av}</div>
+      <div class="lb-nm">${esc(u.name)}</div>
+      <div class="lb-pts">${u.pts.toLocaleString('es-PE')}</div>
+    </div>`).join('');
+}
+
+/* ================= MANUAL ================= */
+const MANUAL=[
+  {e:'🏠',t:'Inicio',d:'Tu tablero del día: meta de ventas, <b>Check-in GPS</b> para registrar visitas presenciales, <b>pitch por WhatsApp</b> prellenado por rubro, y el <b>catálogo</b> con precios reales — con interruptor <b>Compra / Alquiler</b>.'},
+  {e:'📡',t:'Radar por zona',d:'Elige el <b>rubro</b> que buscas, escribe el <b>distrito/urbanización/referencia</b> y el <b>radio</b>. La app abre Google Maps con los negocios reales de esa zona (con teléfono y WhatsApp) para prospectar.'},
+  {e:'✨',t:'Entrenar',d:'Practica tu pitch con <b>voz real</b>: graba, la app <b>transcribe</b> y te <b>califica</b> empatía, claridad, persuasión y manejo de objeciones, con consejos al instante.'},
+  {e:'🏆',t:'Logros',d:'Gana <b>puntos</b> por cada acción (check-in, pitch, búsqueda), sube de <b>nivel</b>, desbloquea <b>insignias</b> y compite en el <b>ranking</b> del equipo.'},
+  {e:'📶',t:'Offline e instalable',d:'Funciona sin internet una vez cargada y se <b>instala como app</b> en el celular (Android/iPhone). Tus datos se guardan en el dispositivo.'}
+];
+function renderManual(){
+  document.getElementById('manualList').innerHTML=MANUAL.map(m=>
+    `<div class="man-item"><h5>${m.e} ${esc(m.t)}</h5><p>${m.d}</p></div>`).join('');
+}
+
+/* ================= DEMO GUIADA (voz masculina latinoamericana) ================= */
+const TOUR=[
+  {e:'👋',sec:null,tab:null,title:'¡Bienvenido a ORASIC SalesForce!',text:'Soy tu guía. En un minuto te muestro cómo prospectar, entrenar tu pitch y vender más. Toca Siguiente para empezar.'},
+  {e:'🏠',sec:'dashboard',tab:'t-dashboard',title:'1. Inicio',text:'Tu tablero del día. Aquí registras visitas con GPS, envías tu pitch por WhatsApp por rubro, y muestras el catálogo con precios reales. Usa el interruptor Compra o Alquiler según lo que prefiera el cliente.'},
+  {e:'📡',sec:'radar',tab:'t-radar',title:'2. Radar por zona',text:'Elige qué rubro quieres encontrar, escribe el distrito, urbanización o un punto de referencia, y el radio. La app te abre Google Maps con los negocios reales de esa zona, con su teléfono y WhatsApp.'},
+  {e:'✨',sec:'roleplay',tab:'t-roleplay',title:'3. Entrenar',text:'Practica tu pitch en voz alta. La app transcribe lo que dices y te califica la empatía, la claridad, la persuasión y cómo manejas la objeción del precio. Ensaya antes de salir a la calle.'},
+  {e:'🏆',sec:'logros',tab:'t-logros',title:'4. Logros',text:'Cada acción te da puntos: check-ins, pitches y búsquedas. Subes de nivel, desbloqueas insignias y compites con tu equipo en el ranking. La constancia se premia.'},
+  {e:'🏁',sec:'manual',tab:'t-manual',title:'¡Listo para vender!',text:'Si olvidas algo, todo está en el Manual, y puedes repetir esta demo cuando quieras. ¡Mucho éxito!'}
+];
+let tStep=0, ttsOn=true;
+const V_MALE=/pablo|raul|raúl|jorge|diego|miguel|carlos|juan|andr[eé]s|gonzalo|enrique|roberto|male|hombre/i;
+const V_FEM=/helena|laura|sabina|paulina|m[oó]nica|elena|mar[ií]a|luc[ií]a|female|mujer/i;
+const V_LAT=/es[-_](mx|us|419|pe|co|ar|cl|ve|bo|ec|gt|hn|ni|pa|py|sv|uy|do|cr)/i;
+function pickVoice(){
+  if(!('speechSynthesis'in window))return null;
+  const vs=(speechSynthesis.getVoices()||[]).filter(v=>/^es/i.test(v.lang||''));
+  if(!vs.length)return null;
+  const sc=v=>{const n=(v.name||'').toLowerCase();let s=0;if(V_MALE.test(n))s+=6;if(V_FEM.test(n))s-=6;if(V_LAT.test(v.lang||''))s+=3;if(/google/i.test(n))s+=1;return s;};
+  return vs.slice().sort((a,b)=>sc(b)-sc(a))[0];
+}
+function speak(t){
+  if(!ttsOn||!('speechSynthesis'in window))return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);const v=pickVoice();u.lang=(v&&v.lang)?v.lang:'es-MX';u.rate=.98;u.pitch=.9;if(v)u.voice=v;speechSynthesis.speak(u);}catch(e){}
+}
+function toggleTTS(){ttsOn=!ttsOn;document.getElementById('tMute').textContent=ttsOn?'🔊':'🔇';if(!ttsOn){if('speechSynthesis'in window)speechSynthesis.cancel();}else speak(TOUR[tStep].text);}
+function renderTour(){
+  const s=TOUR[tStep];
+  document.getElementById('tEmoji').textContent=s.e;
+  document.getElementById('tTitle').textContent=s.title;
+  document.getElementById('tText').textContent=s.text;
+  document.getElementById('tDots').innerHTML=TOUR.map((_,i)=>`<i class="${i===tStep?'on':''}"></i>`).join('');
+  document.getElementById('tPrev').style.visibility=tStep===0?'hidden':'visible';
+  document.getElementById('tNext').textContent=tStep===TOUR.length-1?'Finalizar':'Siguiente';
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('hl'));
+  if(s.sec)go(s.sec);
+  if(s.tab)document.getElementById(s.tab).classList.add('hl');
+  speak(s.text);
+}
+function startTour(){tStep=0;ttsOn=true;document.getElementById('tMute').textContent='🔊';document.body.classList.add('touring');document.getElementById('tourBd').classList.add('show');document.getElementById('tourCard').classList.add('show');renderTour();}
+function tourNext(){if(tStep<TOUR.length-1){tStep++;renderTour();}else endTour();}
+function tourPrev(){if(tStep>0){tStep--;renderTour();}}
+function endTour(){document.body.classList.remove('touring');document.getElementById('tourBd').classList.remove('show');document.getElementById('tourCard').classList.remove('show');document.querySelectorAll('.tab').forEach(b=>b.classList.remove('hl'));if('speechSynthesis'in window)speechSynthesis.cancel();try{localStorage.setItem('sf_tour_done','1');}catch(e){}}
+if('speechSynthesis'in window){speechSynthesis.onvoiceschanged=()=>{};speechSynthesis.getVoices();}
+
+/* ================= INIT ================= */
+renderCatalog();renderWa();initRadar();renderGame();renderManual();
+try{ if(!localStorage.getItem('sf_tour_done')) setTimeout(startTour,700); }catch(e){}
+
+/* ================= PWA SERVICE WORKER ================= */
+if('serviceWorker'in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#080A0F">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NEXO">
+<meta name="description" content="NEXO Royal Prestige — Radar de inteligencia comercial para el equipo de venta directa: genera prospectos, agenda demostraciones, entrena objeciones y gestiona tu cartera.">
+<title>NEXO Royal Prestige | Inteligencia Comercial</title>
+<!-- 🛡️ Red de seguridad ORASIC (variante lite, no invasiva) — plantilla en guardias/capa1-lite-aviso-no-invasivo.html -->
+<script>
+(function(){
+  var CFG = { empresa: 'ORASIC Lab', app: 'NEXO Royal Prestige', whatsapp: '51999039947' };
+  var shown = false, falla = null;
+  function registrar(msg, donde){ if (falla) return; falla = { msg: (msg==null?'':(''+msg)).slice(0,300), donde: donde || '' }; }
+  function linkWhatsApp(){
+    var f = falla || { msg:'Algo no funcionó como debía', donde:'' };
+    var texto = ['🛠️ Reporte de falla — ' + CFG.empresa, 'App: ' + CFG.app, 'Falla: ' + f.msg, (f.donde ? 'Dónde: ' + f.donde : ''), 'Página: ' + location.href, 'Hora: ' + new Date().toLocaleString(), 'Equipo: ' + navigator.userAgent].filter(Boolean).join('\n');
+    return 'https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(texto);
+  }
+  function showBanner(){
+    if (shown) return; shown = true;
+    try {
+      var o = document.createElement('div');
+      o.setAttribute('style','position:fixed;right:16px;bottom:16px;z-index:2147483647;max-width:300px;background:#111827;border:1px solid rgba(167,139,250,0.35);color:#E5E7EB;border-radius:12px;padding:14px 16px;font-family:Inter,system-ui,"Segoe UI",Roboto,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.4);');
+      o.innerHTML = '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;"><div style="font-size:13px;line-height:1.5;">⚠️ Algo no cargó bien en esta página. Si ves un error, repórtalo con un toque.</div><button id="og-close" style="background:none;border:none;color:#9CA3AF;cursor:pointer;font-size:14px;line-height:1;">✕</button></div><a id="og-wa" href="#" style="display:block;margin-top:10px;color:#22D3EE;font-size:12px;text-decoration:none;font-weight:600;">📲 Reportar por WhatsApp</a>';
+      (document.body||document.documentElement).appendChild(o);
+      var c = document.getElementById('og-close'); if (c) c.onclick = function(){ o.remove(); };
+      var w = document.getElementById('og-wa'); if (w){ w.href = linkWhatsApp(); w.target = '_blank'; w.rel = 'noopener'; }
+    } catch(_){}
+  }
+  window.addEventListener('error', function(e){
+    if (e && e.target && e.target !== window) return;
+    var donde = e.filename ? (e.filename.split('/').pop() + ':' + e.lineno + ':' + e.colno) : '';
+    registrar(e.message, donde); showBanner();
+  }, true);
+  window.addEventListener('unhandledrejection', function(e){
+    var r = e && e.reason; registrar((r && (r.message || r)) || 'Promesa rechazada', ''); showBanner();
+  });
+  window.OG_SAFETY = { registrar: registrar, linkWhatsApp: linkWhatsApp };
+})();
+</script>
+<style>
+:root{
+  color-scheme:dark;
+  /* Paleta corporativa ORASIC Lab (tema 100% oscuro) */
+  --p:#22D3EE; --p2:#0EA5C0; --a:#22D3EE; --a-dark:#0EA5C0;
+  --btn:#22D3EE; --btn2:#0E9FB8;
+  --violet:#A78BFA; --cyan:#22D3EE; --pink:#F472B6; --orange:#FB923C;
+  --bg:#080A0F; --c:#14161F; --card2:#1B1E2A; --t:#E9EBF2; --t2:#C3CAD9; --muted:#8C94A8;
+  --line:#262B3A; --field:#0E1119;
+  --ok:#22D3EE; --ok-bg:rgba(34,211,238,.09); --ok-line:rgba(34,211,238,.28); --ok-hl:rgba(34,211,238,.16);
+  --warn:#FB923C; --warn-bg:rgba(251,146,60,.10); --warn-line:rgba(251,146,60,.30);
+  --info:#F472B6; --info-bg:rgba(244,114,182,.10); --info-line:rgba(244,114,182,.30);
+  --shadow:0 6px 22px rgba(0,0,0,.45); --shadow-sm:0 2px 12px rgba(0,0,0,.32);
+  --radius:16px; --nav-h:72px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:var(--bg);color:var(--t);margin:0;
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom));
+  line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+
+/* HEADER */
+header{
+  background:linear-gradient(135deg,#1C1636,#0B0E16);border-bottom:1px solid #2A2340;
+  color:#fff;padding:18px 20px;padding-top:calc(18px + env(safe-area-inset-top));
+  position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.5);
+}
+.brand{display:flex;align-items:center;gap:12px;max-width:680px;margin:0 auto}
+.logo{width:44px;height:44px;flex:0 0 44px;border-radius:12px;background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(34,211,238,.2));
+  border:1px solid rgba(167,139,250,.4);display:grid;place-items:center;font-size:1.4rem}
+.brand h1{margin:0;font-size:1.15rem;letter-spacing:.3px;font-weight:800;line-height:1.15}
+.brand .sub{font-size:.72rem;opacity:.9;margin-top:2px;font-weight:500}
+
+/* SECCIONES */
+.sec{display:none;padding:20px 16px;max-width:680px;margin:0 auto;animation:fade .25s ease}
+.sec.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.page-title{font-size:1.35rem;font-weight:800;color:var(--p);margin:4px 2px 16px;display:flex;align-items:center;gap:8px}
+
+/* TARJETAS */
+.card{background:var(--c);padding:20px;border-radius:var(--radius);box-shadow:var(--shadow-sm);margin-bottom:16px;border:1px solid var(--line)}
+h3{color:var(--p);margin:0 0 4px;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+.card-hint{color:var(--muted);font-size:.8rem;margin:0 0 8px}
+
+/* FORM */
+label{font-weight:700;font-size:.72rem;color:var(--p);display:block;margin-top:16px;text-transform:uppercase;letter-spacing:.4px}
+input,select,textarea{width:100%;padding:12px 14px;margin:8px 0 0;border:1.5px solid var(--line);border-radius:11px;font-size:1rem;background:var(--field);color:var(--t);font-family:inherit;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--a);outline:none;box-shadow:0 0 0 3px rgba(34,211,238,.22);background:#131722}
+input::placeholder,textarea::placeholder{color:#5C6474}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2322D3EE' d='M6 8 0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+
+.btn{background:linear-gradient(135deg,var(--btn),var(--btn2));color:#05141A;border:none;padding:14px;border-radius:12px;width:100%;font-weight:700;font-size:1rem;cursor:pointer;margin-top:18px;transition:transform .1s,filter .15s;box-shadow:0 4px 16px rgba(34,211,238,.32);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{filter:brightness(1.1)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:linear-gradient(135deg,var(--violet),#7C5CE6);color:#fff;box-shadow:0 4px 16px rgba(139,111,232,.35)}
+.btn.ghost:hover{filter:brightness(1.08)}
+
+/* GRID ESTRATEGIAS */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.opt{background:var(--field);padding:16px 10px;border-radius:13px;text-align:center;cursor:pointer;border:2px solid var(--line);transition:all .15s}
+.opt:hover{border-color:rgba(34,211,238,.5);transform:translateY(-2px)}
+.opt.sel{background:rgba(34,211,238,.12);border-color:var(--a);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
+.opt .ico{font-size:1.7rem;display:block;margin-bottom:6px}
+.opt strong{display:block;color:var(--p);font-size:.9rem}
+.opt small{color:var(--muted);font-size:.7rem;display:block;margin-top:3px}
+
+/* EXPLICACIÓN DE ESTRATEGIA */
+.strat-info{margin-top:14px;background:var(--field);border:1px solid var(--line);border-radius:12px;padding:15px;display:none;animation:fade .2s}
+.strat-info.show{display:block}
+.si-h{font-weight:800;color:var(--p);font-size:.98rem;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.si-row{display:flex;gap:11px;margin-bottom:11px}
+.si-row:last-child{margin-bottom:0}
+.si-ic{flex:0 0 auto;font-size:1.05rem;line-height:1.5}
+.si-t b{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.4px;color:var(--a);margin-bottom:3px}
+.si-t span{font-size:.86rem;color:var(--t2);line-height:1.5}
+
+/* RESULTADO */
+.res{background:var(--ok-bg);border:1px solid var(--ok-line);padding:20px;border-radius:var(--radius);margin-top:18px;display:none}
+.res.show{display:block;animation:fade .3s ease}
+.res h4{color:var(--ok);margin:0 0 14px;font-size:1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.res .rubro-chip{background:var(--ok-hl);color:var(--ok);font-size:.72rem;padding:3px 9px;border-radius:20px;font-weight:700;text-transform:none;letter-spacing:0}
+.row{margin-bottom:15px;padding-bottom:15px;border-bottom:1px dashed rgba(34,211,238,.25)}
+.row:last-of-type{border:none;margin-bottom:0;padding-bottom:0}
+.lbl{font-size:.68rem;color:var(--ok);text-transform:uppercase;font-weight:800;margin-bottom:5px;letter-spacing:.4px}
+.val{font-size:.95rem;color:var(--t2);line-height:1.55}
+.hl{background:var(--ok-hl);padding:2px 6px;border-radius:5px;font-weight:700;color:#67E8F9}
+.copy-btn{margin-top:12px;background:var(--card2);color:var(--ok);border:1.5px solid var(--ok-line);border-radius:10px;padding:9px 14px;font-size:.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.copy-btn:hover{background:var(--ok-bg)}
+
+/* FUENTES DE LEADS */
+.sources{margin-top:18px;border-top:2px dashed rgba(34,211,238,.25);padding-top:16px}
+.sources-title{font-size:.72rem;color:var(--ok);text-transform:uppercase;font-weight:800;letter-spacing:.4px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.sources-sub{font-size:.75rem;color:var(--muted);margin:0 0 12px}
+.src{background:var(--card2);border:1px solid var(--ok-line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.src-h{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--t);font-size:.92rem}
+.src-d{font-size:.8rem;color:var(--muted);margin:5px 0 10px;line-height:1.45}
+.src-actions{display:flex;gap:8px;flex-wrap:wrap}
+.src-actions a,.src-actions .sbtn{flex:1;min-width:130px;text-align:center;text-decoration:none;border-radius:9px;padding:10px;font-size:.8rem;font-weight:700;cursor:pointer;border:1.5px solid transparent}
+.src-go{background:var(--ok);color:#05141A}
+.src-go:hover{filter:brightness(1.1)}
+.src-copy{background:transparent;color:var(--ok);border-color:var(--ok-line)}
+.src-copy:hover{background:var(--ok-bg)}
+
+/* SIMULADOR */
+.cli-bubble{background:var(--card2);padding:15px;border-radius:12px;margin-bottom:14px;border-left:4px solid var(--pink)}
+.cli-bubble strong{color:var(--t)}
+#cliLine{font-style:italic;color:var(--t2)}
+.fb{margin-top:14px;padding:14px;border-radius:11px;display:none}
+.fb.show{display:block;animation:fade .25s}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:.72rem;background:rgba(167,139,250,.12);color:#C4B5FD;padding:4px 10px;border-radius:20px;font-weight:600;border:1px solid var(--line)}
+
+/* LEADS */
+.lead{background:var(--c);padding:14px;border-radius:12px;margin-bottom:10px;border:1px solid var(--line);border-left:4px solid var(--a);box-shadow:var(--shadow-sm)}
+.lead-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.lead-name{font-weight:700;font-size:1rem;color:var(--t)}
+.lead-meta{font-size:.8rem;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.niche-tag{background:var(--info-bg);color:var(--info);font-size:.7rem;padding:2px 9px;border-radius:20px;font-weight:700;border:1px solid var(--info-line)}
+.badge{padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:700;white-space:nowrap}
+.b-nuevo{background:rgba(34,211,238,.15);color:#67E8F9}
+.b-demo{background:rgba(251,146,60,.15);color:#FDBA74}
+.b-cerrado{background:rgba(52,211,153,.15);color:#6EE7B7}
+.b-perdido{background:rgba(148,163,184,.13);color:#94A3B8}
+.lead-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.lead-actions select{width:auto;flex:1;min-width:120px;padding:8px 10px;margin:0;font-size:.82rem}
+.icon-btn{background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:8px 10px;cursor:pointer;font-size:.95rem;line-height:1;transition:background .15s;text-decoration:none;display:inline-flex;color:var(--t)}
+.icon-btn:hover{background:#232838}
+.icon-btn.wa{background:rgba(37,211,102,.16);border-color:rgba(37,211,102,.35)}
+.icon-btn.del:hover{background:rgba(248,113,113,.16);border-color:rgba(248,113,113,.35)}
+.b-contact{background:rgba(167,139,250,.15);color:#C4B5FD}
+
+/* KANBAN (embudo) */
+.kanban{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch}
+.kcol{flex:0 0 84%;max-width:300px;background:var(--field);border:1px solid var(--line);border-radius:14px;padding:12px;border-top:3px solid var(--kc,var(--line))}
+.kcol-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.kcol-t{font-weight:800;font-size:.85rem;color:var(--t)}
+.kcount{background:var(--card2);border:1px solid var(--line);color:var(--muted);font-size:.72rem;font-weight:800;padding:2px 9px;border-radius:20px}
+.kcol .lead{border-left-color:var(--kc);margin-bottom:10px}
+.kcol .lead:last-child{margin-bottom:0}
+.kcol-empty{color:var(--muted);font-size:.78rem;text-align:center;padding:14px 0;opacity:.55}
+@media(min-width:600px){.kcol{flex-basis:47%}}
+
+/* GENERADOR DE NOMBRES (universo) */
+.jogger{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 8px}
+.jchip{font-size:.76rem;background:var(--field);border:1.5px solid var(--line);color:var(--t2);padding:6px 11px;border-radius:20px;cursor:pointer;transition:all .15s}
+.jchip:hover{border-color:rgba(34,211,238,.5)}
+.jchip.on{background:rgba(34,211,238,.14);border-color:var(--cyan);color:#67E8F9;font-weight:700}
+.jogger-hint{font-size:.82rem;color:var(--muted);margin:0 0 4px;min-height:1.1em;font-style:italic}
+.universe-meta{margin-top:14px;font-size:.85rem;color:var(--muted);text-align:center}
+.universe-meta b{color:var(--cyan);font-size:1.1rem}
+
+/* DASHBOARD */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.stat{background:var(--c);border:1px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center;box-shadow:var(--shadow-sm)}
+.stat b{display:block;font-size:1.4rem;color:var(--p);line-height:1}
+.stat span{font-size:.62rem;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.3px}
+
+/* CRECIMIENTO */
+.streak{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(251,146,60,.14),rgba(251,146,60,.05));border:1px solid rgba(251,146,60,.3);border-radius:12px;padding:12px 16px;margin-bottom:16px}
+.streak .fire{font-size:1.8rem}
+.streak b{font-size:1.3rem;color:var(--warn)}
+.streak span{font-size:.78rem;color:#FDBA74}
+.entry{background:var(--c);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+.entry-date{font-size:.68rem;color:var(--muted);text-transform:uppercase;font-weight:800;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.entry-line{font-size:.9rem;margin-bottom:6px}
+.entry-line .tag{font-weight:700;font-size:.7rem;padding:1px 7px;border-radius:6px;margin-right:6px}
+.tag-win{background:var(--ok-hl);color:#67E8F9}
+.tag-learn{background:rgba(167,139,250,.16);color:#C4B5FD}
+
+/* MANUAL */
+.man-item{border-bottom:1px solid var(--line);padding:14px 0}
+.man-item:last-child{border:none;padding-bottom:0}
+.man-item h5{margin:0 0 5px;color:var(--p);font-size:.92rem;display:flex;align-items:center;gap:7px}
+.man-item p{margin:0;font-size:.88rem;color:var(--t2)}
+
+/* DEMOS */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.demo{background:var(--c);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow-sm);border-left:4px solid var(--cyan)}
+.demo.done{border-left-color:#34D399}
+.demo.warn{border-left-color:var(--warn)}
+.demo-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.demo-name{font-weight:700;font-size:1rem;color:var(--t)}
+.demo-meta{font-size:.8rem;color:var(--muted);margin-top:5px;line-height:1.6}
+.demo-meta b{color:var(--t);font-weight:600}
+.dbadge{padding:4px 10px;border-radius:20px;font-size:.66rem;font-weight:800;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
+.d-hoy{background:rgba(244,114,182,.18);color:#F9A8D4}
+.d-manana{background:rgba(251,146,60,.16);color:#FDBA74}
+.d-fecha{background:rgba(34,211,238,.14);color:#67E8F9}
+.d-vencida{background:rgba(248,113,113,.18);color:#FCA5A5}
+.d-ok{background:rgba(52,211,153,.16);color:#6EE7B7}
+.d-gris{background:rgba(148,163,184,.12);color:#94A3B8}
+.demo-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.demo-actions select{width:auto;flex:1;min-width:130px;padding:8px 10px;margin:0;font-size:.82rem}
+
+/* VACÍO */
+.empty{text-align:center;color:var(--muted);padding:24px 12px}
+.empty .em{font-size:2rem;display:block;margin-bottom:8px;opacity:.6}
+.empty p{margin:0;font-size:.88rem}
+
+/* NAV */
+nav{position:fixed;bottom:0;left:0;width:100%;background:rgba(9,11,17,.96);backdrop-filter:blur(8px);display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));border-top:1px solid var(--line);z-index:100;box-shadow:0 -4px 16px rgba(0,0,0,.4)}
+nav button{background:none;border:none;font-size:.6rem;color:#7A8296;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 2px;border-radius:10px;transition:color .15s;font-weight:600;flex:1;min-width:0}
+nav button .nico{font-size:1.28rem}
+nav button.active{color:var(--a)}
+
+/* TOAST */
+#toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 16px);transform:translateX(-50%) translateY(20px);background:#1E2433;color:#fff;border:1px solid var(--line);padding:12px 20px;border-radius:12px;font-size:.88rem;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:all .3s;z-index:200;max-width:90%}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(min-width:560px){.stats{gap:12px}}
+
+/* TOUR GUIADO */
+.tour-backdrop{position:fixed;inset:0;background:rgba(3,4,8,.74);z-index:300;display:none}
+.tour-backdrop.show{display:block}
+body.touring nav{z-index:320;pointer-events:none}
+.nav-hl{position:relative}
+.nav-hl::after{content:'';position:absolute;inset:-4px -3px;border:2px solid var(--a);border-radius:12px;animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.tour-card{position:fixed;left:50%;bottom:calc(var(--nav-h) + 22px);transform:translateX(-50%);width:calc(100% - 32px);max-width:420px;background:var(--c);border:1px solid var(--line);border-radius:18px;box-shadow:0 14px 44px rgba(0,0,0,.6);z-index:330;padding:22px;display:none;animation:fade .25s}
+.tour-card.show{display:block}
+.tour-emoji{font-size:2rem;line-height:1}
+.tour-card h4{margin:8px 0 6px;color:var(--p);font-size:1.15rem}
+.tour-card p{margin:0;color:var(--t2);font-size:.95rem;line-height:1.55}
+.tour-dots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px}
+.tour-dots i{width:7px;height:7px;border-radius:50%;background:var(--line);transition:all .2s}
+.tour-dots i.on{background:var(--a);width:20px;border-radius:4px}
+.tour-btns{display:flex;gap:8px;align-items:center;margin-top:14px}
+.tour-btns .spacer{flex:1}
+.t-skip{background:none;border:none;color:var(--muted);font-size:.82rem;cursor:pointer;font-weight:600;padding:8px 4px}
+.t-btn{border:none;border-radius:10px;padding:11px 18px;font-weight:700;font-size:.9rem;cursor:pointer}
+.t-prev{background:var(--card2);color:var(--p);border:1.5px solid var(--line)}
+.t-next{background:linear-gradient(135deg,var(--btn),var(--btn2));color:#05141A}
+.t-mute{position:absolute;top:14px;right:14px;background:var(--card2);border:1px solid var(--line);border-radius:9px;width:36px;height:36px;font-size:1rem;cursor:pointer;line-height:1}
+.man-tour{background:linear-gradient(135deg,var(--violet),#7C5CE6);color:#fff;border:none;border-radius:12px;padding:13px;width:100%;font-weight:700;font-size:.95rem;cursor:pointer;margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px}
+.man-tour:hover{filter:brightness(1.08)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">🎯</div>
+    <div>
+      <h1>NEXO Royal Prestige</h1>
+      <div class="sub">Radar de Inteligencia Comercial</div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 1. RADAR ============ -->
+<section id="radar" class="sec active">
+  <div class="page-title">📡 Radar de Oportunidades</div>
+  <div class="card">
+    <h3>Genera prospectos hoy</h3>
+    <p class="card-hint">Elige tu producto Royal Prestige, a qué cliente apuntas y tu zona.</p>
+
+    <label for="prod">Producto Royal Prestige</label>
+    <select id="prod" onchange="onProdChange()">
+      <option value="Batería de cocina Royal Prestige" selected>Batería de cocina (ollas)</option>
+      <option value="Sistema de purificación de agua Royal Prestige">Sistema de agua / purificador</option>
+      <option value="juego de cuchillos Royal Prestige">Cuchillería</option>
+      <option value="vajilla Royal Prestige">Vajilla / porcelana</option>
+      <option value="__otro__">✏️ Otro producto Royal Prestige…</option>
+    </select>
+    <input type="text" id="prodOther" placeholder="Escribe el producto Royal Prestige..." style="display:none">
+
+    <label for="niche">Tu cliente objetivo</label>
+    <select id="niche" onchange="onNicheChange()">
+      <option value="" disabled selected>Elige tu cliente...</option>
+      <option value="familias">Familias / hogares</option>
+      <option value="amas de casa">Amas de casa</option>
+      <option value="recién casados">Recién casados / novios</option>
+      <option value="parejas jóvenes">Parejas jóvenes</option>
+      <option value="familias con hijos">Familias con hijos</option>
+      <option value="profesionales jóvenes">Profesionales jóvenes</option>
+      <option value="__otro__">✏️ Otro (escribir)…</option>
+    </select>
+    <input type="text" id="nicheOther" placeholder="Escribe tu cliente o segmento..." style="display:none">
+
+    <label for="city">Ciudad / zona <span style="font-weight:400;text-transform:none;opacity:.7">(opcional)</span></label>
+    <select id="city" onchange="onCityChange()">
+      <option value="" selected>Todo el Perú</option>
+      <option value="Lima">Lima</option>
+      <option value="Arequipa">Arequipa</option>
+      <option value="Trujillo">Trujillo</option>
+      <option value="Chiclayo">Chiclayo</option>
+      <option value="Piura">Piura</option>
+      <option value="Cusco">Cusco</option>
+      <option value="Huancayo">Huancayo</option>
+      <option value="Iquitos">Iquitos</option>
+      <option value="Tacna">Tacna</option>
+      <option value="Juliaca">Juliaca</option>
+      <option value="Cajamarca">Cajamarca</option>
+      <option value="Ica">Ica</option>
+      <option value="Pucallpa">Pucallpa</option>
+      <option value="__otro__">✏️ Otra ciudad / zona…</option>
+    </select>
+    <input type="text" id="cityOther" placeholder="Escribe tu ciudad o zona..." style="display:none">
+
+    <label>Estrategia de prospección <span style="font-weight:400;text-transform:none;opacity:.7">— toca una para ver cómo funciona</span></label>
+    <div class="grid" role="radiogroup" aria-label="Estrategia">
+      <div class="opt" role="radio" tabindex="0" data-strat="mapeo"><span class="ico">🗺️</span><strong>Mapeo de Calor</strong><small>Dónde encontrarlos físicamente</small></div>
+      <div class="opt" role="radio" tabindex="0" data-strat="scanner"><span class="ico">🔍</span><strong>Escáner Digital</strong><small>Señales de dolor en redes</small></div>
+      <div class="opt" role="radio" tabindex="0" data-strat="alianzas"><span class="ico">🤝</span><strong>Alianzas B2B</strong><small>Quién ya tiene a tu cliente</small></div>
+      <div class="opt" role="radio" tabindex="0" data-strat="referidos"><span class="ico">🔄</span><strong>Referidos</strong><small>De tus clientes actuales</small></div>
+    </div>
+
+    <div id="stratInfo" class="strat-info"></div>
+
+    <button class="btn" onclick="gen()">🚀 Generar estrategia</button>
+  </div>
+
+  <div id="resBox" class="res">
+    <h4><span>✅</span><span id="rTitle">Estrategia detectada</span></h4>
+    <div class="row"><div class="lbl" id="lbl0"></div><div class="val" id="val0"></div></div>
+    <div class="row"><div class="lbl" id="lbl1"></div><div class="val" id="val1"></div></div>
+    <div class="row">
+      <div class="lbl" id="lbl2"></div>
+      <div class="val" id="val2"></div>
+      <button class="copy-btn" onclick="copyScript()">📋 Copiar guion</button>
+    </div>
+    <div id="srcBox" class="sources" style="display:none"></div>
+    <button class="btn ghost" onclick="prospectoToSistema()">💾 Registrar prospecto de este rubro</button>
+  </div>
+</section>
+
+<!-- ============ 2. SIMULADOR ============ -->
+<section id="sim" class="sec">
+  <div class="page-title">🎭 Simulador de Objeciones</div>
+  <div class="card">
+    <h3>Practica antes de vender</h3>
+    <p class="card-hint">Elige una objeción común y ensaya tu respuesta. Recibirás feedback al instante.</p>
+    <label for="scen">Escenario</label>
+    <select id="scen">
+      <option value="price">💰 "Es muy caro"</option>
+      <option value="time">⏳ "No tengo tiempo"</option>
+      <option value="trust">🛡️ "No confío"</option>
+      <option value="spouse">👫 "Lo tengo que consultar"</option>
+    </select>
+    <button class="btn" onclick="startSim()">🎬 Iniciar escena</button>
+  </div>
+
+  <div class="card" id="simArea" style="display:none">
+    <div class="cli-bubble"><strong>👤 Cliente:</strong> <span id="cliLine"></span></div>
+    <label for="userResp">Tu respuesta</label>
+    <textarea id="userResp" rows="3" placeholder="Escribe cómo responderías..."></textarea>
+    <button class="btn" onclick="checkSim()">🧠 Analizar respuesta</button>
+    <div id="fbBox" class="fb"></div>
+  </div>
+</section>
+
+<!-- ============ 3. SISTEMA / CARTERA ============ -->
+<section id="sys" class="sec">
+  <div class="page-title">🗂️ Mi Embudo</div>
+
+  <div class="stats">
+    <div class="stat"><b id="stNuevo">0</b><span>Nuevos</span></div>
+    <div class="stat"><b id="stDemo">0</b><span>Demos</span></div>
+    <div class="stat"><b id="stCerrado">0</b><span>Cerrados</span></div>
+    <div class="stat"><b id="stTotal">0</b><span>Total</span></div>
+  </div>
+
+  <!-- CAMINO 2: GENERAR NOMBRES (universo / lista de 100) -->
+  <div class="card">
+    <h3>🧠 Genera tu universo</h3>
+    <p class="card-hint">Camino 2: la "Lista de 100". Anota TODOS los que conoces; el embudo decantará a los que compran.</p>
+    <label>Disparadores de memoria — toca uno para recordar</label>
+    <div class="jogger" id="joggerChips"></div>
+    <div class="jogger-hint" id="joggerHint">Elige una categoría para recordar nombres, o escríbelos directo abajo.</div>
+    <label for="namesInput">Nombres (uno por línea)</label>
+    <textarea id="namesInput" rows="4" placeholder="María Quispe&#10;Carlos, el de la esquina&#10;Sra. Rosa del gimnasio..."></textarea>
+    <button class="btn" onclick="addNames()">➕ Agregar todos al embudo</button>
+    <div class="universe-meta">Tu universo: <b id="uniCount">0</b> / meta 100 nombres</div>
+  </div>
+
+  <!-- CAMINO 1: ALTA INDIVIDUAL (desde el Radar/fuentes o manual) -->
+  <div class="card">
+    <h3>➕ Nuevo prospecto</h3>
+    <p class="card-hint">Camino 1: agrega uno a uno (por ejemplo, los que encontraste en las fuentes del Radar).</p>
+    <label for="lName">Nombre</label>
+    <input type="text" id="lName" placeholder="Nombre del cliente o negocio">
+    <label for="lNiche">Cliente / segmento</label>
+    <input type="text" id="lNiche" placeholder="Ej: familias, amas de casa, recién casados...">
+    <label for="lContact">Teléfono / WhatsApp</label>
+    <input type="tel" id="lContact" inputmode="tel" placeholder="Ej: 999 039 947">
+    <label for="lStatus">Estado</label>
+    <select id="lStatus">
+      <option value="Nuevo">🆕 Nuevo</option>
+      <option value="Contactado">📞 Contactado</option>
+      <option value="Demo">📅 Demo pendiente</option>
+      <option value="Cerrado">✅ Cerrado</option>
+      <option value="Perdido">💤 Perdido</option>
+    </select>
+    <button class="btn" onclick="addLead()">➕ Agregar al embudo</button>
+  </div>
+
+  <!-- EMBUDO KANBAN -->
+  <div class="card">
+    <h3>📊 Embudo de prospectos</h3>
+    <p class="card-hint">Mueve cada prospecto con su selector. De izquierda (universo) a derecha (venta cerrada).</p>
+    <div id="leadsList"></div>
+  </div>
+</section>
+
+<!-- ============ 3B. DEMOS ============ -->
+<section id="demos" class="sec">
+  <div class="page-title">📅 Demostraciones</div>
+
+  <div class="stats">
+    <div class="stat"><b id="dProx">0</b><span>Próximas</span></div>
+    <div class="stat"><b id="dReal">0</b><span>Realizadas</span></div>
+    <div class="stat"><b id="dCerr">0</b><span>Cerradas</span></div>
+    <div class="stat"><b id="dRate">0%</b><span>Cierre</span></div>
+  </div>
+
+  <div class="card">
+    <h3>🍲 Agendar demostración</h3>
+    <p class="card-hint">El corazón de la venta: agenda, confirma por WhatsApp y da seguimiento.</p>
+    <label for="dName">Cliente / anfitrión</label>
+    <input type="text" id="dName" placeholder="Nombre de quien recibe la demo">
+    <label for="dContact">WhatsApp</label>
+    <input type="tel" id="dContact" inputmode="tel" placeholder="Ej: 999 039 947">
+    <div class="row2">
+      <div><label for="dDate">Fecha</label><input type="date" id="dDate"></div>
+      <div><label for="dTime">Hora</label><input type="time" id="dTime"></div>
+    </div>
+    <label for="dPlace">Lugar / dirección</label>
+    <input type="text" id="dPlace" placeholder="Casa del cliente, dirección...">
+    <label for="dGuests">N° de invitados <span style="font-weight:400;text-transform:none;opacity:.7">(más = mejor)</span></label>
+    <input type="number" id="dGuests" inputmode="numeric" min="1" placeholder="Ej: 4">
+    <label for="dNotes">Notas <span style="font-weight:400;text-transform:none;opacity:.7">(qué cocinar, alergias...)</span></label>
+    <textarea id="dNotes" rows="2" placeholder="Ej: cocinar arroz + pollo, hija vegetariana..."></textarea>
+    <button class="btn" onclick="addDemo()">📅 Agendar demo</button>
+  </div>
+
+  <div class="card">
+    <h3>🗓️ Mis demostraciones</h3>
+    <p class="card-hint">Ordenadas por fecha. Confirma un día antes y haz seguimiento tras la demo.</p>
+    <div id="demosList"></div>
+  </div>
+</section>
+
+<!-- ============ 4. CRECIMIENTO ============ -->
+<section id="grow" class="sec">
+  <div class="page-title">🌱 Diario de Crecimiento</div>
+
+  <div class="streak">
+    <span class="fire">🔥</span>
+    <div><b id="streakDays">0</b> <span id="streakLabel">días de registro</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Reflexión de hoy</h3>
+    <label for="winIn">🏆 Victoria del día</label>
+    <textarea id="winIn" rows="2" placeholder="Ej: Cerré una alianza con una tienda del rubro..."></textarea>
+    <label for="learnIn">📖 Aprendizaje</label>
+    <textarea id="learnIn" rows="2" placeholder="Ej: Hablé muy rápido al inicio, debo pausar más..."></textarea>
+    <button class="btn" onclick="saveGrow()">💾 Guardar reflexión</button>
+  </div>
+
+  <div id="growHist"></div>
+</section>
+
+<!-- ============ 5. MANUAL ============ -->
+<section id="man" class="sec">
+  <div class="page-title">📘 Manual</div>
+  <div class="card">
+    <h3>Cómo usar NEXO Royal Prestige</h3>
+    <div class="man-item">
+      <h5>📡 Radar de Oportunidades</h5>
+      <p>Elige tu producto Royal Prestige y tu cliente objetivo, toca una de las 4 estrategias y genera un plan concreto para conseguir clientes:</p>
+    </div>
+    <div class="man-item"><h5>🗺️ Mapeo de Calor</h5><p>Te dice <em>dónde</em> encontrar físicamente a tu nicho: sus locales, ferias, gremios y zonas de mayor concentración.</p></div>
+    <div class="man-item"><h5>🔍 Escáner Digital</h5><p>Te dice <em>qué</em> buscar en redes: los grupos, hashtags y frases de dolor de tu rubro para detectar prospectos calientes.</p></div>
+    <div class="man-item"><h5>🤝 Alianzas B2B</h5><p>Te sugiere <em>quién</em> ya tiene la confianza de tu nicho sin competir contigo, para un intercambio de referidos.</p></div>
+    <div class="man-item"><h5>🔄 Referidos</h5><p>Te da el guion exacto para pedir contactos a quien ya te compró, dentro del mismo rubro.</p></div>
+    <div class="man-item"><h5>🎭 Simulador</h5><p>Ensaya las objeciones más comunes antes de vender. Regla de oro: valida la emoción del cliente <em>antes</em> de rebatir.</p></div>
+    <div class="man-item"><h5>🗂️ Embudo (dos caminos)</h5><p><strong>Camino 1:</strong> trae prospectos de las fuentes del Radar, uno a uno. <strong>Camino 2:</strong> genera tu universo con la "Lista de 100" (los disparadores te ayudan a recordar a todos los que conoces). Ambos caen en el mismo <strong>embudo kanban</strong>: mueve cada prospecto de Nuevo → Contactado → Demo → Cerrado y escríbeles por WhatsApp con un toque.</p></div>
+    <div class="man-item"><h5>📅 Demostraciones</h5><p>El corazón de la venta de ollas: agenda la demo de cocina, confírmala por WhatsApp un día antes (mensaje automático), y al terminar cambia el estado a Realizada o Cerrada. La app calcula tu % de cierre.</p></div>
+    <div class="man-item"><h5>🌱 Crecimiento</h5><p>Anota una victoria y un aprendizaje al día. Tu racha 🔥 mide la constancia, que es lo que construye resultados.</p></div>
+    <div class="man-item"><h5>🔒 Tus datos</h5><p>La cartera, las demos y el diario se guardan solo en este dispositivo (almacenamiento del navegador). No se envían a ningún servidor.</p></div>
+    <button class="man-tour" onclick="startTour()">▶️ Ver tour guiado (con voz)</button>
+  </div>
+</section>
+
+<!-- ============ NAV ============ -->
+<nav>
+  <button onclick="showSec('radar')" class="active" id="b-radar"><span class="nico">📡</span>Radar</button>
+  <button onclick="showSec('sim')" id="b-sim"><span class="nico">🎭</span>Práctica</button>
+  <button onclick="showSec('sys')" id="b-sys"><span class="nico">🗂️</span>Embudo</button>
+  <button onclick="showSec('demos')" id="b-demos"><span class="nico">📅</span>Demos</button>
+  <button onclick="showSec('grow')" id="b-grow"><span class="nico">🌱</span>Crecer</button>
+  <button onclick="showSec('man')" id="b-man"><span class="nico">📘</span>Manual</button>
+</nav>
+
+<!-- ============ TOUR GUIADO ============ -->
+<div id="tourBackdrop" class="tour-backdrop" onclick="event.stopPropagation()"></div>
+<div id="tourCard" class="tour-card">
+  <button class="t-mute" id="tMute" onclick="toggleTTS()" title="Activar/silenciar voz" aria-label="Voz">🔊</button>
+  <div class="tour-emoji" id="tEmoji">👋</div>
+  <h4 id="tTitle"></h4>
+  <p id="tText"></p>
+  <div class="tour-dots" id="tDots"></div>
+  <div class="tour-btns">
+    <button class="t-skip" onclick="endTour()">Saltar</button>
+    <span class="spacer"></span>
+    <button class="t-btn t-prev" id="tPrev" onclick="tourPrev()">Anterior</button>
+    <button class="t-btn t-next" id="tNext" onclick="tourNext()">Siguiente</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+/* ============ PERSISTENCIA ============ */
+const DB = { leads:'nexo_leads_v2', growth:'nexo_growth_v2', demos:'nexo_demos_v1' };
+function load(key){ try{ return JSON.parse(localStorage.getItem(key)) || []; }catch(e){ return []; } }
+function save(key,data){ try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){ toast('⚠️ No se pudo guardar'); } }
+let leads = load(DB.leads);
+let growth = load(DB.growth);
+let demos = load(DB.demos);
+
+/* ============ UTILIDADES ============ */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2200); }
+function showSec(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('b-'+id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============ RADAR ============ */
+let curStrat='';
+let lastNiche='';
+
+/* Biblioteca de rubros: enriquece los resultados según el nicho escrito.
+   Si no hay coincidencia, se usa un perfil genérico parametrizado. */
+const NICHE_LIB = [
+  { m:/famili|hogar|ama de casa|amas de casa|mam[aá]|reci[eé]n casad|pareja|\bolla|cocina|consumidor final|se[ñn]ora|vecin/i,
+    lugares:'condominios y urbanizaciones con señales de poder adquisitivo (autos nuevos, casas mejoradas, luces encendidas al anochecer), además de ferias, parroquias y eventos familiares. Horario ideal: 4-7 PM entre semana y sábados por la mañana',
+    digital:'Facebook Marketplace de tu ciudad, grupos locales de compra/venta y de cocina/recetas, y comunidades de mamás emprendedoras',
+    aliados:'mueblerías, tiendas de electrodomésticos, wedding planners, gasfiteros/instaladores y bazares de cocina',
+    dolor:'"gasto mucho en gas", "cocinar me quita tiempo", "quiero algo que dure para mi familia"' },
+  { m:/gimnasi|fitness|\bgym\b|entren|crossfit|pesas|deport/i,
+    lugares:'gimnasios de barrio, boxes de crossfit, parques con máquinas, tiendas de suplementos y ferias deportivas',
+    digital:'grupos de Facebook de fitness, hashtags como #GymPeru #FitnessLima y comentarios en reels de rutinas',
+    aliados:'nutricionistas, tiendas de suplementos, fisioterapeutas y marcas de ropa deportiva',
+    dolor:'"me estanqué", "no bajo de peso", "no tengo tiempo de entrenar"' },
+  { m:/belleza|sal[oó]n|spa|est[eé]tic|u[ñn]as|peluqu|cabello|maquilla|barber|cosmet/i,
+    lugares:'salones de belleza, spas, barberías, ferias de novias y galerías de productos de belleza',
+    digital:'grupos de emprendedoras de belleza, hashtags #NailsPeru #BellezaLima y TikToks de tutoriales',
+    aliados:'tiendas de cosméticos, fotógrafos, wedding planners y organizadores de eventos',
+    dolor:'"pierdo clientas", "no me alcanza la agenda", "quiero cobrar más"' },
+  { m:/salud|cl[ií]nic|dental|odontolog|m[eé]dic|nutri|psicolog|terapia|consultorio|fisio/i,
+    lugares:'centros médicos, boticas, ferias de salud y consultorios de la zona',
+    digital:'grupos de pacientes por especialidad, reseñas en Google/Facebook y hashtags de salud',
+    aliados:'farmacias, laboratorios, seguros y otros especialistas complementarios',
+    dolor:'"me da miedo el tratamiento", "es muy caro", "no consigo cita"' },
+  { m:/restaur|comida|\bfood\b|cafeter|gastro|men[uú]|cevich|poller[ií]a|panader|delivery/i,
+    lugares:'restaurantes, mercados, ferias gastronómicas y zonas de oficinas a la hora de almuerzo',
+    digital:'grupos de foodies, hashtags #ComidaPeruana #DondeComerLima y las apps de delivery',
+    aliados:'proveedores de insumos, apps de delivery, oficinas cercanas y organizadores de eventos',
+    dolor:'"vendo poco entre semana", "el delivery me come la ganancia", "no fidelizo clientes"' },
+  { m:/inmobil|bienes ra[ií]c|departament|\bcasa|lote|construc|arquitect|remodel/i,
+    lugares:'ferias inmobiliarias, casetas de venta, urbanizaciones nuevas y municipios',
+    digital:'grupos de compra/venta de inmuebles, portales y hashtags #DepaEnVentaLima',
+    aliados:'bancos, notarías, mueblerías, decoradores y estudios de arquitectura',
+    dolor:'"no consigo crédito", "los trámites son un caos", "no sé si es buena inversión"' },
+  { m:/educ|colegio|academ|curso|instituto|profesor|clases|idioma|ingl[eé]s|universidad/i,
+    lugares:'colegios, academias, ferias vocacionales, bibliotecas y centros culturales',
+    digital:'grupos de padres y estudiantes, foros de admisión y hashtags educativos',
+    aliados:'librerías, colegios, editoriales y centros de idiomas',
+    dolor:'"mi hijo no rinde", "no sé qué carrera elegir", "las mensualidades son altas"' },
+  { m:/retail|moda|ropa|tienda|boutique|zapat|accesor|textil|gamarra/i,
+    lugares:'galerías comerciales (Gamarra, Polvos Azules), ferias y centros comerciales',
+    digital:'marketplaces, grupos de compra/venta y hashtags #ModaPeru #GamarraStyle',
+    aliados:'proveedores textiles, influencers de moda, couriers y tiendas complementarias',
+    dolor:'"tengo stock parado", "la competencia baja precios", "no vendo online"' },
+  { m:/b2b|empresa|corporativ|software|saas|consultor|agencia|contab|legal|abogad|log[ií]stic|industr/i,
+    lugares:'cámaras de comercio, coworkings, eventos empresariales y parques industriales',
+    digital:'LinkedIn filtrando por cargo y empresa, grupos de gremios y hashtags del sector',
+    aliados:'estudios contables, agencias, gremios empresariales y proveedores de TI',
+    dolor:'"perdemos tiempo en tareas manuales", "no tenemos control de la data", "queremos crecer sin contratar más"' }
+];
+function nicheProfile(niche){
+  const n = niche.trim();
+  const found = NICHE_LIB.find(x=>x.m.test(n));
+  if(found) return found;
+  if(RP_ONLY) return NICHE_LIB[0]; // Royal Prestige vende a hogares → usa el perfil de familias
+  return {
+    lugares:`los puntos donde tu nicho «${n}» ya se reúne o trabaja: sus locales, gremios, ferias del rubro y proveedores que los visitan`,
+    digital:`grupos de Facebook y hashtags de «${n}», más los comentarios en las cuentas grandes del sector`,
+    aliados:`negocios que YA atienden a «${n}» sin competir contigo (proveedores y servicios complementarios)`,
+    dolor:`las frases de queja típicas de «${n}»`
+  };
+}
+
+const STRAT_META = {
+  mapeo:   { name:'Mapeo de Calor', labels:['📍 Dónde ir','🎯 Cómo filtrar','🗣️ Guion de apertura'] },
+  scanner: { name:'Escáner Digital', labels:['🔎 Qué buscar','🎯 Señales de dolor','💬 Mensaje directo'] },
+  alianzas:{ name:'Alianzas B2B', labels:['🤝 Aliados objetivo','🎯 Cómo proponerlo','🗣️ Pitch de alianza'] },
+  referidos:{ name:'Referidos', labels:['🔄 A quién pedir','🎯 Cuándo y cómo','🗣️ Guion de referido'] }
+};
+
+function buildStrategy(strat, product, niche, prof){
+  const P = `<span class='hl'>${esc(product)}</span>`;
+  const N = esc(niche);
+  if(strat==='mapeo') return [
+    `Concéntrate en ${esc(prof.lugares)}.`,
+    `Ve en la hora de mayor movimiento del rubro y prioriza a quienes muestran actividad reciente (local con clientes, inversión visible, personal atendiendo). Lleva tarjetas y una demo lista para mostrar.`,
+    `"Hola, trabajo con ${N} en la zona y ayudo con ${P}. ¿Le muestro en 2 minutos cómo le ahorraría tiempo o dinero?"`
+  ];
+  if(strat==='scanner') return [
+    `Rastrea a tu nicho ${N} en ${esc(prof.digital)}.`,
+    `Filtra las publicaciones con frases de dolor como ${esc(prof.dolor)}. Quien se queja hoy es tu prospecto caliente de hoy.`,
+    `"Hola 👋 vi tu publicación sobre ${N}. Justo ayudo con eso mediante ${P}. ¿Te comparto cómo lo resolvió alguien de tu mismo rubro?"`
+  ];
+  if(strat==='alianzas') return [
+    `Tus aliados ideales: ${esc(prof.aliados)}.`,
+    `Elige 5 que ya tengan la confianza de ${N} y no compitan contigo. Propón un intercambio de referidos medible, con una meta semanal.`,
+    `"Ambos atendemos a ${N} sin competir. Si me refieres clientes para ${P}, yo te derivo a los míos. ¿Armamos la alianza esta semana?"`
+  ];
+  return [
+    `Pide referidos a tus clientes felices de ${N}. El mejor prospecto se parece al que ya te compró.`,
+    `Hazlo dentro de las 48 horas post-venta, cuando la emoción está alta. Pide nombres concretos, no un vago "si conoces a alguien".`,
+    `"Gracias por confiar en ${P}. ¿Conoces a 2 personas de ${N} tan exigentes como tú que merezcan lo mismo? Pásame sus nombres y yo me presento."`
+  ];
+}
+
+/* Explicación de cada nivel/estrategia: qué es, cómo se hace y qué información entrega */
+const STRAT_EXPLAIN = {
+  mapeo:{ title:'🗺️ Mapeo de Calor',
+    que:'Prospección física: te dice DÓNDE están tus clientes en el mundo real, listos para abordar en persona. Ideal para venta directa (como las ollas Royal Prestige).',
+    como:'Vas a las zonas y horarios que NEXO te marca, llevas tus tarjetas y una demo lista, y abordas cara a cara priorizando las mejores señales.',
+    sale:'Los lugares exactos, cómo filtrar a los mejores prospectos, un guion de apertura, y fuentes con un clic (Google Maps del rubro o Facebook Marketplace) que abren listas reales con dirección y teléfono.'},
+  scanner:{ title:'🔍 Escáner Digital',
+    que:'Prospección en redes: detecta a quien YA está publicando el dolor o la necesidad que tú resuelves. Son prospectos "calientes".',
+    como:'Entras a los grupos y hashtags que NEXO te da, filtras las publicaciones con frases de queja, y escribes por mensaje directo con la plantilla lista.',
+    sale:'Dónde buscar (Facebook, Instagram, TikTok y LinkedIn), las señales de dolor a filtrar, un mensaje directo listo para pegar, y enlaces que abren esas búsquedas al instante.'},
+  alianzas:{ title:'🤝 Alianzas B2B',
+    que:'Prospección por socios: en vez de buscar cliente por cliente, te alías con negocios que YA tienen la confianza de tu nicho y no compiten contigo.',
+    como:'Contactas a los aliados que NEXO sugiere y les propones un intercambio de referidos con el pitch ya redactado y una meta semanal.',
+    sale:'Qué tipo de aliados buscar, cómo proponer la alianza paso a paso, un pitch listo, y enlaces (Google Maps y LinkedIn) para encontrarlos.'},
+  referidos:{ title:'🔄 Referidos',
+    que:'Prospección por recomendación: el cliente que ya te compró te trae a los siguientes, que se le parecen y confían más rápido.',
+    como:'Dentro de las 48 horas después de la venta, le pides 2 nombres concretos a cada cliente feliz usando el guion listo.',
+    sale:'A quién pedir, cuándo y cómo hacerlo, un guion de referido listo, y un acceso directo a tu cartera de clientes cerrados.'}
+};
+function renderStratInfo(strat){
+  const e=STRAT_EXPLAIN[strat]; const box=document.getElementById('stratInfo');
+  if(!e){ box.classList.remove('show'); return; }
+  box.innerHTML = `<div class="si-h">${e.title}</div>
+    <div class="si-row"><span class="si-ic">💡</span><div class="si-t"><b>Qué es</b><span>${esc(e.que)}</span></div></div>
+    <div class="si-row"><span class="si-ic">🚶</span><div class="si-t"><b>Cómo se hace</b><span>${esc(e.como)}</span></div></div>
+    <div class="si-row"><span class="si-ic">📄</span><div class="si-t"><b>Qué información te dará NEXO</b><span>${esc(e.sale)}</span></div></div>`;
+  box.classList.add('show');
+}
+document.querySelectorAll('.opt').forEach(el=>{
+  const pick=()=>{
+    curStrat=el.dataset.strat;
+    document.querySelectorAll('.opt').forEach(e=>{e.classList.remove('sel');e.setAttribute('aria-checked','false');});
+    el.classList.add('sel'); el.setAttribute('aria-checked','true');
+    renderStratInfo(curStrat);
+  };
+  el.addEventListener('click',pick);
+  el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();} });
+});
+
+/* Interruptor: true = app exclusiva Royal Prestige (venta a hogares).
+   Para la futura versión multi-rubro, cambiar a false y restaurar los rubros de negocio en el <select> #niche. */
+const RP_ONLY = true;
+
+// Manejo genérico de "Otro (escribir)" para los desplegables
+function toggleOther(selId, otherId){
+  const sel=document.getElementById(selId); const other=document.getElementById(otherId);
+  if(sel.value==='__otro__'){ other.style.display='block'; other.focus(); }
+  else{ other.style.display='none'; }
+}
+function valOf(selId, otherId){
+  const sel=document.getElementById(selId);
+  if(sel.value==='__otro__') return document.getElementById(otherId).value.trim();
+  return sel.value.trim();
+}
+function onNicheChange(){ toggleOther('niche','nicheOther'); }
+function onProdChange(){ toggleOther('prod','prodOther'); }
+function onCityChange(){ toggleOther('city','cityOther'); }
+function currentNiche(){ return valOf('niche','nicheOther'); }
+function currentProduct(){ return valOf('prod','prodOther'); }
+function currentCity(){ return valOf('city','cityOther'); }
+
+function gen(){
+  const product = currentProduct();
+  const niche = currentNiche();
+  const city = currentCity();
+  if(!product){ toast('Elige tu producto Royal Prestige'); document.getElementById('prod').focus(); return; }
+  if(!niche){ toast('Elige tu cliente objetivo'); document.getElementById('niche').focus(); return; }
+  if(!curStrat){ toast('Elige una estrategia'); return; }
+
+  lastNiche = niche;
+  const prof = nicheProfile(niche);
+  const meta = STRAT_META[curStrat];
+  const parts = buildStrategy(curStrat, product, niche, prof);
+
+  document.getElementById('rTitle').innerHTML = esc(meta.name) + ' <span class="rubro-chip">'+esc(niche)+'</span>';
+  for(let i=0;i<3;i++){
+    document.getElementById('lbl'+i).textContent = meta.labels[i];
+    document.getElementById('val'+i).innerHTML = parts[i];
+  }
+  renderSources(curStrat, product, niche, city);
+  const rb=document.getElementById('resBox');
+  rb.classList.add('show');
+  rb.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function copyScript(){
+  const text = document.getElementById('val2').innerText.replace(/^"|"$/g,'').trim();
+  navigator.clipboard?.writeText(text).then(()=>toast('📋 Guion copiado'), ()=>toast('No se pudo copiar'));
+}
+
+/* ---- GENERADOR DE LEADS: convierte la estrategia en fuentes reales y gratuitas ---- */
+const enc = s => encodeURIComponent(s);
+const CONSUMER_RE = /famili|hogar|ama de casa|amas de casa|mam[aá]|pap[aá]|reci[eé]n casad|pareja|novi|consumidor|persona|\bolla|cocina|\bcasa|se[ñn]ora|vecin|inquilin/i;
+let _msgs = [];
+
+function hashtagOf(niche){
+  return niche.normalize('NFD').replace(/[^a-zA-Z0-9]/g,'').toLowerCase() || 'ventas';
+}
+function leadSources(strat, product, niche, city){
+  const isConsumer = RP_ONLY || CONSUMER_RE.test(niche);
+  const place = city || 'tu ciudad';
+  const q = enc(niche + (city?(' '+city):''));
+  const tag = hashtagOf(niche);
+  const dm = `Hola 👋, trabajo con ${niche} y ayudo con ${product}. ¿Le comparto en 1 minuto cómo le suma?`;
+  const ally = `Hola, ambos atendemos a ${niche} sin competir. Si me refieres clientes para ${product}, yo te derivo a los míos. ¿Armamos una alianza?`;
+  const refer = `Gracias por confiar en ${product}. ¿Conoces a 2 personas de ${niche} que merezcan lo mismo? Pásame sus nombres y yo me presento.`;
+
+  if(strat === 'mapeo'){
+    if(isConsumer) return [
+      {icon:'🛒',title:'Facebook Marketplace',desc:`Personas reales de ${place} comprando y vendiendo cerca. Filtra por rubro-hogar y escribe a quien muestra interés.`,url:`https://www.facebook.com/marketplace/${enc(place)}/search?query=${enc(niche)}`,msg:dm},
+      {icon:'📍',title:'Google Maps — puntos de reunión',desc:`Ubica ferias, mercados y centros comerciales de ${place} donde tu público circula para hacer captación y demos.`,url:`https://www.google.com/maps/search/${enc('ferias y mercados '+place)}`,msg:dm}
+    ];
+    return [
+      {icon:'🗺️',title:'Google Maps — negocios del rubro',desc:`Lista real de ${niche} en ${place} con dirección, teléfono y web. Tus leads locales listos para contactar.`,url:`https://www.google.com/maps/search/${q}`,msg:dm},
+      {icon:'🔎',title:'Google — contacto directo',desc:`Encuentra webs y WhatsApp de ${niche} en ${place}.`,url:`https://www.google.com/search?q=${enc(niche+' '+place+' contacto whatsapp')}`,msg:dm}
+    ];
+  }
+  if(strat === 'scanner'){
+    const base = [
+      {icon:'📘',title:'Facebook — grupos locales',desc:`Grupos de ${place} donde tu nicho pregunta y se queja. Únete y detecta el dolor que resuelves.`,url:`https://www.facebook.com/search/groups/?q=${q}`,msg:dm},
+      {icon:'📸',title:'Instagram — hashtag del nicho',desc:`Explora #${tag} y contacta por MD a las cuentas activas del rubro.`,url:`https://www.instagram.com/explore/tags/${tag}/`,msg:dm},
+      {icon:'🎵',title:'TikTok — señales del rubro',desc:`Mira quién publica sobre ${niche} y revisa comentarios con dolor para escribirles.`,url:`https://www.tiktok.com/search?q=${enc(niche)}`,msg:dm}
+    ];
+    if(!isConsumer) base.push({icon:'💼',title:'LinkedIn — personas del rubro',desc:`Busca a responsables de ${niche} por cargo y empresa.`,url:`https://www.linkedin.com/search/results/people/?keywords=${enc(niche)}`,msg:dm});
+    return base;
+  }
+  if(strat === 'alianzas') return [
+    {icon:'🗺️',title:'Google Maps — aliados locales',desc:`Negocios complementarios a ${niche} en ${place} para proponer intercambio de referidos.`,url:`https://www.google.com/maps/search/${q}`,msg:ally},
+    {icon:'💼',title:'LinkedIn — empresas aliadas',desc:`Empresas que ya tienen la confianza de ${niche} sin competir contigo.`,url:`https://www.linkedin.com/search/results/companies/?keywords=${enc(niche)}`,msg:ally}
+  ];
+  // referidos → no hay fuente externa: tus propios clientes son la mina
+  return [
+    {icon:'🔄',title:'Tu cartera de clientes cerrados',desc:'Los mejores referidos vienen de quien ya te compró. Abre tu cartera y pide 2 nombres a cada cliente Cerrado, dentro de las 48 h.',msg:refer,goSistema:true}
+  ];
+}
+function renderSources(strat, product, niche, city){
+  const list = leadSources(strat, product, niche, city);
+  const box = document.getElementById('srcBox');
+  _msgs = list.map(s=>s.msg);
+  if(!list.length){ box.style.display='none'; box.innerHTML=''; return; }
+  box.style.display='block';
+  box.innerHTML =
+    '<div class="sources-title">🎯 Generador de leads</div>' +
+    '<p class="sources-sub">Fuentes reales y gratuitas. Toca «Ver leads», contacta y guarda cada prospecto en tu cartera.</p>' +
+    list.map((s,i)=>`<div class="src">
+      <div class="src-h">${s.icon} ${esc(s.title)}</div>
+      <div class="src-d">${esc(s.desc)}</div>
+      <div class="src-actions">
+        ${s.url?`<a class="src-go" href="${s.url}" target="_blank" rel="noopener">🔎 Ver leads</a>`:''}
+        ${s.goSistema?`<button class="sbtn src-go" onclick="showSec('sys')">🗂️ Abrir cartera</button>`:''}
+        <button class="sbtn src-copy" onclick="copyMsg(${i})">📋 Copiar mensaje</button>
+      </div>
+    </div>`).join('');
+}
+function copyMsg(i){
+  const m = _msgs[i] || '';
+  navigator.clipboard?.writeText(m).then(()=>toast('📋 Mensaje copiado'), ()=>toast('No se pudo copiar'));
+}
+function prospectoToSistema(){
+  showSec('sys');
+  if(lastNiche) document.getElementById('lNiche').value = lastNiche;
+  document.getElementById('lName').focus();
+  toast('Registra el prospecto de «'+lastNiche+'»');
+}
+
+/* ============ SIMULADOR ============ */
+const SCENARIOS = {
+  price:{line:'Me encanta, pero es mucho dinero para mí en este momento.'},
+  time:{line:'No tengo tiempo para ver demostraciones, estoy muy apurado.'},
+  trust:{line:'He visto muchas estafas, prefiero no arriesgarme.'},
+  spouse:{line:'Se ve bien, pero lo tengo que consultar antes de decidir.'}
+};
+function startSim(){
+  const sc=document.getElementById('scen').value;
+  document.getElementById('simArea').style.display='block';
+  document.getElementById('cliLine').innerText = SCENARIOS[sc].line;
+  document.getElementById('fbBox').classList.remove('show');
+  document.getElementById('userResp').value='';
+  document.getElementById('simArea').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function checkSim(){
+  const r = document.getElementById('userResp').value.trim();
+  const fb = document.getElementById('fbBox');
+  fb.classList.add('show');
+  if(r.length < 15){
+    fb.style.background='var(--warn-bg)'; fb.style.color='var(--warn)';
+    fb.innerHTML='<strong>⚠️ Muy corto.</strong> Desarrolla tu respuesta: primero valida la emoción del cliente y luego reencuadra. Una línea suena a libreto.';
+    return;
+  }
+  const low = r.toLowerCase();
+  const startsPero = /^\s*pero\b/.test(low);
+  const empathy = /(entiendo|comprendo|tiene sentido|claro que|le escucho|imagino|es v[aá]lido|totalmente)/.test(low);
+  const question = r.includes('?');
+  let score=0, tips=[];
+  if(empathy) score++; else tips.push('Valida primero: "Entiendo perfectamente..."');
+  if(question) score++; else tips.push('Cierra con una pregunta que invite a avanzar.');
+  if(startsPero) tips.push('Evita empezar con "Pero": suena a que contradices.');
+  if(score>=2 && !startsPero){
+    fb.style.background='var(--ok-bg)'; fb.style.color='var(--ok)';
+    fb.innerHTML='<strong>✅ ¡Excelente enfoque!</strong> Mostraste empatía y guiaste con una pregunta. Remate sugerido: <em>"¿Si resolvemos justamente eso, avanzaríamos hoy?"</em>';
+  }else{
+    fb.style.background='var(--warn-bg)'; fb.style.color='var(--warn)';
+    fb.innerHTML='<strong>⚠️ Mejorable.</strong> ' + (tips.length? '<div class="chips">'+tips.map(t=>'<span class="chip">'+esc(t)+'</span>').join('')+'</div>':'');
+  }
+}
+
+/* ============ CARTERA ============ */
+const STATUS = {
+  Nuevo:{label:'🆕 Nuevo', cls:'b-nuevo', color:'var(--cyan)'},
+  Contactado:{label:'📞 Contactado', cls:'b-contact', color:'var(--violet)'},
+  Demo:{label:'📅 Demo', cls:'b-demo', color:'var(--orange)'},
+  Cerrado:{label:'✅ Cerrado', cls:'b-cerrado', color:'#34D399'},
+  Perdido:{label:'💤 Perdido', cls:'b-perdido', color:'var(--muted)'}
+};
+
+/* ---- CAMINO 2: generar universo de nombres (Lista de 100) ---- */
+const JOGGERS = [
+  {c:'Familia', p:'Papás, hermanos, tíos, primos, suegros, cuñados...'},
+  {c:'Amigos', p:'Amigos cercanos, del barrio, de toda la vida...'},
+  {c:'Vecinos', p:'De tu calle, edificio o condominio...'},
+  {c:'Trabajo', p:'Compañeros de ahora y de trabajos anteriores...'},
+  {c:'Iglesia/comunidad', p:'De tu parroquia, grupo o comunidad...'},
+  {c:'Gimnasio/deporte', p:'Del gym, la cancha, el club...'},
+  {c:'Colegio de los hijos', p:'Otros papás y mamás del colegio...'},
+  {c:'Estudios', p:'Excompañeros del cole, instituto o universidad...'},
+  {c:'Proveedores', p:'Tu peluquero, mecánico, casero, la bodega...'},
+  {c:'WhatsApp/redes', p:'Revisa tus contactos de WhatsApp y redes...'}
+];
+let joggerCat='';
+function renderJogger(){
+  const box=document.getElementById('joggerChips');
+  if(!box) return;
+  box.innerHTML = JOGGERS.map((j,i)=>`<span class="jchip ${j.c===joggerCat?'on':''}" onclick="pickJogger(${i})">${esc(j.c)}</span>`).join('');
+}
+function pickJogger(i){
+  const j=JOGGERS[i]; joggerCat=j.c;
+  document.getElementById('joggerHint').textContent='💭 '+j.p;
+  renderJogger();
+  document.getElementById('namesInput').focus();
+}
+function addNames(){
+  const raw=document.getElementById('namesInput').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!raw.length){ toast('Escribe al menos un nombre'); return; }
+  const seg=joggerCat||'Universo';
+  const base=Date.now();
+  raw.forEach((n,idx)=>leads.unshift({id:base+idx, name:n, niche:seg, contact:'', status:'Nuevo', created:new Date().toISOString()}));
+  save(DB.leads,leads);
+  document.getElementById('namesInput').value='';
+  renderLeads();
+  toast(raw.length+(raw.length===1?' nombre agregado':' nombres agregados')+' al embudo');
+}
+function waLink(num){
+  const clean = String(num||'').replace(/\D/g,'');
+  if(!clean) return '';
+  const full = clean.length===9 ? '51'+clean : clean;
+  return 'https://wa.me/'+full;
+}
+function addLead(){
+  const name=document.getElementById('lName').value.trim();
+  const niche=document.getElementById('lNiche').value.trim();
+  const contact=document.getElementById('lContact').value.trim();
+  const status=document.getElementById('lStatus').value;
+  if(!name){ toast('Ingresa al menos el nombre'); return; }
+  leads.unshift({id:Date.now(), name, niche, contact, status, created:new Date().toISOString()});
+  save(DB.leads,leads);
+  document.getElementById('lName').value='';
+  document.getElementById('lContact').value='';
+  // el rubro se conserva para registrar varios del mismo nicho seguidos
+  document.getElementById('lStatus').value='Nuevo';
+  renderLeads();
+  toast('Prospecto agregado ✅');
+}
+function changeStatus(id,val){ const l=leads.find(x=>x.id===id); if(l){ l.status=val; save(DB.leads,leads); renderLeads(); } }
+function delLead(id){
+  const l=leads.find(x=>x.id===id);
+  if(l && confirm('¿Eliminar a "'+l.name+'" de tu cartera?')){
+    leads=leads.filter(x=>x.id!==id); save(DB.leads,leads); renderLeads(); toast('Prospecto eliminado');
+  }
+}
+function leadCard(l){
+  const wa=waLink(l.contact);
+  const opts=Object.keys(STATUS).map(k=>`<option value="${k}" ${k===l.status?'selected':''}>${STATUS[k].label}</option>`).join('');
+  return `<div class="lead">
+    <div class="lead-top">
+      <div>
+        <div class="lead-name">${esc(l.name)}</div>
+        <div class="lead-meta">
+          ${l.niche?`<span class="niche-tag">🏷️ ${esc(l.niche)}</span>`:''}
+          ${l.contact?`<span>📞 ${esc(l.contact)}</span>`:''}
+        </div>
+      </div>
+    </div>
+    <div class="lead-actions">
+      <select onchange="changeStatus(${l.id},this.value)" aria-label="Mover de estado">${opts}</select>
+      ${wa?`<a class="icon-btn wa" href="${wa}" target="_blank" rel="noopener" title="WhatsApp" aria-label="Escribir por WhatsApp">💬</a>`:''}
+      <button class="icon-btn del" onclick="delLead(${l.id})" title="Eliminar" aria-label="Eliminar">🗑️</button>
+    </div>
+  </div>`;
+}
+function renderLeads(){
+  const ct=document.getElementById('leadsList');
+  const count=s=>leads.filter(l=>l.status===s).length;
+  document.getElementById('stNuevo').textContent=count('Nuevo');
+  document.getElementById('stDemo').textContent=count('Demo');
+  document.getElementById('stCerrado').textContent=count('Cerrado');
+  document.getElementById('stTotal').textContent=leads.length;
+  const uc=document.getElementById('uniCount'); if(uc) uc.textContent=leads.length;
+  renderJogger();
+
+  if(!leads.length){
+    ct.innerHTML='<div class="empty"><span class="em">📭</span><p>Tu embudo está vacío.<br>Genera tu universo arriba o trae prospectos del Radar.</p></div>';
+    return;
+  }
+  ct.innerHTML = '<div class="kanban">' + Object.keys(STATUS).map(k=>{
+    const st=STATUS[k];
+    const items=leads.filter(l=>l.status===k);
+    const cards = items.length ? items.map(leadCard).join('') : '<div class="kcol-empty">— vacío —</div>';
+    return `<div class="kcol" style="--kc:${st.color}">
+      <div class="kcol-h"><span class="kcol-t">${st.label}</span><span class="kcount">${items.length}</span></div>
+      ${cards}
+    </div>`;
+  }).join('') + '</div>';
+}
+
+/* ============ CRECIMIENTO ============ */
+function saveGrow(){
+  const win=document.getElementById('winIn').value.trim();
+  const learn=document.getElementById('learnIn').value.trim();
+  if(!win && !learn){ toast('Escribe una victoria o un aprendizaje'); return; }
+  growth.unshift({id:Date.now(), date:new Date().toISOString(), win, learn});
+  save(DB.growth,growth);
+  document.getElementById('winIn').value='';
+  document.getElementById('learnIn').value='';
+  renderGrow();
+  toast('Reflexión guardada 🌱');
+}
+function delGrow(id){ growth=growth.filter(g=>g.id!==id); save(DB.growth,growth); renderGrow(); }
+function countStreak(){
+  if(!growth.length) return 0;
+  const iso=d=>d.toISOString().slice(0,10);
+  const days=[...new Set(growth.map(g=>g.date.slice(0,10)))].sort().reverse();
+  let cursor=new Date(); cursor.setHours(0,0,0,0);
+  if(days[0]!==iso(cursor)){ const y=new Date(cursor); y.setDate(y.getDate()-1); if(days[0]!==iso(y)) return 0; cursor=y; }
+  let streak=0;
+  for(const d of days){ if(d===iso(cursor)){ streak++; cursor.setDate(cursor.getDate()-1); } else break; }
+  return streak;
+}
+function renderGrow(){
+  const streak=countStreak();
+  document.getElementById('streakDays').textContent=streak;
+  document.getElementById('streakLabel').textContent = streak===1?'día seguido 🎯':'días seguidos 🎯';
+  const hi=document.getElementById('growHist');
+  if(!growth.length){
+    hi.innerHTML='<div class="empty"><span class="em">🌱</span><p>Aún no hay reflexiones.<br>Registra tu primer día para arrancar tu racha.</p></div>';
+    return;
+  }
+  hi.innerHTML = growth.map(g=>{
+    const d=new Date(g.date).toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'});
+    return `<div class="entry">
+      <div class="entry-date">📅 ${d}<button class="icon-btn del" onclick="delGrow(${g.id})" title="Eliminar" style="padding:4px 8px;font-size:.8rem">🗑️</button></div>
+      ${g.win?`<div class="entry-line"><span class="tag tag-win">Victoria</span>${esc(g.win)}</div>`:''}
+      ${g.learn?`<div class="entry-line"><span class="tag tag-learn">Aprendizaje</span>${esc(g.learn)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+/* ============ DEMOS ============ */
+const DSTATUS = {
+  Agendada:{label:'📅 Agendada'},
+  Realizada:{label:'✅ Realizada'},
+  Cerrada:{label:'💰 Cerrada'},
+  Cancelada:{label:'❌ Cancelada'}
+};
+function localToday(){ const d=new Date(); return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+function dayDiff(dateStr){
+  if(!dateStr) return null;
+  const p=dateStr.split('-'); const d=new Date(+p[0],+p[1]-1,+p[2]);
+  return Math.round((d - localToday())/86400000);
+}
+function fmtDate(dateStr){
+  if(!dateStr) return 'Sin fecha';
+  const p=dateStr.split('-'); const d=new Date(+p[0],+p[1]-1,+p[2]);
+  return d.toLocaleDateString('es-PE',{weekday:'short',day:'2-digit',month:'short'});
+}
+function demoBadge(d){
+  if(d.status==='Cerrada') return {t:'Cerrada',cls:'d-ok'};
+  if(d.status==='Realizada') return {t:'Realizada',cls:'d-ok'};
+  if(d.status==='Cancelada') return {t:'Cancelada',cls:'d-gris'};
+  const diff=dayDiff(d.date);
+  if(diff===null) return {t:'Sin fecha',cls:'d-gris'};
+  if(diff<0) return {t:'Vencida',cls:'d-vencida'};
+  if(diff===0) return {t:'Hoy',cls:'d-hoy'};
+  if(diff===1) return {t:'Mañana',cls:'d-manana'};
+  return {t:fmtDate(d.date),cls:'d-fecha'};
+}
+function addDemo(){
+  const name=document.getElementById('dName').value.trim();
+  if(!name){ toast('Ingresa el nombre del cliente'); return; }
+  const d={
+    id:Date.now(), name,
+    contact:document.getElementById('dContact').value.trim(),
+    date:document.getElementById('dDate').value,
+    time:document.getElementById('dTime').value,
+    place:document.getElementById('dPlace').value.trim(),
+    guests:document.getElementById('dGuests').value.trim(),
+    notes:document.getElementById('dNotes').value.trim(),
+    status:'Agendada', created:new Date().toISOString()
+  };
+  demos.push(d); save(DB.demos,demos);
+  ['dName','dContact','dDate','dTime','dPlace','dGuests','dNotes'].forEach(id=>document.getElementById(id).value='');
+  renderDemos(); toast('Demo agendada 📅');
+}
+function changeDemoStatus(id,val){ const d=demos.find(x=>x.id===id); if(d){ d.status=val; save(DB.demos,demos); renderDemos(); if(val==='Cerrada') toast('¡Venta cerrada! 💰'); } }
+function delDemo(id){
+  const d=demos.find(x=>x.id===id);
+  if(d && confirm('¿Eliminar la demo de "'+d.name+'"?')){ demos=demos.filter(x=>x.id!==id); save(DB.demos,demos); renderDemos(); toast('Demo eliminada'); }
+}
+function waDemo(id){
+  const d=demos.find(x=>x.id===id); if(!d) return;
+  const link=waLink(d.contact);
+  if(!link){ toast('Esta demo no tiene WhatsApp'); return; }
+  let msg;
+  if(d.status==='Realizada'){
+    msg=`Hola ${d.name} 😊 gracias por recibirme. ¿Qué te pareció lo que cocinamos? Quedo atento para resolver cualquier duda y que tu familia disfrute al máximo. ¿Avanzamos?`;
+  } else {
+    const cuando = d.date ? ('el '+fmtDate(d.date)+(d.time?(' a las '+d.time):'')) : 'pronto';
+    msg=`Hola ${d.name} 👋 te confirmo nuestra demostración de cocina ${cuando}${d.place?(' en '+d.place):''}. Va a estar buenísima 🍲. ¿Todo bien por tu lado?`;
+  }
+  window.open(link+'?text='+encodeURIComponent(msg),'_blank','noopener');
+}
+function renderDemos(){
+  const prox = demos.filter(d=>d.status==='Agendada' && (dayDiff(d.date)===null || dayDiff(d.date)>=0)).length;
+  const real = demos.filter(d=>d.status==='Realizada'||d.status==='Cerrada').length;
+  const cerr = demos.filter(d=>d.status==='Cerrada').length;
+  document.getElementById('dProx').textContent=prox;
+  document.getElementById('dReal').textContent=real;
+  document.getElementById('dCerr').textContent=cerr;
+  document.getElementById('dRate').textContent = real? Math.round(cerr/real*100)+'%' : '0%';
+
+  const ct=document.getElementById('demosList');
+  if(!demos.length){
+    ct.innerHTML='<div class="empty"><span class="em">🍲</span><p>Sin demostraciones aún.<br>Agenda tu primera arriba.</p></div>';
+    return;
+  }
+  const rank=d=>({Agendada:0,Realizada:1,Cerrada:2,Cancelada:3}[d.status]);
+  const sorted=[...demos].sort((a,b)=> rank(a)-rank(b) || String(a.date).localeCompare(String(b.date)));
+  ct.innerHTML = sorted.map(d=>{
+    const b=demoBadge(d);
+    const cls = (d.status==='Cerrada'||d.status==='Realizada')?'done' : (b.cls==='d-vencida'||b.cls==='d-hoy'?'warn':'');
+    const wa=waLink(d.contact);
+    const opts=Object.keys(DSTATUS).map(k=>`<option value="${k}" ${k===d.status?'selected':''}>${DSTATUS[k].label}</option>`).join('');
+    const meta=[
+      d.time?`🕒 <b>${esc(d.time)}</b>`:'',
+      d.place?`📍 ${esc(d.place)}`:'',
+      d.guests?`👥 ${esc(d.guests)} invitados`:'',
+      d.contact?`📞 ${esc(d.contact)}`:''
+    ].filter(Boolean).join('<br>');
+    return `<div class="demo ${cls}">
+      <div class="demo-top">
+        <div>
+          <div class="demo-name">${esc(d.name)}</div>
+          <div class="demo-meta">${meta||'<span style="opacity:.6">Sin detalles</span>'}${d.notes?`<br>📝 ${esc(d.notes)}`:''}</div>
+        </div>
+        <span class="dbadge ${b.cls}">${b.t}</span>
+      </div>
+      <div class="demo-actions">
+        <select onchange="changeDemoStatus(${d.id},this.value)" aria-label="Estado de la demo">${opts}</select>
+        ${wa?`<button class="icon-btn wa" onclick="waDemo(${d.id})" title="Confirmar/seguir por WhatsApp" aria-label="WhatsApp">💬</button>`:''}
+        <button class="icon-btn del" onclick="delDemo(${d.id})" title="Eliminar" aria-label="Eliminar">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ============ TOUR GUIADO CON VOZ ============ */
+const TOUR = [
+  {emoji:'👋', sec:null,     nav:null,      title:'¡Bienvenido a NEXO Royal Prestige!', text:'Soy tu guía. En un minuto te muestro cómo conseguir clientes y vender más Royal Prestige. Toca Siguiente para empezar.'},
+  {emoji:'📡', sec:'radar',  nav:'b-radar', title:'1. Radar de Oportunidades', text:'Aquí generas tus prospectos. Eliges tu producto Royal Prestige, tu cliente objetivo y una de cuatro estrategias. Te muestro para qué sirve cada una.'},
+  {emoji:'🗺️', sec:'radar',  nav:'b-radar', strat:'mapeo',    title:'Estrategia: Mapeo de Calor', text:'Si eliges Mapeo de Calor, NEXO te dice DÓNDE encontrar clientes en persona: las zonas, los horarios ideales, cómo filtrar a los mejores y un guion para abordarlos. Perfecto para tocar puertas.'},
+  {emoji:'🔍', sec:'radar',  nav:'b-radar', strat:'scanner',  title:'Estrategia: Escáner Digital', text:'Con Escáner Digital te muestro a quién ya está pidiendo ayuda en redes: los grupos, los hashtags, las frases de dolor a buscar y un mensaje directo listo para enviar.'},
+  {emoji:'🤝', sec:'radar',  nav:'b-radar', strat:'alianzas', title:'Estrategia: Alianzas B2B', text:'Alianzas B2B es para aliarte con negocios que ya tienen la confianza de tus clientes, sin competir contigo, e intercambiar referidos. NEXO te da los aliados y el pitch listo.'},
+  {emoji:'🔄', sec:'radar',  nav:'b-radar', strat:'referidos',title:'Estrategia: Referidos', text:'Referidos se maneja pidiendo dos nombres a cada cliente feliz, dentro de las cuarenta y ocho horas de la venta, con el guion ya listo. El mejor cliente trae al siguiente.'},
+  {emoji:'🚀', sec:'radar',  nav:'b-radar', title:'Genera tu plan', text:'Eliges la estrategia que quieras y tocas Generar. NEXO te entrega fuentes reales y gratuitas para conseguir clientes hoy mismo.'},
+  {emoji:'🎭', sec:'sim',    nav:'b-sim',   title:'2. Práctica', text:'Antes de vender, ensaya. Elige una objeción típica del cliente, escribe tu respuesta y recibe consejos al instante.'},
+  {emoji:'🗂️', sec:'sys',    nav:'b-sys',   title:'3. Tu embudo', text:'Aquí tienes dos caminos: traer prospectos de las fuentes del Radar, o generar tu universo con la Lista de 100, anotando a todos los que conoces. Todos caen en un tablero donde los mueves de Nuevo a Contactado, Demo y Cerrado hasta que compran.'},
+  {emoji:'📅', sec:'demos',  nav:'b-demos', title:'4. Demostraciones', text:'El corazón de la venta: agenda tus demostraciones de cocina, confírmalas por WhatsApp y marca cuáles cerraste. NEXO calcula tu porcentaje de cierre.'},
+  {emoji:'🌱', sec:'grow',   nav:'b-grow',  title:'5. Crecimiento', text:'Al final del día, anota una victoria y un aprendizaje. Tu racha mide la constancia, que es lo que trae los resultados.'},
+  {emoji:'🏁', sec:'man',    nav:'b-man',   title:'¡Listo para vender!', text:'Si olvidas algo, todo está en el Manual, y puedes repetir este tour cuando quieras. ¡Mucho éxito!'}
+];
+let tourStep=0, ttsOn=true;
+/* Elige la mejor voz: HOMBRE + acento LATINOAMERICANO, entre las que tenga el equipo.
+   La API no expone el género, así que se usa un heurístico por nombre conocido. */
+const V_MALE   = /pablo|raul|raúl|jorge|diego|miguel|carlos|juan|andr[eé]s|gonzalo|enrique|roberto|male|hombre|masculin/i;
+const V_FEMALE = /helena|laura|sabina|paulina|m[oó]nica|elena|mar[ií]a|luc[ií]a|female|mujer|femenin/i;
+const V_LATAM  = /es[-_](mx|us|419|pe|co|ar|cl|ve|bo|ec|gt|hn|ni|pa|py|sv|uy|do|cr)/i;
+function pickVoice(){
+  if(!('speechSynthesis'in window)) return null;
+  const vs=(speechSynthesis.getVoices()||[]).filter(v=>/^es/i.test(v.lang||''));
+  if(!vs.length) return null;
+  const score=v=>{
+    const n=(v.name||'').toLowerCase(); let s=0;
+    if(V_MALE.test(n)) s+=6;               // prioridad fuerte: hombre
+    if(V_FEMALE.test(n)) s-=6;             // evita voces de mujer
+    if(V_LATAM.test(v.lang||'')) s+=3;     // preferencia: acento latino
+    if(/google/i.test(n)) s+=1;           // voces Google suelen sonar mejor
+    return s;
+  };
+  return vs.slice().sort((a,b)=>score(b)-score(a))[0];
+}
+function speak(t){
+  if(!ttsOn || !('speechSynthesis'in window)) return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t);
+    const v=pickVoice();
+    u.lang = (v && v.lang) ? v.lang : 'es-MX';
+    u.rate=0.98; u.pitch=0.9;             // tono un poco más grave = más masculino
+    if(v) u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function toggleTTS(){
+  ttsOn=!ttsOn;
+  document.getElementById('tMute').textContent = ttsOn?'🔊':'🔇';
+  if(!ttsOn){ if('speechSynthesis'in window) speechSynthesis.cancel(); }
+  else speak(TOUR[tourStep].text);
+}
+function renderTour(){
+  const s=TOUR[tourStep];
+  document.getElementById('tEmoji').textContent=s.emoji;
+  document.getElementById('tTitle').textContent=s.title;
+  document.getElementById('tText').textContent=s.text;
+  document.getElementById('tDots').innerHTML=TOUR.map((_,i)=>`<i class="${i===tourStep?'on':''}"></i>`).join('');
+  document.getElementById('tPrev').style.visibility = tourStep===0?'hidden':'visible';
+  document.getElementById('tNext').textContent = tourStep===TOUR.length-1?'Finalizar':'Siguiente';
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('nav-hl'));
+  if(s.sec) showSec(s.sec);
+  if(s.strat){
+    curStrat=s.strat;
+    document.querySelectorAll('.opt').forEach(e=>{const on=e.dataset.strat===s.strat;e.classList.toggle('sel',on);e.setAttribute('aria-checked',on?'true':'false');});
+    renderStratInfo(s.strat);
+    const info=document.getElementById('stratInfo');
+    if(info) setTimeout(()=>info.scrollIntoView({behavior:'smooth',block:'center'}),60);
+  }
+  if(s.nav) document.getElementById(s.nav).classList.add('nav-hl');
+  speak(s.text);
+}
+function startTour(){
+  tourStep=0; ttsOn=true;
+  document.getElementById('tMute').textContent='🔊';
+  document.body.classList.add('touring');
+  document.getElementById('tourBackdrop').classList.add('show');
+  document.getElementById('tourCard').classList.add('show');
+  renderTour();
+}
+function tourNext(){ if(tourStep<TOUR.length-1){ tourStep++; renderTour(); } else endTour(); }
+function tourPrev(){ if(tourStep>0){ tourStep--; renderTour(); } }
+function endTour(){
+  document.body.classList.remove('touring');
+  document.getElementById('tourBackdrop').classList.remove('show');
+  document.getElementById('tourCard').classList.remove('show');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('nav-hl'));
+  if('speechSynthesis'in window) speechSynthesis.cancel();
+  try{ localStorage.setItem('nexo_tour_done','1'); }catch(e){}
+}
+// Precargar voces (Chrome las entrega de forma asíncrona)
+if('speechSynthesis'in window){ speechSynthesis.onvoiceschanged=()=>{}; speechSynthesis.getVoices(); }
+
+/* ============ INIT ============ */
+renderLeads();
+renderGrow();
+renderDemos();
+// Tour automático la primera vez
+try{ if(!localStorage.getItem('nexo_tour_done')) setTimeout(startTour, 700); }catch(e){}
+// PWA
+if('serviceWorker'in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+/* ORASIC SalesForce — Service Worker (PWA offline) */
+const CACHE = 'orasic-sf-v1';
+const ASSETS = ['./', './index.html', './manifest.json', './icon.svg'];
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  // Navegaciones -> app shell (offline-first)
+  if (req.mode === 'navigate') {
+    e.respondWith(caches.match('./index.html').then((r) => r || fetch(req)));
+    return;
+  }
+  // Recursos propios -> cache-first; externos (wa.me, tel, mapas) -> red
+  e.respondWith(
+    caches.match(req).then((cached) => cached || fetch(req).then((res) => {
+      if (res && res.status === 200 && new URL(req.url).origin === self.location.origin) {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(req, copy));
+      }
+      return res;
+    }).catch(() => cached))
+  );
+});
