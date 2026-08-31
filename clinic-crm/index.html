@@ -417,7 +417,11 @@ document.querySelectorAll('.login-tab').forEach(tab => {
 });
 
 // Demo mode
-document.getElementById('demo-btn').addEventListener('click', async () => {
+// Evita que boot() (async, se llama al cargar y de nuevo por onAuthStateChange)
+// pise la demo local con la pantalla de login al no encontrar sesión real.
+let demoModeActive = false;
+function entrarComoDemo() {
+  demoModeActive = true;
   // Carga datos de demo localmente
   const demoData = {
     profile: { id: 'demo-user', email: 'demo@clinica.local', full_name: 'Dr. Demo', clinic_id: 'demo-clinic', role: 'admin' },
@@ -450,9 +454,16 @@ document.getElementById('demo-btn').addEventListener('click', async () => {
   document.getElementById('clinic-name-label').textContent = clinic.name;
   document.getElementById('user-email-label').textContent = profile.email;
 
-  // Carga la primera página (citas/pacientes)
-  renderCitas();
-});
+  // Carga la primera página (mismo punto de entrada que usa el login real)
+  navigate('dashboard');
+}
+document.getElementById('demo-btn').addEventListener('click', entrarComoDemo);
+
+// La demo se abre automáticamente al entrar, sin login ni clics extra —
+// cumple la promesa de la landing ("sin signup, sin límites, sin pagar").
+// Para llegar al login real (ej. si una clínica real usa este mismo link
+// más adelante), se agrega ?login=true a la URL.
+if (new URLSearchParams(location.search).get('login') !== 'true') entrarComoDemo();
 
 function showLoginError(msg) {
   const el = document.getElementById('login-error');
@@ -508,7 +519,11 @@ document.getElementById('btn-logout-mobile').addEventListener('click', async () 
 });
 
 // ---------- Boot ----------
+// demoModeActive (declarada más arriba, antes de "Demo mode") evita que boot()
+// (llamado de forma asíncrona, dos veces: al cargar y por onAuthStateChange)
+// pise la demo local con la pantalla de login al no encontrar sesión real.
 async function boot() {
+  if (demoModeActive) return;
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none'; return; }
 
