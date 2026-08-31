@@ -548,11 +548,24 @@ function loadState() {
   };
 }
 
+// El banco (articulos-datos.js) trae solo numero/title/body/... — sin los
+// campos que el resto de la app necesita para listar, filtrar y editar
+// (id estable, plataforma, status, createdAt). Se completan aquí una sola vez.
+function normalizarArticulo(a, plataforma, prefijo){
+  return {
+    id: a.id || `${prefijo}-seed-${a.numero}`,
+    plataforma,
+    status: a.status || 'draft',
+    createdAt: a.createdAt || new Date().toISOString(),
+    ...a
+  };
+}
+
 function syncArticlesFromJSON() {
   if (typeof ARTICULOS_DATA !== 'undefined' && ARTICULOS_DATA) {
     // NO reemplazar artículos publicados localmente - solo cargar drafts del banco
-    const serverBlog = ARTICULOS_DATA.blogArticles || [];
-    const serverLinkedin = ARTICULOS_DATA.linkedinArticles || [];
+    const serverBlog = (ARTICULOS_DATA.blogArticles || []).map(a => normalizarArticulo(a, 'Blog', 'blog'));
+    const serverLinkedin = (ARTICULOS_DATA.linkedinArticles || []).map(a => normalizarArticulo(a, 'LinkedIn', 'li'));
 
     // Preservar los artículos publicados en localStorage
     const localPublished = state.blogArticles.filter(a => a.status === 'published');
@@ -567,8 +580,8 @@ function syncArticlesFromJSON() {
       .then(text => {
         // eval() removed: articulos-datos.js already loaded via <script> tag at line 16
         if (typeof ARTICULOS_DATA !== 'undefined') {
-          const serverBlog = ARTICULOS_DATA.blogArticles || [];
-          const serverLinkedin = ARTICULOS_DATA.linkedinArticles || [];
+          const serverBlog = (ARTICULOS_DATA.blogArticles || []).map(a => normalizarArticulo(a, 'Blog', 'blog'));
+          const serverLinkedin = (ARTICULOS_DATA.linkedinArticles || []).map(a => normalizarArticulo(a, 'LinkedIn', 'li'));
 
           // Preservar los artículos publicados en localStorage
           const localPublished = state.blogArticles.filter(a => a.status === 'published');
