@@ -766,9 +766,13 @@ function showLinkedInPreview(title, body, hashtags, photoFile) {
 }
 
 let state = loadState();
-// Sincronizar artículos desde JSON al iniciar
+// Sincronizar artículos y guiones al iniciar, siempre — para que la app
+// nunca abra vacía. importCalendarSeed() es seguro de llamar en cada carga:
+// solo agrega los días que falten (existing.has(row.day)), nunca duplica ni
+// pisa piezas ya editadas.
 window.addEventListener('DOMContentLoaded', () => {
   syncArticlesFromJSON();
+  importCalendarSeed();
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -973,7 +977,7 @@ function importCalendarSeed() {
   });
 
   saveState();
-  showToast(`✅ ${added} piezas importadas al banco`, 'success');
+  if (added > 0) showToast(`✅ ${added} piezas importadas al banco`, 'success');
   render();
 }
 
