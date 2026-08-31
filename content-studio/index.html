@@ -779,9 +779,9 @@ window.addEventListener('DOMContentLoaded', () => {
 //  CALENDARIO SEED — 30 días planificados
 // ═══════════════════════════════════════════════════════════
 const CALENDAR_SEED = [
-  { day:1,  pilar:'Mito vs Realidad', rubro:'Costo y tiempo',                    idea:'"cuesta miles y tarda meses" vs. IA en días',                         formato:'Narrado',   goal:'educacion', status:'published', asset:'video-1-mito-vs-realidad-FINAL2.mp4' },
-  { day:2,  pilar:'Antes/Después',    rubro:'Reservas + cobro (pyme genérico)',   idea:'WhatsApp desordenado vs. app que agenda y cobra',                     formato:'Narrado',   goal:'leads',      status:'published', asset:'video-2-antes-despues-FINAL2.mp4' },
-  { day:3,  pilar:'Números',          rubro:'+100 apps, 12 rubros, 2 países',     idea:'Prueba social en cifras',                                             formato:'Narrado',   goal:'awareness',  status:'published', asset:'video-3-numeros-FINAL2.mp4' },
+  { day:1,  pilar:'Mito vs Realidad', rubro:'Costo y tiempo',                    idea:'"cuesta miles y tarda meses" vs. IA en días',                         formato:'Narrado',   goal:'educacion', status:'ready', asset:'video-1-mito-vs-realidad-FINAL2.mp4' },
+  { day:2,  pilar:'Antes/Después',    rubro:'Reservas + cobro (pyme genérico)',   idea:'WhatsApp desordenado vs. app que agenda y cobra',                     formato:'Narrado',   goal:'leads',      status:'ready', asset:'video-2-antes-despues-FINAL2.mp4' },
+  { day:3,  pilar:'Números',          rubro:'+100 apps, 12 rubros, 2 países',     idea:'Prueba social en cifras',                                             formato:'Narrado',   goal:'awareness',  status:'ready', asset:'video-3-numeros-FINAL2.mp4' },
   { day:4,  pilar:'Tips',             rubro:'Señales de alerta',                  idea:'3 señales de que tu negocio necesita dejar el Excel',                 formato:'Silencioso',goal:'educacion',  status:'ready' },
   // Días 5-30 reescritos: cada "idea" es un GANCHO de 3 segundos en el lenguaje del
   // dueño de pyme (no una descripción del tema), y "mensaje" fija la idea central
@@ -904,7 +904,7 @@ let GUIONES = {
   34: ['+120 gimnasios pasaron de WhatsApp a datos reales de su negocio.', 'Membresías, pagos atrasados, quién desaparece en la semana uno: cuando lo ves, aún puedes retenerlo.']
 };
 
-const SEED_START = new Date(2026, 6, 28); // July 28 in local time — primer video publicado
+const SEED_START = new Date(2026, 8, 1); // 1 de setiembre — arranque real de publicación
 
 function reimportCalendarSeed() {
   if (!confirm('¿Actualizar las 30 piezas del calendario con los textos más recientes?\n\nSe conservan tu estado de publicación, los guiones ya generados y los números de rendimiento.')) return;
@@ -4679,12 +4679,18 @@ function saveConfig() {
   render(); // refresh to show "Claude conectado" badge
 }
 
+// Arranque limpio: borra guiones y artículos actuales (incluyendo cualquier
+// marca de "publicado" o métrica de pruebas) y siembra todo de nuevo desde
+// cero — guiones desde SEED_START (1 de setiembre), artículos con fecha de hoy.
 function confirmClearAll() {
-  if (confirm('¿Borrar TODO? No se puede deshacer.')) {
+  if (confirm('¿Reiniciar todo el contenido? Borra guiones y artículos actuales y siembra todo de nuevo desde cero. No se puede deshacer.')) {
     state.items = [];
+    state.linkedinArticles = [];
+    state.blogArticles = [];
     saveState();
-    showToast('🗑️ Todo eliminado','info');
-    render();
+    importCalendarSeed();
+    syncArticlesFromJSON();
+    showToast('🆕 Contenido reiniciado desde cero', 'success');
   }
 }
 
