@@ -1,4 +1,4 @@
-# ORASIC Lab — Contexto del proyecto
+# ORASIC Lab by NIROMA Labs — Contexto del proyecto
 
 Landing page de ORASIC Lab (agencia de software/apps a medida con IA, Perú y Colombia). Sitio en `orasic-lab.vercel.app`.
 
