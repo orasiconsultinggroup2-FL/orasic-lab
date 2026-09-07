@@ -1,51 +1,26 @@
 const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 const app = express();
-const PORT = 5050;
+const PORT = process.env.PORT || 3000;
 const REPO_ROOT = path.join(__dirname, '..');
 
 // Middleware
-app.use(cors());
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+// Sin CORS y sin body-parser urlencoded a propósito: la app es same-origin
+// (servida por este mismo servidor) y solo envía JSON vía fetch. Habilitar
+// CORS o form-urlencoded permitiría ataques cross-site contra los endpoints.
+app.use(express.json({ limit: '5mb' }));
 
-// Servir archivos estáticos de Content Studio
+// Servir archivos estáticos: primero desde la raíz del proyecto (para orasic-tour.js, etc)
+// luego desde content-studio/ (para articulos-datos.js, etc)
+app.use(express.static(REPO_ROOT));
 app.use(express.static(__dirname));
 
 // Redirige /content-studio/ a /
 app.get('/content-studio/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
-
-// ==================
-// Función helper: hacer commit y push
-// ==================
-function commitAndPush(file, message) {
-  try {
-    const fileName = path.basename(file);
-    const options = { cwd: REPO_ROOT, encoding: 'utf-8', stdio: 'pipe' };
-
-    // Agregar archivo
-    execSync(`git add "${fileName}"`, options);
-
-    // Hacer commit
-    execSync(`git commit -m "${message}"`, options);
-
-    // Hacer push
-    execSync(`git push`, options);
-
-    console.log(`✅ Git: Commit y push realizados para ${fileName}`);
-    return true;
-  } catch (error) {
-    console.warn(`⚠ Git error (ignorado):`, error.message.substring(0, 100));
-    return false;
-  }
-}
 
 // ==================
 // ENDPOINT: Publicar artículo en Blog
@@ -105,7 +80,6 @@ app.post('/api/publish-blog', (req, res) => {
     console.log(`✅ Artículo publicado: "${article.title}" (${article.id})`);
 
     // Nota: El commit y push se hacen manualmente después de publicar
-    // commitAndPush() está disponible pero comentado para evitar errores de permisos
 
     res.json({
       success: true,
@@ -139,77 +113,6 @@ app.get('/api/articles-published', (req, res) => {
 });
 
 // ==================
-// ENDPOINT: Generar video a partir de guión
-// ==================
-app.post('/api/generate-video', (req, res) => {
-  try {
-    const { script, title } = req.body;
-
-    if (!script || typeof script !== 'string') {
-      return res.status(400).json({ error: 'Script inválido o vacío' });
-    }
-
-    // Sanitiza el título para usarlo en nombre de archivo
-    const sanitized = (title || 'video').replace(/[^a-zA-Z0-9-_]/g, '-').slice(0, 30);
-    const timestamp = Date.now();
-    const outputFile = path.join(__dirname, `videos_output`, `${sanitized}_${timestamp}.mp4`);
-
-    // Crea directorio si no existe
-    const outputDir = path.dirname(outputFile);
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-    }
-
-    console.log(`🎬 Generando video: "${title || 'Sin título'}"...`);
-
-    // Ejecuta el script Python
-    const pythonScript = path.join(__dirname, 'generate_video.py');
-    const command = `python "${pythonScript}" "${script.replace(/"/g, '\\"')}" "${outputFile}"`;
-
-    try {
-      execSync(command, {
-        cwd: __dirname,
-        encoding: 'utf-8',
-        stdio: 'pipe',
-        timeout: 120000  // 2 minutos timeout
-      });
-
-      // Verifica si el archivo se creó
-      if (!fs.existsSync(outputFile)) {
-        throw new Error('El archivo de video no se generó correctamente');
-      }
-
-      console.log(`✅ Video generado: ${outputFile}`);
-
-      res.json({
-        success: true,
-        message: '✅ Video generado correctamente',
-        videoPath: `/videos_output/${path.basename(outputFile)}`,
-        filename: path.basename(outputFile)
-      });
-
-    } catch (execError) {
-      console.error('Error al ejecutar Python:', execError.message);
-
-      // Intenta mostrar stderr
-      const errorMsg = execError.stderr
-        ? execError.stderr.toString().slice(0, 500)
-        : execError.message;
-
-      res.status(500).json({
-        error: 'Error al generar video con Python',
-        details: errorMsg,
-        hint: 'Asegúrate de tener instalado: pip install moviepy pillow numpy'
-      });
-    }
-
-  } catch (error) {
-    console.error('❌ Error en /api/generate-video:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// ==================
 // Servir videos generados
 // ==================
 app.use('/videos_output', express.static(path.join(__dirname, 'videos_output')));
@@ -218,7 +121,7 @@ app.use('/videos_output', express.static(path.join(__dirname, 'videos_output')))
 // Health check
 // ==================
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'ORASIC Content Studio running on port 5050' });
+  res.json({ status: 'ok', message: `ORASIC Content Studio running on port ${PORT}` });
 });
 
 // ==================
@@ -226,7 +129,7 @@ app.get('/api/health', (req, res) => {
 // ==================
 app.listen(PORT, () => {
   console.log(`
-╔════════════════════════════════════════════════════╗
+╔═══════════════════════════════════════════════════╗
 ║   🎬 ORASIC Content Studio                          ║
 ║   📍 http://localhost:${PORT}/                      ║
 ║   🚀 Servidor Node.js iniciado                      ║
